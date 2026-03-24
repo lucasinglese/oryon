@@ -179,3 +179,17 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+
+# Remove poetry.lock
+poetry.lock
+
+
+# Personal folder
+.DS_Store
+.claude
+.idea
+
+
+# Website
+docs/site/
