@@ -1,0 +1,11 @@
+[package]
+name = "oryon"
+version = "0.0.1"
+edition = "2021"
+description = "Institutional-grade feature and target engineering for quantitative research."
+license = "MIT"
+repository = "https://github.com/Quantreo/oryon"
+
+[dependencies]
+smallvec = "1"
+thiserror = "2"
