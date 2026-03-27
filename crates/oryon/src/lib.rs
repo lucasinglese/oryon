@@ -1,3 +1,8 @@
+#[cfg(test)]
+pub mod testing;
+
+pub mod checks;
+pub mod diagnostics;
 pub mod error;
 pub mod features;
 pub mod ops;

@@ -24,8 +24,8 @@ impl FeaturePipeline {
     ) -> Result<Self, OryonError> {
         let dag = FeatureDag::new(features)?;
 
-        let required_columns = dag.required_columns();
-        let missing_keys: Vec<String> = required_columns
+        let input_names = dag.input_names();
+        let missing_keys: Vec<String> = input_names
             .iter()
             .filter(|col| !input_columns.contains(col))
             .cloned()
@@ -53,7 +53,7 @@ impl FeaturePipeline {
     /// in the same order as `input_columns` passed to `new()`.
     ///
     /// Returns a flat `Vec<Option<f64>>` with all feature outputs,
-    /// in the same order as `output_keys()`.
+    /// in the same order as `output_names()`.
     pub fn update(&mut self, state: &[Option<f64>]) -> Vec<Option<f64>> {
         let mut all_values: HashMap<String, Option<f64>> = HashMap::new();
 
@@ -66,14 +66,14 @@ impl FeaturePipeline {
         for level in self.dag.execution_order_mut() {
             for feature in level.iter_mut() {
                 let feature_state: Vec<Option<f64>> = feature
-                    .required_columns()
+                    .input_names()
                     .iter()
                     .map(|col| all_values.get(col).copied().flatten())
                     .collect();
 
                 let output: Output = feature.update(&feature_state);
 
-                let names = feature.names();
+                let names = feature.output_names();
                 for (i, name) in names.iter().enumerate() {
                     if i < output.len() {
                         all_values.insert(name.clone(), output[i]);
@@ -90,7 +90,7 @@ impl FeaturePipeline {
     /// Process a full dataset bar by bar (research mode).
     /// Each inner slice is one bar's raw input values.
     ///
-    /// Returns a matrix: one row per bar, columns matching `output_keys()`.
+    /// Returns a matrix: one row per bar, columns matching `output_names()`.
     pub fn run_research(&mut self, data: &[Vec<Option<f64>>]) -> Vec<Vec<Option<f64>>> {
         self.dag.reset();
         let mut results: Vec<Vec<Option<f64>>> = Vec::with_capacity(data.len());
@@ -106,12 +106,12 @@ impl FeaturePipeline {
     }
 
     /// Output column names in execution order.
-    pub fn output_keys(&self) -> &[String] {
-        self.dag.output_keys()
+    pub fn output_names(&self) -> &[String] {
+        self.dag.output_names()
     }
 
     /// Input columns in the order expected by update().
-    pub fn required_columns(&self) -> &[String] {
+    pub fn input_names(&self) -> &[String] {
         &self.input_columns
     }
 
@@ -133,75 +133,8 @@ impl FeaturePipeline {
 
 #[cfg(test)]
 mod tests {
-    use smallvec::smallvec;
-
     use super::*;
-
-    struct AddOneStub {
-        col: Vec<String>,
-        name: Vec<String>,
-    }
-
-    impl AddOneStub {
-        fn new(col: Vec<String>, name: Vec<String>) -> Self {
-            AddOneStub { col, name }
-        }
-    }
-
-    impl Feature for AddOneStub {
-        fn names(&self) -> Vec<String> {
-            self.name.clone()
-        }
-        fn required_columns(&self) -> Vec<String> {
-            self.col.clone()
-        }
-        fn update(&mut self, state: &[Option<f64>]) -> Output {
-            smallvec![state[0].map(|x| x + 1.0)]
-        }
-        fn reset(&mut self) {}
-        fn fresh(&self) -> Box<dyn Feature> {
-            Box::new(AddOneStub::new(self.col.clone(), self.name.clone()))
-        }
-    }
-
-    struct WarmUpOneStub {
-        col: Vec<String>,
-        name: Vec<String>,
-        seen_one: bool,
-    }
-
-    impl WarmUpOneStub {
-        fn new(col: Vec<String>, name: Vec<String>) -> Self {
-            WarmUpOneStub {
-                col,
-                name,
-                seen_one: false,
-            }
-        }
-    }
-
-    impl Feature for WarmUpOneStub {
-        fn names(&self) -> Vec<String> {
-            self.name.clone()
-        }
-        fn required_columns(&self) -> Vec<String> {
-            self.col.clone()
-        }
-        fn update(&mut self, state: &[Option<f64>]) -> Output {
-            if !self.seen_one {
-                self.seen_one = true;
-                smallvec![None]
-            } else {
-                smallvec![state[0]]
-            }
-        }
-        fn reset(&mut self) {
-            self.seen_one = false;
-        }
-        fn fresh(&self) -> Box<dyn Feature> {
-            Box::new(WarmUpOneStub::new(self.col.clone(), self.name.clone()))
-        }
-    }
+    use crate::testing::{AddOneStub, WarmUpOneStub};
 
     #[test]
     fn test_update_single() {
@@ -278,7 +211,7 @@ mod tests {
     }
 
     #[test]
-    fn test_output_keys() {
+    fn test_output_names() {
         let a = AddOneStub::new(vec!["close".into()], vec!["a".into()]);
         let b = AddOneStub::new(vec!["close".into()], vec!["b".into()]);
         let pipeline = FeaturePipeline::new(
@@ -287,7 +220,7 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(pipeline.output_keys(), &["a".to_string(), "b".to_string()]);
+        assert_eq!(pipeline.output_names(), &["a".to_string(), "b".to_string()]);
     }
 
     #[test]
@@ -302,7 +235,7 @@ mod tests {
         .unwrap();
 
         assert_eq!(
-            pipeline.output_keys(),
+            pipeline.output_names(),
             &["close_plus_one".to_string(), "close_plus_two".to_string()]
         );
     }

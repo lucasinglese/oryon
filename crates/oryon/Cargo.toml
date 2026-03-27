@@ -9,3 +9,26 @@ repository = "https://github.com/Quantreo/oryon"
 [dependencies]
 smallvec = "1"
 thiserror = "2"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "features"
+harness = false
+
+[[bench]]
+name = "ops"
+harness = false
+
+[[bench]]
+name = "targets"
+harness = false
+
+[[bench]]
+name = "checks"
+harness = false
+
+[[bench]]
+name = "diagnostics"
+harness = false

@@ -1,3 +1,4 @@
+use crate::error::OryonError;
 use crate::ops::{log_return, std_dev};
 use crate::tools::{pairwise, rolling, shift};
 use crate::traits::Target;
@@ -8,29 +9,48 @@ use crate::traits::Target;
 /// over the next `horizon` bars. The last `horizon` values are `None`
 /// because the future is not yet known.
 ///
-/// Output key: `{col}_future_ctc_vol_{horizon}`.
+/// Output name: `{input}_future_ctc_vol_{horizon}`.
+#[derive(Debug)]
 pub struct FutureCTCVolatility {
-    col: String,
+    input: String,
     horizon: usize,
-    name: String,
+    output: String,
 }
 
 impl FutureCTCVolatility {
     /// Create a new `FutureCTCVolatility` target.
     ///
-    /// - `col` — price column name (e.g. `"close"`).
+    /// - `input` — price series name (e.g. `"close"`).
     /// - `horizon` — number of bars to look ahead.
-    pub fn new(col: &str, horizon: usize) -> Self {
-        let name = format!("{col}_future_ctc_vol_{horizon}");
-        FutureCTCVolatility {
-            col: col.to_string(),
-            horizon,
-            name,
+    pub fn new(input: &str, horizon: usize) -> Result<Self, OryonError> {
+        if input.is_empty() {
+            return Err(OryonError::InvalidInput { msg: "input must not be empty".into() });
         }
+        if horizon == 0 {
+            return Err(OryonError::InvalidInput { msg: "horizon must be > 0".into() });
+        }
+        let output = format!("{input}_future_ctc_vol_{horizon}");
+        Ok(FutureCTCVolatility {
+            input: input.to_string(),
+            horizon,
+            output,
+        })
     }
 }
 
 impl Target for FutureCTCVolatility {
+    fn input_names(&self) -> Vec<String> {
+        vec![self.input.clone()]
+    }
+
+    fn output_names(&self) -> Vec<String> {
+        vec![self.output.clone()]
+    }
+
+    fn forward_period(&self) -> usize {
+        self.horizon
+    }
+
     fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let prices = columns[0];
         let shifted_prices = shift(prices, 1);
@@ -39,77 +59,37 @@ impl Target for FutureCTCVolatility {
         let result = shift(&vol, -(self.horizon as isize));
         vec![result]
     }
-
-    fn forward_period(&self) -> usize {
-        self.horizon
-    }
-
-    fn names(&self) -> Vec<String> {
-        vec![self.name.clone()]
-    }
-
-    fn required_columns(&self) -> Vec<String> {
-        vec![self.col.clone()]
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::target_contract_tests;
 
-    #[test]
-    fn test_names() {
-        let target = FutureCTCVolatility::new("close", 3);
-        assert_eq!(target.names(), vec!["close_future_ctc_vol_3".to_string()]);
+    fn prices() -> Vec<Option<f64>> {
+        vec![
+            Some(100.0), Some(101.0), Some(103.0), Some(102.0),
+            Some(105.0), Some(107.0), Some(106.0),
+        ]
     }
 
-    #[test]
-    fn test_required_columns() {
-        let target = FutureCTCVolatility::new("close", 3);
-        assert_eq!(target.required_columns(), vec!["close".to_string()]);
+    fn vol3() -> FutureCTCVolatility {
+        FutureCTCVolatility::new("close", 3).unwrap()
     }
 
-    #[test]
-    fn test_forward_period() {
-        let target = FutureCTCVolatility::new("close", 5);
-        assert_eq!(target.forward_period(), 5);
-    }
-
-    #[test]
-    fn test_compute_shape() {
-        let target = FutureCTCVolatility::new("close", 3);
-        let prices: Vec<Option<f64>> = vec![
-            Some(100.0),
-            Some(101.0),
-            Some(103.0),
-            Some(102.0),
-            Some(105.0),
-            Some(107.0),
-            Some(106.0),
-        ];
-
-        let result = target.compute(&[&prices]);
-        assert_eq!(result.len(), 1); // one output column
-        assert_eq!(result[0].len(), prices.len()); // same length as input
-    }
+    target_contract_tests!(
+        FutureCTCVolatility::new("close", 3).unwrap(),
+        vec!["close".to_string()],
+        vec!["close_future_ctc_vol_3".to_string()],
+        3,
+        0,
+        &prices(),
+    );
 
     #[test]
     fn test_compute_forward_none() {
-        let target = FutureCTCVolatility::new("close", 3);
-        let prices: Vec<Option<f64>> = vec![
-            Some(100.0),
-            Some(101.0),
-            Some(103.0),
-            Some(102.0),
-            Some(105.0),
-            Some(107.0),
-            Some(106.0),
-        ];
-
-        let result = target.compute(&[&prices]);
-        let col = &result[0];
-
-        // Last `horizon` values must be None (future unknown).
+        let col = &vol3().compute(&[&prices()])[0];
+        // last horizon values must be None
         assert_eq!(col[4], None);
         assert_eq!(col[5], None);
         assert_eq!(col[6], None);
@@ -117,40 +97,27 @@ mod tests {
 
     #[test]
     fn test_compute_valid_values() {
-        let target = FutureCTCVolatility::new("close", 3);
-        let prices: Vec<Option<f64>> = vec![
-            Some(100.0),
-            Some(101.0),
-            Some(103.0),
-            Some(102.0),
-            Some(105.0),
-            Some(107.0),
-            Some(106.0),
-        ];
-
-        let result = target.compute(&[&prices]);
-        let col = &result[0];
-
-        // First valid value should be at index 0 (warm-up absorbed by shift).
+        let col = &vol3().compute(&[&prices()])[0];
         assert!(col[0].is_some());
         assert!(col[0].unwrap() > 0.0);
     }
 
     #[test]
     fn test_compute_stateless() {
-        let target = FutureCTCVolatility::new("close", 3);
-        let prices: Vec<Option<f64>> = vec![
-            Some(100.0),
-            Some(101.0),
-            Some(103.0),
-            Some(102.0),
-            Some(105.0),
-            Some(107.0),
-            Some(106.0),
-        ];
+        let target = vol3();
+        let p = prices();
+        assert_eq!(target.compute(&[&p]), target.compute(&[&p]));
+    }
 
-        let r1 = target.compute(&[&prices]);
-        let r2 = target.compute(&[&prices]);
-        assert_eq!(r1, r2); // same input → same output, no state
+    #[test]
+    fn test_invalid_input_empty() {
+        let err = FutureCTCVolatility::new("", 3).unwrap_err();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("input")));
+    }
+
+    #[test]
+    fn test_invalid_horizon_zero() {
+        let err = FutureCTCVolatility::new("close", 0).unwrap_err();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("horizon")));
     }
 }

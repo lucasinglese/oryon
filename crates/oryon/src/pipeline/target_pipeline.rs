@@ -14,7 +14,7 @@ pub struct TargetPipeline {
     /// Input columns in the order expected by compute().
     input_columns: Vec<String>,
     /// All output column names, in order.
-    output_keys: Vec<String>,
+    output_names: Vec<String>,
 }
 
 impl TargetPipeline {
@@ -29,7 +29,7 @@ impl TargetPipeline {
         // Check for duplicate output keys across targets.
         let mut seen_keys: HashMap<String, usize> = HashMap::new();
         for (i, target) in targets.iter().enumerate() {
-            for key in target.names() {
+            for key in target.output_names() {
                 if let Some(&existing_idx) = seen_keys.get(&key) {
                     return Err(OryonError::DuplicateOutputKey {
                         key,
@@ -45,7 +45,7 @@ impl TargetPipeline {
         let mut missing_keys: Vec<String> = Vec::new();
         let mut seen_missing: HashMap<String, ()> = HashMap::new();
         for target in &targets {
-            for col in target.required_columns() {
+            for col in target.input_names() {
                 if !input_columns.contains(&col) && !seen_missing.contains_key(&col) {
                     seen_missing.insert(col.clone(), ());
                     missing_keys.push(col);
@@ -64,26 +64,26 @@ impl TargetPipeline {
             input_col_mapping.insert(col.clone(), i);
         }
 
-        let output_keys: Vec<String> = targets.iter().flat_map(|t| t.names()).collect();
+        let output_names: Vec<String> = targets.iter().flat_map(|t| t.output_names()).collect();
 
         Ok(TargetPipeline {
             targets,
             input_col_mapping,
             input_columns,
-            output_keys,
+            output_names,
         })
     }
 
     /// Compute all targets over the full dataset.
     ///
     /// `data` contains one slice per entry in `input_columns`, in the same order.
-    /// Returns one `Vec<Option<f64>>` per output key (see `output_keys()`).
+    /// Returns one `Vec<Option<f64>>` per output key (see `output_names()`).
     pub fn compute(&self, data: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let mut result: Vec<Vec<Option<f64>>> = Vec::new();
 
         for target in &self.targets {
             let target_columns: Vec<&[Option<f64>]> = target
-                .required_columns()
+                .input_names()
                 .iter()
                 .map(|col| {
                     let idx = self.input_col_mapping[col];
@@ -99,12 +99,12 @@ impl TargetPipeline {
     }
 
     /// Output column names, in order.
-    pub fn output_keys(&self) -> &[String] {
-        &self.output_keys
+    pub fn output_names(&self) -> &[String] {
+        &self.output_names
     }
 
     /// Input columns in the order expected by compute().
-    pub fn required_columns(&self) -> &[String] {
+    pub fn input_names(&self) -> &[String] {
         &self.input_columns
     }
 
@@ -150,19 +150,19 @@ mod tests {
 
     #[test]
     fn test_single_target() {
-        let target = FutureCTCVolatility::new("close", 3);
+        let target = FutureCTCVolatility::new("close", 3).unwrap();
         let pipeline =
             TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.len(), 1);
-        assert_eq!(pipeline.output_keys(), &["close_future_ctc_vol_3".to_string()]);
+        assert_eq!(pipeline.output_names(), &["close_future_ctc_vol_3".to_string()]);
         assert_eq!(pipeline.forward_period(), 3);
     }
 
     #[test]
     fn test_multiple_targets() {
-        let t1 = FutureCTCVolatility::new("close", 3);
-        let t2 = FutureCTCVolatility::new("close", 5);
+        let t1 = FutureCTCVolatility::new("close", 3).unwrap();
+        let t2 = FutureCTCVolatility::new("close", 5).unwrap();
         let pipeline = TargetPipeline::new(
             vec![Box::new(t1), Box::new(t2)],
             vec!["close".into()],
@@ -172,7 +172,7 @@ mod tests {
         assert_eq!(pipeline.len(), 2);
         assert_eq!(pipeline.forward_period(), 5);
         assert_eq!(
-            pipeline.output_keys(),
+            pipeline.output_names(),
             &[
                 "close_future_ctc_vol_3".to_string(),
                 "close_future_ctc_vol_5".to_string(),
@@ -182,7 +182,7 @@ mod tests {
 
     #[test]
     fn test_compute() {
-        let target = FutureCTCVolatility::new("close", 3);
+        let target = FutureCTCVolatility::new("close", 3).unwrap();
         let pipeline =
             TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
@@ -200,8 +200,8 @@ mod tests {
 
     #[test]
     fn test_compute_multiple() {
-        let t1 = FutureCTCVolatility::new("close", 3);
-        let t2 = FutureCTCVolatility::new("close", 5);
+        let t1 = FutureCTCVolatility::new("close", 3).unwrap();
+        let t2 = FutureCTCVolatility::new("close", 5).unwrap();
         let pipeline = TargetPipeline::new(
             vec![Box::new(t1), Box::new(t2)],
             vec!["close".into()],
@@ -218,15 +218,15 @@ mod tests {
 
     #[test]
     fn test_missing_column() {
-        let target = FutureCTCVolatility::new("close", 3);
+        let target = FutureCTCVolatility::new("close", 3).unwrap();
         let result = TargetPipeline::new(vec![Box::new(target)], vec!["volume".into()]);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_duplicate_output_key() {
-        let t1 = FutureCTCVolatility::new("close", 3);
-        let t2 = FutureCTCVolatility::new("close", 3); // same output key
+        let t1 = FutureCTCVolatility::new("close", 3).unwrap();
+        let t2 = FutureCTCVolatility::new("close", 3).unwrap(); // same output key
         let result = TargetPipeline::new(
             vec![Box::new(t1), Box::new(t2)],
             vec!["close".into()],

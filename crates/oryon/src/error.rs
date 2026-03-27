@@ -18,4 +18,7 @@ pub enum OryonError {
 
     #[error("Invalid configuration: {msg}")]
     InvalidConfig { msg: String },
+
+    #[error("Invalid input: {msg}")]
+    InvalidInput { msg: String },
 }
