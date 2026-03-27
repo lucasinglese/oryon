@@ -4,6 +4,11 @@ use crate::traits::{Feature, Output};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
+/// Simple Moving Average over a rolling window.
+///
+/// Returns `None` during warm-up (first `window - 1` bars).
+/// A `None` input within the window propagates as `None` output
+/// until the window is fully refilled with valid values.
 #[derive(Debug)]
 pub struct Sma {
     inputs: Vec<String>,
@@ -13,6 +18,11 @@ pub struct Sma {
 }
 
 impl Sma {
+    /// Create a new `Sma`.
+    ///
+    /// - `inputs` — name of the input column (e.g. `["close"]`).
+    /// - `window` — number of bars to average. Must be > 0.
+    /// - `outputs` — name of the output column (e.g. `["close_sma_3"]`).
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
         if inputs.is_empty() {
             return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
