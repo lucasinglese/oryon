@@ -98,8 +98,10 @@ mod tests {
     #[test]
     fn test_compute_valid_values() {
         let col = &vol3().compute(&[&prices()])[0];
-        assert!(col[0].is_some());
-        assert!(col[0].unwrap() > 0.0);
+        assert!((col[0].unwrap() - 0.014966120092234598).abs() < 1e-10);
+        assert!((col[1].unwrap() - 0.020212720949768705).abs() < 1e-10);
+        assert!((col[2].unwrap() - 0.020094947737925430).abs() < 1e-10);
+        assert!((col[3].unwrap() - 0.019890273555006756).abs() < 1e-10);
     }
 
     #[test]
