@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::ops::{average, log_return, std_dev};
+use oryon::ops::{average, log_return, simple_return, std_dev};
 
 fn data(window: usize) -> Vec<Option<f64>> {
     (0..window).map(|i| Some(100.0 + i as f64 * 0.01)).collect()
@@ -33,5 +33,13 @@ fn bench_log_return(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_average, bench_std_dev, bench_log_return);
+fn bench_simple_return(c: &mut Criterion) {
+    let pair = vec![Some(100.0), Some(110.0)];
+
+    c.bench_function("simple_return", |b| {
+        b.iter(|| simple_return(black_box(&pair)))
+    });
+}
+
+criterion_group!(benches, bench_average, bench_std_dev, bench_log_return, bench_simple_return);
 criterion_main!(benches);

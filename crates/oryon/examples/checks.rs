@@ -5,7 +5,7 @@ use oryon::pipeline::FeaturePipeline;
 
 fn main() {
     let prices: Vec<Option<f64>> = vec![
-        Some(100.0), Some(101.5), Some(103.0), Some(102.0), Some(104.5),
+        Some(100.0), Some(101.5), Some(103.0), Some(-102.0), Some(104.5),
         Some(106.0), Some(105.5), Some(107.0), Some(109.0), Some(108.0),
     ];
 

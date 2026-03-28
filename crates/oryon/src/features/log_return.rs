@@ -4,6 +4,11 @@ use crate::error::OryonError;
 use crate::{Feature, Output};
 use crate::ops::log_return;
 
+/// Log return over a configurable lookback window.
+///
+/// Computes `ln(P_t / P_{t-n})` where `n` is the window. Returns `None`
+/// during warm-up (first `window` bars). A `None` input propagates as
+/// `None` output until the window is fully refilled with valid values.
 #[derive(Debug)]
 pub struct LogReturn {
     inputs: Vec<String>,
@@ -13,6 +18,11 @@ pub struct LogReturn {
 }
 
 impl LogReturn {
+    /// Create a new `LogReturn`.
+    ///
+    /// - `inputs` — name of the input column (e.g. `["close"]`).
+    /// - `window` — lookback in bars. Must be > 0.
+    /// - `outputs` — name of the output column (e.g. `["close_log_return_5"]`).
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
         if inputs.is_empty() {
             return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
@@ -80,7 +90,7 @@ mod tests {
     use super::*;
     use crate::feature_contract_tests;
     use smallvec::smallvec;
-    use crate::features::Sma;
+
 
     feature_contract_tests!(LogReturn::new(vec!["close".to_string()], 2, vec!["close_log_return_2".to_string()]).unwrap(),
         vec!["close".to_string()],
