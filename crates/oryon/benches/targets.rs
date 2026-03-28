@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::targets::{FutureCTCVolatility, FutureLinearSlope};
+use oryon::targets::{FutureCTCVolatility, FutureLinearSlope, FutureReturn};
 use oryon::traits::Target;
 
 fn prices(n: usize) -> Vec<Option<f64>> {
@@ -43,5 +43,24 @@ fn bench_future_linear_slope(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_future_ctc_volatility, bench_future_linear_slope);
+fn bench_future_return(c: &mut Criterion) {
+    let p = prices(1000);
+
+    let mut group = c.benchmark_group("future_return_compute");
+
+    let fr_h20 = FutureReturn::new(vec!["close".into()], 20, vec!["close_future_return_20".into()]).unwrap();
+    group.bench_function("h20/1000_bars", |b| {
+        b.iter(|| fr_h20.compute(black_box(&[&p])))
+    });
+
+    let fr_h200 = FutureReturn::new(vec!["close".into()], 200, vec!["close_future_return_200".into()]).unwrap();
+    group.bench_function("h200/1000_bars", |b| {
+        b.iter(|| fr_h200.compute(black_box(&[&p])))
+    });
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_future_ctc_volatility, bench_future_linear_slope, bench_future_return);
 criterion_main!(benches);
+

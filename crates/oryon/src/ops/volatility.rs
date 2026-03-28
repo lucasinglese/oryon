@@ -14,6 +14,29 @@ pub fn parkinson_log_hl_sq(data: &[Option<f64>]) -> Option<f64> {
     }
 }
 
+/// Single-bar Rogers-Satchell squared term: `ln(H/C)·ln(H/O) + ln(L/C)·ln(L/O)`.
+///
+/// `data[0]` = high, `data[1]` = low, `data[2]` = open, `data[3]` = close.
+///
+/// Returns `None` if fewer than 4 values, any is `None` or non-positive, or high < low.
+/// Note: the result can be negative for individual bars with unusual price action.
+pub fn rogers_satchell_sq(data: &[Option<f64>]) -> Option<f64> {
+    if data.len() < 4 {
+        return None;
+    }
+    match (data[0], data[1], data[2], data[3]) {
+        (Some(high), Some(low), Some(open), Some(close))
+            if high > 0.0 && low > 0.0 && open > 0.0 && close > 0.0 && high >= low =>
+        {
+            Some(
+                (high / close).ln() * (high / open).ln()
+                    + (low / close).ln() * (low / open).ln(),
+            )
+        }
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -51,5 +74,39 @@ mod tests {
     #[test]
     fn test_parkinson_log_hl_sq_zero_price() {
         assert_eq!(parkinson_log_hl_sq(&[Some(0.0), Some(99.0)]), None);
+    }
+
+    #[test]
+    fn test_rogers_satchell_sq() {
+        // H=108, L=104, O=105, C=107
+        // expected = ln(108/107)·ln(108/105) + ln(104/107)·ln(104/105)
+        let h = 108.0f64;
+        let l = 104.0f64;
+        let o = 105.0f64;
+        let c = 107.0f64;
+        let expected = (h / c).ln() * (h / o).ln() + (l / c).ln() * (l / o).ln();
+        let result = rogers_satchell_sq(&[Some(h), Some(l), Some(o), Some(c)]);
+        assert!((result.unwrap() - expected).abs() < 1e-14);
+    }
+
+    #[test]
+    fn test_rogers_satchell_sq_with_none() {
+        assert_eq!(rogers_satchell_sq(&[None, Some(104.0), Some(105.0), Some(107.0)]), None);
+        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(104.0), None, Some(107.0)]), None);
+    }
+
+    #[test]
+    fn test_rogers_satchell_sq_too_short() {
+        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(104.0), Some(105.0)]), None);
+    }
+
+    #[test]
+    fn test_rogers_satchell_sq_high_less_than_low() {
+        assert_eq!(rogers_satchell_sq(&[Some(100.0), Some(110.0), Some(105.0), Some(107.0)]), None);
+    }
+
+    #[test]
+    fn test_rogers_satchell_sq_zero_price() {
+        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(0.0), Some(105.0), Some(107.0)]), None);
     }
 }

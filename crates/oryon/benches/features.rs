@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::features::{Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, SimpleReturn, Skewness, Sma};
+use oryon::features::{Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, RogersSatchellVolatility, SimpleReturn, Skewness, Sma};
 use oryon::traits::Feature;
 
 fn bench_log_return(c: &mut Criterion) {
@@ -146,5 +146,27 @@ fn bench_linear_slope(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_ema, bench_kama, bench_kurtosis, bench_linear_slope, bench_log_return, bench_parkinson_volatility, bench_simple_return, bench_skewness, bench_sma);
+fn bench_rogers_satchell_volatility(c: &mut Criterion) {
+    let mut group = c.benchmark_group("rogers_satchell_volatility_update");
+
+    let mut rs_w20 = RogersSatchellVolatility::new(
+        vec!["high".into(), "low".into(), "open".into(), "close".into()],
+        20, vec!["rs_vol_20".into()],
+    ).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| rs_w20.update(black_box(&[Some(108.0), Some(104.0), Some(105.0), Some(107.0)])))
+    });
+
+    let mut rs_w200 = RogersSatchellVolatility::new(
+        vec!["high".into(), "low".into(), "open".into(), "close".into()],
+        200, vec!["rs_vol_200".into()],
+    ).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| rs_w200.update(black_box(&[Some(108.0), Some(104.0), Some(105.0), Some(107.0)])))
+    });
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_ema, bench_kama, bench_kurtosis, bench_linear_slope, bench_log_return, bench_parkinson_volatility, bench_rogers_satchell_volatility, bench_simple_return, bench_skewness, bench_sma);
 criterion_main!(benches);

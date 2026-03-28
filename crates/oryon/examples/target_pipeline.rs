@@ -36,5 +36,5 @@ fn main() {
 }
 
 fn fmt(v: Option<f64>) -> String {
-    v.map_or("—".into(), |x| format!("{x:.6}"))
+    v.map_or("-".into(), |x| format!("{x:.6}"))
 }
