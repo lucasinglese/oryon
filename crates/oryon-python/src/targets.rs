@@ -27,7 +27,11 @@ impl FutureReturn {
     pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> PyResult<Self> {
         RustFutureReturn::new(inputs.clone(), horizon, outputs.clone())
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        Ok(FutureReturn { inputs, horizon, outputs })
+        Ok(FutureReturn {
+            inputs,
+            horizon,
+            outputs,
+        })
     }
 
     /// Input column names.
@@ -77,7 +81,11 @@ impl FutureCTCVolatility {
         let rust = RustFutureCTCVolatility::new(&input, horizon)
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let output = rust.output_names()[0].clone();
-        Ok(FutureCTCVolatility { input, horizon, output })
+        Ok(FutureCTCVolatility {
+            input,
+            horizon,
+            output,
+        })
     }
 
     /// Input column names.
@@ -125,7 +133,11 @@ impl FutureLinearSlope {
     pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> PyResult<Self> {
         RustFutureLinearSlope::new(inputs.clone(), horizon, outputs.clone())
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        Ok(FutureLinearSlope { inputs, horizon, outputs })
+        Ok(FutureLinearSlope {
+            inputs,
+            horizon,
+            outputs,
+        })
     }
 
     /// Input column names.
