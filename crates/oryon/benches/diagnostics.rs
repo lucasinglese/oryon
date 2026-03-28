@@ -41,5 +41,11 @@ fn bench_valid_rate(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_null_rate, bench_has_inf, bench_has_nan, bench_valid_rate);
+criterion_group!(
+    benches,
+    bench_null_rate,
+    bench_has_inf,
+    bench_has_nan,
+    bench_valid_rate
+);
 criterion_main!(benches);

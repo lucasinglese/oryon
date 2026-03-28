@@ -29,10 +29,14 @@ impl RogersSatchellVolatility {
     /// Create a new `RogersSatchellVolatility`.
     ///
     /// - `inputs`  - names of the high, low, open, and close columns, in that order.
-    ///               Must contain at least 4 entries.
+    ///   Must contain at least 4 entries.
     /// - `window`  - number of bars in the rolling window. Must be > 0.
     /// - `outputs` - name of the output column (e.g. `["rs_vol_20"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.len() < 4 {
             return Err(OryonError::InvalidInput {
                 msg: "inputs must contain high, low, open, and close columns".into(),
@@ -112,8 +116,14 @@ mod tests {
             vec!["high".into(), "low".into(), "open".into(), "close".into()],
             3,
             vec!["rs_vol_3".into()],
-        ).unwrap(),
-        vec!["high".to_string(), "low".to_string(), "open".to_string(), "close".to_string()],
+        )
+        .unwrap(),
+        vec![
+            "high".to_string(),
+            "low".to_string(),
+            "open".to_string(),
+            "close".to_string()
+        ],
         vec!["rs_vol_3".to_string()],
         2,
         &[Some(108.0), Some(104.0), Some(105.0), Some(107.0)],
@@ -124,7 +134,8 @@ mod tests {
             vec!["high".into(), "low".into(), "open".into(), "close".into()],
             3,
             vec!["rs_vol_3".into()],
-        ).unwrap()
+        )
+        .unwrap()
     }
 
     fn out(v: Option<f64>) -> Output {
@@ -166,7 +177,10 @@ mod tests {
         rs.update(bar);
         assert!(rs.update(bar)[0].is_some());
         // invalid bar → None
-        assert_eq!(rs.update(&[Some(99.0), Some(108.0), Some(105.0), Some(107.0)]), out(None));
+        assert_eq!(
+            rs.update(&[Some(99.0), Some(108.0), Some(105.0), Some(107.0)]),
+            out(None)
+        );
     }
 
     #[test]

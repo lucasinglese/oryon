@@ -18,6 +18,13 @@ pub struct FeaturePipeline {
 }
 
 impl FeaturePipeline {
+    /// Create a new `FeaturePipeline`.
+    ///
+    /// - `features` - features to run, in any order. Dependencies are resolved automatically.
+    /// - `input_columns` - column names provided at each `update()` call, in order.
+    ///
+    /// Returns `Err` if there are duplicate output keys, cyclic dependencies,
+    /// or required input columns missing from `input_columns`.
     pub fn new(
         features: Vec<Box<dyn Feature>>,
         input_columns: Vec<String>,
@@ -139,8 +146,7 @@ mod tests {
     #[test]
     fn test_update_single() {
         let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
-        let mut pipeline =
-            FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
+        let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0)]);
         assert_eq!(pipeline.update(&[Some(5.0)]), vec![Some(6.0)]);
@@ -150,11 +156,8 @@ mod tests {
     fn test_update_two_independent() {
         let a = AddOneStub::new(vec!["close".into()], vec!["a".into()]);
         let b = AddOneStub::new(vec!["close".into()], vec!["b".into()]);
-        let mut pipeline = FeaturePipeline::new(
-            vec![Box::new(a), Box::new(b)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let mut pipeline =
+            FeaturePipeline::new(vec![Box::new(a), Box::new(b)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0), Some(2.0)]);
         assert_eq!(pipeline.update(&[Some(4.0)]), vec![Some(5.0), Some(5.0)]);
@@ -164,30 +167,19 @@ mod tests {
     fn test_update_chained() {
         let a = AddOneStub::new(vec!["close".into()], vec!["close_plus_one".into()]);
         let b = AddOneStub::new(vec!["close_plus_one".into()], vec!["close_plus_two".into()]);
-        let mut pipeline = FeaturePipeline::new(
-            vec![Box::new(b), Box::new(a)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let mut pipeline =
+            FeaturePipeline::new(vec![Box::new(b), Box::new(a)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0), Some(3.0)]);
-        assert_eq!(
-            pipeline.update(&[Some(10.0)]),
-            vec![Some(11.0), Some(12.0)]
-        );
+        assert_eq!(pipeline.update(&[Some(10.0)]), vec![Some(11.0), Some(12.0)]);
     }
 
     #[test]
     fn test_run_research() {
         let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
-        let mut pipeline =
-            FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
+        let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
 
-        let data = vec![
-            vec![Some(1.0)],
-            vec![Some(2.0)],
-            vec![Some(3.0)],
-        ];
+        let data = vec![vec![Some(1.0)], vec![Some(2.0)], vec![Some(3.0)]];
 
         let results = pipeline.run_research(&data);
         assert_eq!(results.len(), 3);
@@ -199,8 +191,7 @@ mod tests {
     #[test]
     fn test_reset_between_splits() {
         let f = WarmUpOneStub::new(vec!["close".into()], vec!["out".into()]);
-        let mut pipeline =
-            FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
+        let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.update(&[Some(1.0)]), vec![None]);
         assert_eq!(pipeline.update(&[Some(2.0)]), vec![Some(2.0)]);
@@ -214,11 +205,8 @@ mod tests {
     fn test_output_names() {
         let a = AddOneStub::new(vec!["close".into()], vec!["a".into()]);
         let b = AddOneStub::new(vec!["close".into()], vec!["b".into()]);
-        let pipeline = FeaturePipeline::new(
-            vec![Box::new(a), Box::new(b)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let pipeline =
+            FeaturePipeline::new(vec![Box::new(a), Box::new(b)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.output_names(), &["a".to_string(), "b".to_string()]);
     }
@@ -228,11 +216,8 @@ mod tests {
         let a = AddOneStub::new(vec!["close".into()], vec!["close_plus_one".into()]);
         let b = AddOneStub::new(vec!["close_plus_one".into()], vec!["close_plus_two".into()]);
 
-        let pipeline = FeaturePipeline::new(
-            vec![Box::new(b), Box::new(a)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let pipeline =
+            FeaturePipeline::new(vec![Box::new(b), Box::new(a)], vec!["close".into()]).unwrap();
 
         assert_eq!(
             pipeline.output_names(),

@@ -1,8 +1,8 @@
-use std::collections::VecDeque;
-use smallvec::smallvec;
 use crate::error::OryonError;
-use crate::{Feature, Output};
 use crate::ops::log_return;
+use crate::{Feature, Output};
+use smallvec::smallvec;
+use std::collections::VecDeque;
 
 /// Log return over a configurable lookback window.
 ///
@@ -23,24 +23,34 @@ impl LogReturn {
     /// - `inputs` — name of the input column (e.g. `["close"]`).
     /// - `window` — lookback in bars. Must be > 0.
     /// - `outputs` — name of the output column (e.g. `["close_log_return_5"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
 
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
 
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be non-zero".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be non-zero".into(),
+            });
         }
 
         Ok(LogReturn {
             inputs,
             window,
             outputs,
-            buffer: VecDeque::with_capacity(window+1),
+            buffer: VecDeque::with_capacity(window + 1),
         })
     }
 }
@@ -54,7 +64,9 @@ impl Feature for LogReturn {
         self.outputs.clone()
     }
 
-    fn warm_up_period(&self) -> usize { self.window }
+    fn warm_up_period(&self) -> usize {
+        self.window
+    }
 
     fn fresh(&self) -> Box<dyn Feature> {
         Box::new(
@@ -74,7 +86,7 @@ impl Feature for LogReturn {
             self.buffer.pop_front();
         }
 
-        if self.buffer.len() == self.window + 1{
+        if self.buffer.len() == self.window + 1 {
             let prev = self.buffer[0];
             let next = self.buffer[self.window];
             smallvec![log_return(&[prev, next])]
@@ -84,15 +96,19 @@ impl Feature for LogReturn {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::feature_contract_tests;
     use smallvec::smallvec;
 
-
-    feature_contract_tests!(LogReturn::new(vec!["close".to_string()], 2, vec!["close_log_return_2".to_string()]).unwrap(),
+    feature_contract_tests!(
+        LogReturn::new(
+            vec!["close".to_string()],
+            2,
+            vec!["close_log_return_2".to_string()]
+        )
+        .unwrap(),
         vec!["close".to_string()],
         vec!["close_log_return_2".to_string()],
         2,
@@ -100,13 +116,17 @@ mod tests {
     );
 
     fn log_return_2() -> LogReturn {
-        LogReturn::new(vec!["close".to_string()], 2, vec!["close_log_return_2".to_string()]).unwrap()
+        LogReturn::new(
+            vec!["close".to_string()],
+            2,
+            vec!["close_log_return_2".to_string()],
+        )
+        .unwrap()
     }
 
     fn out(v: Option<f64>) -> Output {
         smallvec![v]
     }
-
 
     #[test]
     fn test_update() {
@@ -120,7 +140,12 @@ mod tests {
 
     #[test]
     fn test_window_size_is_one() {
-        let mut log_return = LogReturn::new(vec!["close".to_string()], 1, vec!["close_log_return_1".to_string()]).unwrap();
+        let mut log_return = LogReturn::new(
+            vec!["close".to_string()],
+            1,
+            vec!["close_log_return_1".to_string()],
+        )
+        .unwrap();
         assert_eq!(log_return.update(&[Some(1.0_f64.exp())]), out(None));
         assert!((log_return.update(&[Some(1.1_f64.exp())])[0].unwrap() - 0.1).abs() < 1e-10);
     }
@@ -136,7 +161,7 @@ mod tests {
     #[test]
     fn test_buffer_capacity() {
         let log_return = log_return_2();
-        assert_eq!(log_return.buffer.capacity(), log_return.window+1);
+        assert_eq!(log_return.buffer.capacity(), log_return.window + 1);
     }
 
     #[test]

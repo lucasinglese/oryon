@@ -24,10 +24,14 @@ impl FutureCTCVolatility {
     /// - `horizon` — number of bars to look ahead.
     pub fn new(input: &str, horizon: usize) -> Result<Self, OryonError> {
         if input.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "input must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "input must not be empty".into(),
+            });
         }
         if horizon == 0 {
-            return Err(OryonError::InvalidInput { msg: "horizon must be > 0".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "horizon must be > 0".into(),
+            });
         }
         let output = format!("{input}_future_ctc_vol_{horizon}");
         Ok(FutureCTCVolatility {
@@ -68,8 +72,13 @@ mod tests {
 
     fn prices() -> Vec<Option<f64>> {
         vec![
-            Some(100.0), Some(101.0), Some(103.0), Some(102.0),
-            Some(105.0), Some(107.0), Some(106.0),
+            Some(100.0),
+            Some(101.0),
+            Some(103.0),
+            Some(102.0),
+            Some(105.0),
+            Some(107.0),
+            Some(106.0),
         ]
     }
 
@@ -98,10 +107,10 @@ mod tests {
     #[test]
     fn test_compute_valid_values() {
         let col = &vol3().compute(&[&prices()])[0];
-        assert!((col[0].unwrap() - 0.014966120092234598).abs() < 1e-10);
-        assert!((col[1].unwrap() - 0.020212720949768705).abs() < 1e-10);
-        assert!((col[2].unwrap() - 0.020094947737925430).abs() < 1e-10);
-        assert!((col[3].unwrap() - 0.019890273555006756).abs() < 1e-10);
+        assert!((col[0].unwrap() - 0.014_966_120_092_234_598).abs() < 1e-10);
+        assert!((col[1].unwrap() - 0.020_212_720_949_768_705).abs() < 1e-10);
+        assert!((col[2].unwrap() - 0.020_094_947_737_925_43).abs() < 1e-10);
+        assert!((col[3].unwrap() - 0.019_890_273_555_006_756).abs() < 1e-10);
     }
 
     #[test]

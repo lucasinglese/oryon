@@ -29,18 +29,28 @@ impl ParkinsonVolatility {
     /// Create a new `ParkinsonVolatility`.
     ///
     /// - `inputs`  - names of the high and low columns, in that order
-    ///               (e.g. `["high", "low"]`).
+    ///   (e.g. `["high", "low"]`).
     /// - `window`  - number of bars in the rolling window. Must be > 0.
     /// - `outputs` - name of the output column (e.g. `["parkinson_vol_20"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.len() < 2 {
-            return Err(OryonError::InvalidInput { msg: "inputs must contain high and low columns".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must contain high and low columns".into(),
+            });
         }
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be non-zero".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be non-zero".into(),
+            });
         }
         Ok(ParkinsonVolatility {
             inputs,
@@ -106,7 +116,8 @@ mod tests {
             vec!["high".into(), "low".into()],
             3,
             vec!["parkinson_vol_3".into()],
-        ).unwrap(),
+        )
+        .unwrap(),
         vec!["high".to_string(), "low".to_string()],
         vec!["parkinson_vol_3".to_string()],
         2,
@@ -118,7 +129,8 @@ mod tests {
             vec!["high".into(), "low".into()],
             3,
             vec!["parkinson_vol_3".into()],
-        ).unwrap()
+        )
+        .unwrap()
     }
 
     fn out(v: Option<f64>) -> Output {
@@ -131,9 +143,18 @@ mod tests {
         let mut pv = pv_3();
         assert_eq!(pv.update(&[Some(102.0), Some(99.0)]), out(None));
         assert_eq!(pv.update(&[Some(104.0), Some(101.0)]), out(None));
-        assert!((pv.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606).abs() < 1e-12);
-        assert!((pv.update(&[Some(106.0), Some(103.0)])[0].unwrap() - 0.017_525_511_477_570).abs() < 1e-12);
-        assert!((pv.update(&[Some(108.0), Some(105.0)])[0].unwrap() - 0.017_307_528_183_468).abs() < 1e-12);
+        assert!(
+            (pv.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606).abs()
+                < 1e-12
+        );
+        assert!(
+            (pv.update(&[Some(106.0), Some(103.0)])[0].unwrap() - 0.017_525_511_477_570).abs()
+                < 1e-12
+        );
+        assert!(
+            (pv.update(&[Some(108.0), Some(105.0)])[0].unwrap() - 0.017_307_528_183_468).abs()
+                < 1e-12
+        );
     }
 
     #[test]
@@ -165,11 +186,18 @@ mod tests {
         // fresh starts from scratch
         assert_eq!(fresh.update(&[Some(102.0), Some(99.0)]), out(None));
         assert_eq!(fresh.update(&[Some(104.0), Some(101.0)]), out(None));
-        assert!((fresh.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606).abs() < 1e-12);
+        assert!(
+            (fresh.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606).abs()
+                < 1e-12
+        );
 
         // original continues from its own state
         assert_eq!(original.update(&[Some(104.0), Some(101.0)]), out(None));
-        assert!((original.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606).abs() < 1e-12);
+        assert!(
+            (original.update(&[Some(103.0), Some(100.0)])[0].unwrap() - 0.017_753_593_761_606)
+                .abs()
+                < 1e-12
+        );
     }
 
     #[test]
@@ -180,13 +208,15 @@ mod tests {
 
     #[test]
     fn test_error_raises_when_empty_outputs() {
-        let err = ParkinsonVolatility::new(vec!["high".into(), "low".into()], 3, vec![]).unwrap_err();
+        let err =
+            ParkinsonVolatility::new(vec!["high".into(), "low".into()], 3, vec![]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("outputs")));
     }
 
     #[test]
     fn test_error_raises_when_window_is_zero() {
-        let err = ParkinsonVolatility::new(vec!["high".into(), "low".into()], 0, vec!["pv".into()]).unwrap_err();
+        let err = ParkinsonVolatility::new(vec!["high".into(), "low".into()], 0, vec!["pv".into()])
+            .unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("window")));
     }
 }

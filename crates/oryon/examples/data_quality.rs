@@ -5,8 +5,16 @@ use oryon::pipeline::FeaturePipeline;
 
 fn main() {
     let prices: Vec<Option<f64>> = vec![
-        None, Some(101.5), Some(f64::NAN), Some(102.0), Some(104.5),
-        Some(106.0), None, Some(107.0), Some(109.0), Some(108.0),
+        None,
+        Some(101.5),
+        Some(f64::NAN),
+        Some(102.0),
+        Some(104.5),
+        Some(106.0),
+        None,
+        Some(107.0),
+        Some(109.0),
+        Some(108.0),
     ];
 
     // pre-flight diagnostics on the raw column
@@ -18,15 +26,25 @@ fn main() {
     let mut pipeline = FeaturePipeline::new(vec![Box::new(sma)], vec!["close".into()]).unwrap();
 
     // per-bar check on feature output
-    println!("{:<5} {:<10} {:<10} {}", "bar", "close", "sma_3", "valid");
+    println!("{:<5} {:<10} {:<10} valid", "bar", "close", "sma_3");
     for (i, &price) in prices.iter().enumerate() {
         let out = pipeline.update(&[price]);
-        println!("{:<5} {:<10} {:<10} {}", i, fmt(price), fmt(out[0]), is_valid(out[0]));
+        println!(
+            "{:<5} {:<10} {:<10} {}",
+            i,
+            fmt(price),
+            fmt(out[0]),
+            is_valid(out[0])
+        );
     }
 }
 
 fn fmt(v: Option<f64>) -> String {
     v.map_or("—".into(), |x| {
-        if x.is_nan() { "NaN".into() } else { format!("{x:.4}") }
+        if x.is_nan() {
+            "NaN".into()
+        } else {
+            format!("{x:.4}")
+        }
     })
 }

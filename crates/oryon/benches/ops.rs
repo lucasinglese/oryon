@@ -1,5 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::ops::{average, kurtosis, linear_slope, log_return, parkinson_log_hl_sq, rogers_satchell_sq, simple_return, skewness, std_dev};
+use oryon::ops::{
+    average, kurtosis, linear_slope, log_return, parkinson_log_hl_sq, rogers_satchell_sq,
+    simple_return, skewness, std_dev,
+};
 
 fn data(window: usize) -> Vec<Option<f64>> {
     (0..window).map(|i| Some(100.0 + i as f64 * 0.01)).collect()
@@ -28,9 +31,7 @@ fn bench_std_dev(c: &mut Criterion) {
 fn bench_log_return(c: &mut Criterion) {
     let pair = vec![Some(101.0), Some(100.0)];
 
-    c.bench_function("log_return", |b| {
-        b.iter(|| log_return(black_box(&pair)))
-    });
+    c.bench_function("log_return", |b| b.iter(|| log_return(black_box(&pair))));
 }
 
 fn bench_simple_return(c: &mut Criterion) {
@@ -70,14 +71,18 @@ fn bench_parkinson_log_hl_sq(c: &mut Criterion) {
 }
 
 fn bench_linear_slope(c: &mut Criterion) {
-    let x20  = data(20);
-    let y20  = data(20);
+    let x20 = data(20);
+    let y20 = data(20);
     let x200 = data(200);
     let y200 = data(200);
 
     let mut group = c.benchmark_group("linear_slope");
-    group.bench_function("w20",  |b| b.iter(|| linear_slope(black_box(&x20),  black_box(&y20))));
-    group.bench_function("w200", |b| b.iter(|| linear_slope(black_box(&x200), black_box(&y200))));
+    group.bench_function("w20", |b| {
+        b.iter(|| linear_slope(black_box(&x20), black_box(&y20)))
+    });
+    group.bench_function("w200", |b| {
+        b.iter(|| linear_slope(black_box(&x200), black_box(&y200)))
+    });
     group.finish();
 }
 
@@ -89,5 +94,16 @@ fn bench_rogers_satchell_sq(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_average, bench_std_dev, bench_log_return, bench_parkinson_log_hl_sq, bench_rogers_satchell_sq, bench_simple_return, bench_skewness, bench_kurtosis, bench_linear_slope);
+criterion_group!(
+    benches,
+    bench_average,
+    bench_std_dev,
+    bench_log_return,
+    bench_parkinson_log_hl_sq,
+    bench_rogers_satchell_sq,
+    bench_simple_return,
+    bench_skewness,
+    bench_kurtosis,
+    bench_linear_slope
+);
 criterion_main!(benches);

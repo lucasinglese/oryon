@@ -23,17 +23,27 @@ impl Sma {
     /// - `inputs` — name of the input column (e.g. `["close"]`).
     /// - `window` — number of bars to average. Must be > 0.
     /// - `outputs` — name of the output column (e.g. `["close_sma_3"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
 
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
 
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be non-zero".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be non-zero".into(),
+            });
         }
 
         Ok(Sma {

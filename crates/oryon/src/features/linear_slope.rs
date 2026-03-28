@@ -25,11 +25,15 @@ impl LinearSlope {
     /// Create a new `LinearSlope`.
     ///
     /// - `inputs`  - names of the x and y columns, in that order (e.g. `["time_idx", "price"]`).
-    ///               Must contain at least 2 entries.
+    ///   Must contain at least 2 entries.
     /// - `window`  - number of bars in the rolling window. Must be >= 2.
     /// - `outputs` - names of the two output columns: `[slope_name, r2_name]`. Must contain
-    ///               exactly 2 entries.
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    ///   exactly 2 entries.
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.len() < 2 {
             return Err(OryonError::InvalidInput {
                 msg: "inputs must contain x and y columns".into(),
@@ -102,7 +106,10 @@ impl Feature for LinearSlope {
         let mut y_sum = 0.0f64;
         for i in 0..x.len() {
             match (x[i], y[i]) {
-                (Some(xi), Some(yi)) => { x_sum += xi; y_sum += yi; }
+                (Some(xi), Some(yi)) => {
+                    x_sum += xi;
+                    y_sum += yi;
+                }
                 _ => return smallvec![None, None],
             }
         }
@@ -126,7 +133,11 @@ impl Feature for LinearSlope {
         }
 
         let slope = sxy / sxx;
-        let r2 = if syy == 0.0 { None } else { Some(sxy * sxy / (sxx * syy)) };
+        let r2 = if syy == 0.0 {
+            None
+        } else {
+            Some(sxy * sxy / (sxx * syy))
+        };
 
         smallvec![Some(slope), r2]
     }
@@ -143,7 +154,8 @@ mod tests {
             vec!["x".into(), "y".into()],
             3,
             vec!["xy_slope_3".into(), "xy_r2_3".into()],
-        ).unwrap(),
+        )
+        .unwrap(),
         vec!["x".to_string(), "y".to_string()],
         vec!["xy_slope_3".to_string(), "xy_r2_3".to_string()],
         2,

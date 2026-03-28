@@ -39,15 +39,11 @@ pub fn shift(data: &[Option<f64>], offset: isize) -> Vec<Option<f64>> {
     let mut result = vec![None; n];
     if offset >= 0 {
         let off = offset as usize;
-        for i in off..n {
-            result[i] = data[i - off];
-        }
+        result[off..n].copy_from_slice(&data[..(n - off)]);
     } else {
         let off = (-offset) as usize;
         if off < n {
-            for i in 0..(n - off) {
-                result[i] = data[i + off];
-            }
+            result[..(n - off)].copy_from_slice(&data[off..]);
         }
     }
     result

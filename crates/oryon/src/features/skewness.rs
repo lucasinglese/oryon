@@ -23,15 +23,25 @@ impl Skewness {
     /// - `inputs` — name of the input column (e.g. `["close"]`).
     /// - `window` — number of bars. Must be >= 3 (skewness requires at least 3 values).
     /// - `outputs` — name of the output column (e.g. `["close_skewness_20"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
         if window < 3 {
-            return Err(OryonError::InvalidInput { msg: "window must be >= 3".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be >= 3".into(),
+            });
         }
         Ok(Skewness {
             inputs,

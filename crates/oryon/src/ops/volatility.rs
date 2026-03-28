@@ -28,10 +28,7 @@ pub fn rogers_satchell_sq(data: &[Option<f64>]) -> Option<f64> {
         (Some(high), Some(low), Some(open), Some(close))
             if high > 0.0 && low > 0.0 && open > 0.0 && close > 0.0 && high >= low =>
         {
-            Some(
-                (high / close).ln() * (high / open).ln()
-                    + (low / close).ln() * (low / open).ln(),
-            )
+            Some((high / close).ln() * (high / open).ln() + (low / close).ln() * (low / open).ln())
         }
         _ => None,
     }
@@ -91,22 +88,37 @@ mod tests {
 
     #[test]
     fn test_rogers_satchell_sq_with_none() {
-        assert_eq!(rogers_satchell_sq(&[None, Some(104.0), Some(105.0), Some(107.0)]), None);
-        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(104.0), None, Some(107.0)]), None);
+        assert_eq!(
+            rogers_satchell_sq(&[None, Some(104.0), Some(105.0), Some(107.0)]),
+            None
+        );
+        assert_eq!(
+            rogers_satchell_sq(&[Some(108.0), Some(104.0), None, Some(107.0)]),
+            None
+        );
     }
 
     #[test]
     fn test_rogers_satchell_sq_too_short() {
-        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(104.0), Some(105.0)]), None);
+        assert_eq!(
+            rogers_satchell_sq(&[Some(108.0), Some(104.0), Some(105.0)]),
+            None
+        );
     }
 
     #[test]
     fn test_rogers_satchell_sq_high_less_than_low() {
-        assert_eq!(rogers_satchell_sq(&[Some(100.0), Some(110.0), Some(105.0), Some(107.0)]), None);
+        assert_eq!(
+            rogers_satchell_sq(&[Some(100.0), Some(110.0), Some(105.0), Some(107.0)]),
+            None
+        );
     }
 
     #[test]
     fn test_rogers_satchell_sq_zero_price() {
-        assert_eq!(rogers_satchell_sq(&[Some(108.0), Some(0.0), Some(105.0), Some(107.0)]), None);
+        assert_eq!(
+            rogers_satchell_sq(&[Some(108.0), Some(0.0), Some(105.0), Some(107.0)]),
+            None
+        );
     }
 }

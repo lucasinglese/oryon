@@ -1,8 +1,8 @@
-use std::collections::VecDeque;
-use smallvec::smallvec;
 use crate::error::OryonError;
-use crate::{Feature, Output};
 use crate::ops::simple_return;
+use crate::{Feature, Output};
+use smallvec::smallvec;
+use std::collections::VecDeque;
 
 /// Simple (arithmetic) return over a configurable lookback window.
 ///
@@ -23,15 +23,25 @@ impl SimpleReturn {
     /// - `inputs` — name of the input column (e.g. `["close"]`).
     /// - `window` — lookback in bars. Must be > 0.
     /// - `outputs` — name of the output column (e.g. `["close_simple_return_5"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be non-zero".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be non-zero".into(),
+            });
         }
         Ok(SimpleReturn {
             inputs,
@@ -90,7 +100,12 @@ mod tests {
     use smallvec::smallvec;
 
     feature_contract_tests!(
-        SimpleReturn::new(vec!["close".to_string()], 2, vec!["close_simple_return_2".to_string()]).unwrap(),
+        SimpleReturn::new(
+            vec!["close".to_string()],
+            2,
+            vec!["close_simple_return_2".to_string()]
+        )
+        .unwrap(),
         vec!["close".to_string()],
         vec!["close_simple_return_2".to_string()],
         2,
@@ -98,7 +113,12 @@ mod tests {
     );
 
     fn simple_return_2() -> SimpleReturn {
-        SimpleReturn::new(vec!["close".to_string()], 2, vec!["close_simple_return_2".to_string()]).unwrap()
+        SimpleReturn::new(
+            vec!["close".to_string()],
+            2,
+            vec!["close_simple_return_2".to_string()],
+        )
+        .unwrap()
     }
 
     fn out(v: Option<f64>) -> Output {
@@ -116,14 +136,24 @@ mod tests {
 
     #[test]
     fn test_update_negative_current() {
-        let mut sr = SimpleReturn::new(vec!["close".to_string()], 1, vec!["close_simple_return_1".to_string()]).unwrap();
+        let mut sr = SimpleReturn::new(
+            vec!["close".to_string()],
+            1,
+            vec!["close_simple_return_1".to_string()],
+        )
+        .unwrap();
         assert_eq!(sr.update(&[Some(100.0)]), out(None));
         assert!((sr.update(&[Some(90.0)])[0].unwrap() - (-0.1)).abs() < 1e-10);
     }
 
     #[test]
     fn test_window_size_is_one() {
-        let mut sr = SimpleReturn::new(vec!["close".to_string()], 1, vec!["close_simple_return_1".to_string()]).unwrap();
+        let mut sr = SimpleReturn::new(
+            vec!["close".to_string()],
+            1,
+            vec!["close_simple_return_1".to_string()],
+        )
+        .unwrap();
         assert_eq!(sr.update(&[Some(100.0)]), out(None));
         assert!((sr.update(&[Some(110.0)])[0].unwrap() - 0.1).abs() < 1e-10);
     }

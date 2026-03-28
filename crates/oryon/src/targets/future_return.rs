@@ -20,7 +20,11 @@ impl FutureReturn {
     /// - `inputs`  - price series name (e.g. `["close"]`). Must contain at least 1 entry.
     /// - `horizon` - number of bars to look ahead. Must be > 0.
     /// - `outputs` - name of the output column (e.g. `["close_future_return_5"]`).
-    pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        horizon: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
             return Err(OryonError::InvalidInput {
                 msg: "inputs must not be empty".into(),
@@ -36,7 +40,11 @@ impl FutureReturn {
                 msg: "outputs must not be empty".into(),
             });
         }
-        Ok(FutureReturn { inputs, horizon, outputs })
+        Ok(FutureReturn {
+            inputs,
+            horizon,
+            outputs,
+        })
     }
 }
 
@@ -68,17 +76,32 @@ mod tests {
 
     fn prices() -> Vec<Option<f64>> {
         vec![
-            Some(100.0), Some(102.0), Some(105.0), Some(103.0),
-            Some(108.0), Some(107.0), Some(110.0),
+            Some(100.0),
+            Some(102.0),
+            Some(105.0),
+            Some(103.0),
+            Some(108.0),
+            Some(107.0),
+            Some(110.0),
         ]
     }
 
     fn fr2() -> FutureReturn {
-        FutureReturn::new(vec!["close".into()], 2, vec!["close_future_return_2".into()]).unwrap()
+        FutureReturn::new(
+            vec!["close".into()],
+            2,
+            vec!["close_future_return_2".into()],
+        )
+        .unwrap()
     }
 
     target_contract_tests!(
-        FutureReturn::new(vec!["close".into()], 2, vec!["close_future_return_2".into()]).unwrap(),
+        FutureReturn::new(
+            vec!["close".into()],
+            2,
+            vec!["close_future_return_2".into()]
+        )
+        .unwrap(),
         vec!["close".to_string()],
         vec!["close_future_return_2".to_string()],
         2,

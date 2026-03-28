@@ -17,8 +17,7 @@ pub fn has_inf(col: &[Option<f64>]) -> bool {
 
 /// Returns `true` if any value is `NaN`.
 pub fn has_nan(col: &[Option<f64>]) -> bool {
-    col.iter()
-        .any(|v| matches!(v, Some(x) if x.is_nan()))
+    col.iter().any(|v| matches!(v, Some(x) if x.is_nan()))
 }
 
 /// Fraction of values that are `Some` and finite.
@@ -30,7 +29,6 @@ pub fn valid_rate(col: &[Option<f64>]) -> f64 {
     let count = col.iter().filter(|v| checks::is_valid(**v)).count();
     count as f64 / col.len() as f64
 }
-
 
 #[cfg(test)]
 mod tests {

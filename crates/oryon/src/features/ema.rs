@@ -26,15 +26,25 @@ impl Ema {
     /// - `inputs` — name of the input column (e.g. `["close"]`).
     /// - `window` — number of bars for seeding and smoothing factor. Must be > 0.
     /// - `outputs` — name of the output column (e.g. `["close_ema_20"]`).
-    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be non-zero".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be non-zero".into(),
+            });
         }
         let alpha = 2.0 / (window as f64 + 1.0);
         Ok(Ema {
@@ -143,8 +153,8 @@ mod tests {
         let mut e = ema_3();
         e.update(&[Some(100.0)]);
         e.update(&[Some(200.0)]);
-        e.update(&[Some(300.0)]);  // seeded
-        assert_eq!(e.update(&[None]), out(None));  // reset
+        e.update(&[Some(300.0)]); // seeded
+        assert_eq!(e.update(&[None]), out(None)); // reset
 
         // re-seeds from scratch
         assert_eq!(e.update(&[Some(100.0)]), out(None));

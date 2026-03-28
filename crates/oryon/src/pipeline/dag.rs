@@ -21,6 +21,13 @@ pub struct FeatureDag {
 }
 
 impl FeatureDag {
+    /// Create a new `FeatureDag` from a list of features.
+    ///
+    /// Infers dependency edges by matching each feature's `input_names()` against
+    /// the `output_names()` of other features. Features with no shared dependency
+    /// are placed in the same execution level.
+    ///
+    /// Returns `Err` if output keys are duplicated or if a cyclic dependency is detected.
     pub fn new(features: Vec<Box<dyn Feature>>) -> Result<Self, OryonError> {
         let n = features.len();
 
@@ -95,8 +102,7 @@ impl FeatureDag {
 
         // 4. Build output_names in execution order + move features into levels
         let mut output_names: Vec<String> = Vec::new();
-        let mut slots: Vec<Option<Box<dyn Feature>>> =
-            features.into_iter().map(Some).collect();
+        let mut slots: Vec<Option<Box<dyn Feature>>> = features.into_iter().map(Some).collect();
 
         let mut execution_order: Vec<Vec<Box<dyn Feature>>> = Vec::new();
         for level in &level_indices {
@@ -208,15 +214,18 @@ mod tests {
 
     #[test]
     fn test_chained_features_two_levels() {
-        let dag = FeatureDag::new(vec![
-            a(&["a"], &["b"]),
-            a(&["close"], &["a"]),
-        ]).unwrap();
+        let dag = FeatureDag::new(vec![a(&["a"], &["b"]), a(&["close"], &["a"])]).unwrap();
 
         assert_eq!(dag.execution_order().len(), 2);
         assert_eq!(dag.input_names(), &["close".to_string()]);
-        assert_eq!(dag.execution_order()[0][0].output_names(), vec!["a".to_string()]);
-        assert_eq!(dag.execution_order()[1][0].output_names(), vec!["b".to_string()]);
+        assert_eq!(
+            dag.execution_order()[0][0].output_names(),
+            vec!["a".to_string()]
+        );
+        assert_eq!(
+            dag.execution_order()[1][0].output_names(),
+            vec!["b".to_string()]
+        );
     }
 
     #[test]
@@ -227,10 +236,7 @@ mod tests {
 
     #[test]
     fn test_warm_up_period() {
-        let dag = FeatureDag::new(vec![
-            a(&["close"], &["a"]),
-            w(&["close"], &["b"]),
-        ]).unwrap();
+        let dag = FeatureDag::new(vec![a(&["close"], &["a"]), w(&["close"], &["b"])]).unwrap();
 
         assert_eq!(dag.warm_up_period(), 1);
     }

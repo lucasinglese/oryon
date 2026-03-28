@@ -151,11 +151,13 @@ mod tests {
     #[test]
     fn test_single_target() {
         let target = FutureCTCVolatility::new("close", 3).unwrap();
-        let pipeline =
-            TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
+        let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.len(), 1);
-        assert_eq!(pipeline.output_names(), &["close_future_ctc_vol_3".to_string()]);
+        assert_eq!(
+            pipeline.output_names(),
+            &["close_future_ctc_vol_3".to_string()]
+        );
         assert_eq!(pipeline.forward_period(), 3);
     }
 
@@ -163,11 +165,8 @@ mod tests {
     fn test_multiple_targets() {
         let t1 = FutureCTCVolatility::new("close", 3).unwrap();
         let t2 = FutureCTCVolatility::new("close", 5).unwrap();
-        let pipeline = TargetPipeline::new(
-            vec![Box::new(t1), Box::new(t2)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let pipeline =
+            TargetPipeline::new(vec![Box::new(t1), Box::new(t2)], vec!["close".into()]).unwrap();
 
         assert_eq!(pipeline.len(), 2);
         assert_eq!(pipeline.forward_period(), 5);
@@ -183,8 +182,7 @@ mod tests {
     #[test]
     fn test_compute() {
         let target = FutureCTCVolatility::new("close", 3).unwrap();
-        let pipeline =
-            TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
+        let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
         let result = pipeline.compute(&[&prices]);
@@ -202,11 +200,8 @@ mod tests {
     fn test_compute_multiple() {
         let t1 = FutureCTCVolatility::new("close", 3).unwrap();
         let t2 = FutureCTCVolatility::new("close", 5).unwrap();
-        let pipeline = TargetPipeline::new(
-            vec![Box::new(t1), Box::new(t2)],
-            vec!["close".into()],
-        )
-        .unwrap();
+        let pipeline =
+            TargetPipeline::new(vec![Box::new(t1), Box::new(t2)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
         let result = pipeline.compute(&[&prices]);
@@ -227,10 +222,7 @@ mod tests {
     fn test_duplicate_output_key() {
         let t1 = FutureCTCVolatility::new("close", 3).unwrap();
         let t2 = FutureCTCVolatility::new("close", 3).unwrap(); // same output key
-        let result = TargetPipeline::new(
-            vec![Box::new(t1), Box::new(t2)],
-            vec!["close".into()],
-        );
+        let result = TargetPipeline::new(vec![Box::new(t1), Box::new(t2)], vec!["close".into()]);
         assert!(result.is_err());
     }
 }

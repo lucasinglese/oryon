@@ -6,7 +6,9 @@ pub fn log_return(data: &[Option<f64>]) -> Option<f64> {
         return None;
     }
     match (data[0], data[1]) {
-        (Some(previous), Some(current)) if previous > 0.0 && current > 0.0 => Some((current / previous).ln()),
+        (Some(previous), Some(current)) if previous > 0.0 && current > 0.0 => {
+            Some((current / previous).ln())
+        }
         _ => None,
     }
 }

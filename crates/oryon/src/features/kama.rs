@@ -38,14 +38,14 @@ pub struct Kama {
 impl Kama {
     /// Create a new `Kama`.
     ///
-    /// - `inputs`  — name of the input column (e.g. `["close"]`).
-    /// - `window`  — lookback for the Efficiency Ratio. Must be >= 1.
-    ///               Kaufman default: 10.
-    /// - `outputs` — name of the output column (e.g. `["close_kama_10"]`).
-    /// - `fast`    — period for the fast smoothing constant. Must be >= 1.
-    ///               Kaufman default: 2.
-    /// - `slow`    — period for the slow smoothing constant. Must be > `fast`.
-    ///               Kaufman default: 30.
+    /// - `inputs`  - name of the input column (e.g. `["close"]`).
+    /// - `window`  - lookback for the Efficiency Ratio. Must be >= 1.
+    ///   Kaufman default: 10.
+    /// - `outputs` - name of the output column (e.g. `["close_kama_10"]`).
+    /// - `fast`    - period for the fast smoothing constant. Must be >= 1.
+    ///   Kaufman default: 2.
+    /// - `slow`    - period for the slow smoothing constant. Must be > `fast`.
+    ///   Kaufman default: 30.
     pub fn new(
         inputs: Vec<String>,
         window: usize,
@@ -54,19 +54,29 @@ impl Kama {
         slow: usize,
     ) -> Result<Self, OryonError> {
         if inputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "inputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "inputs must not be empty".into(),
+            });
         }
         if outputs.is_empty() {
-            return Err(OryonError::InvalidInput { msg: "outputs must not be empty".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
         }
         if window == 0 {
-            return Err(OryonError::InvalidInput { msg: "window must be >= 1".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "window must be >= 1".into(),
+            });
         }
         if fast == 0 {
-            return Err(OryonError::InvalidInput { msg: "fast must be >= 1".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "fast must be >= 1".into(),
+            });
         }
         if slow <= fast {
-            return Err(OryonError::InvalidInput { msg: "slow must be > fast".into() });
+            return Err(OryonError::InvalidInput {
+                msg: "slow must be > fast".into(),
+            });
         }
         Ok(Kama {
             inputs,
@@ -94,17 +104,15 @@ impl Feature for Kama {
     }
 
     fn fresh(&self) -> Box<dyn Feature> {
-        Box::new(
-            Kama {
-                inputs: self.inputs.clone(),
-                window: self.window,
-                outputs: self.outputs.clone(),
-                fast_sc: self.fast_sc,
-                slow_sc: self.slow_sc,
-                prev_kama: None,
-                buffer: VecDeque::with_capacity(self.window + 1),
-            }
-        )
+        Box::new(Kama {
+            inputs: self.inputs.clone(),
+            window: self.window,
+            outputs: self.outputs.clone(),
+            fast_sc: self.fast_sc,
+            slow_sc: self.slow_sc,
+            prev_kama: None,
+            buffer: VecDeque::with_capacity(self.window + 1),
+        })
     }
 
     fn reset(&mut self) {
@@ -124,7 +132,7 @@ impl Feature for Kama {
         }
 
         // Collect values — any None in window resets seed and returns None.
-        let prices: Vec<f64> = match self.buffer.iter().map(|x| *x).collect::<Option<Vec<_>>>() {
+        let prices: Vec<f64> = match self.buffer.iter().copied().collect::<Option<Vec<_>>>() {
             Some(v) => v,
             None => {
                 self.prev_kama = None;
@@ -135,7 +143,11 @@ impl Feature for Kama {
         let direction = (prices[self.window] - prices[0]).abs();
         let volatility: f64 = prices.windows(2).map(|w| (w[1] - w[0]).abs()).sum();
 
-        let er = if volatility > 0.0 { direction / volatility } else { 0.0 };
+        let er = if volatility > 0.0 {
+            direction / volatility
+        } else {
+            0.0
+        };
         let sc = (er * (self.fast_sc - self.slow_sc) + self.slow_sc).powi(2);
 
         let seed = self.prev_kama.unwrap_or(prices[self.window - 1]);

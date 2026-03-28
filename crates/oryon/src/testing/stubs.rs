@@ -14,9 +14,15 @@ impl AddOneStub {
 }
 
 impl Feature for AddOneStub {
-    fn input_names(&self) -> Vec<String> { self.inputs.clone() }
-    fn output_names(&self) -> Vec<String> { self.outputs.clone() }
-    fn update(&mut self, state: &[Option<f64>]) -> Output { smallvec![state[0].map(|x| x + 1.0)] }
+    fn input_names(&self) -> Vec<String> {
+        self.inputs.clone()
+    }
+    fn output_names(&self) -> Vec<String> {
+        self.outputs.clone()
+    }
+    fn update(&mut self, state: &[Option<f64>]) -> Output {
+        smallvec![state[0].map(|x| x + 1.0)]
+    }
     fn reset(&mut self) {}
     fn fresh(&self) -> Box<dyn Feature> {
         Box::new(AddOneStub::new(self.inputs.clone(), self.outputs.clone()))
@@ -32,14 +38,24 @@ pub struct WarmUpOneStub {
 
 impl WarmUpOneStub {
     pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> Self {
-        WarmUpOneStub { inputs, outputs, seen_one: false }
+        WarmUpOneStub {
+            inputs,
+            outputs,
+            seen_one: false,
+        }
     }
 }
 
 impl Feature for WarmUpOneStub {
-    fn input_names(&self) -> Vec<String> { self.inputs.clone() }
-    fn output_names(&self) -> Vec<String> { self.outputs.clone() }
-    fn warm_up_period(&self) -> usize { 1 }
+    fn input_names(&self) -> Vec<String> {
+        self.inputs.clone()
+    }
+    fn output_names(&self) -> Vec<String> {
+        self.outputs.clone()
+    }
+    fn warm_up_period(&self) -> usize {
+        1
+    }
     fn update(&mut self, state: &[Option<f64>]) -> Output {
         if !self.seen_one {
             self.seen_one = true;
@@ -48,8 +64,13 @@ impl Feature for WarmUpOneStub {
             smallvec![state[0]]
         }
     }
-    fn reset(&mut self) { self.seen_one = false; }
+    fn reset(&mut self) {
+        self.seen_one = false;
+    }
     fn fresh(&self) -> Box<dyn Feature> {
-        Box::new(WarmUpOneStub::new(self.inputs.clone(), self.outputs.clone()))
+        Box::new(WarmUpOneStub::new(
+            self.inputs.clone(),
+            self.outputs.clone(),
+        ))
     }
 }

@@ -119,7 +119,16 @@ mod tests {
     #[test]
     fn test_skewness_symmetric() {
         // Python: skewness([2,4,4,4,5,5,7,9]) = 0.818487553356800
-        let data = vec![Some(2.0), Some(4.0), Some(4.0), Some(4.0), Some(5.0), Some(5.0), Some(7.0), Some(9.0)];
+        let data = vec![
+            Some(2.0),
+            Some(4.0),
+            Some(4.0),
+            Some(4.0),
+            Some(5.0),
+            Some(5.0),
+            Some(7.0),
+            Some(9.0),
+        ];
         assert!((skewness(&data).unwrap() - 0.818487553356800).abs() < 1e-10);
     }
 
@@ -162,7 +171,16 @@ mod tests {
     #[test]
     fn test_kurtosis_symmetric() {
         // Python: kurtosis([2,4,4,4,5,5,7,9]) = 0.940625000000000
-        let data = vec![Some(2.0), Some(4.0), Some(4.0), Some(4.0), Some(5.0), Some(5.0), Some(7.0), Some(9.0)];
+        let data = vec![
+            Some(2.0),
+            Some(4.0),
+            Some(4.0),
+            Some(4.0),
+            Some(5.0),
+            Some(5.0),
+            Some(7.0),
+            Some(9.0),
+        ];
         assert!((kurtosis(&data).unwrap() - 0.940625000000000).abs() < 1e-10);
     }
 
@@ -192,6 +210,9 @@ mod tests {
 
     #[test]
     fn test_kurtosis_all_equal() {
-        assert_eq!(kurtosis(&[Some(5.0), Some(5.0), Some(5.0), Some(5.0)]), None);
+        assert_eq!(
+            kurtosis(&[Some(5.0), Some(5.0), Some(5.0), Some(5.0)]),
+            None
+        );
     }
 }

@@ -23,11 +23,15 @@ impl FutureLinearSlope {
     /// Create a new `FutureLinearSlope` target.
     ///
     /// - `inputs`  - names of the x and y columns, in that order (e.g. `["time_idx", "close"]`).
-    ///               Must contain at least 2 non-empty entries. `inputs[0]` is x, `inputs[1]` is y.
+    ///   Must contain at least 2 non-empty entries. `inputs[0]` is x, `inputs[1]` is y.
     /// - `horizon` - number of bars to look ahead. Must be >= 2.
     /// - `outputs` - names of the two output columns: `[slope_name, r2_name]`. Must contain
-    ///               exactly 2 entries.
-    pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> Result<Self, OryonError> {
+    ///   exactly 2 entries.
+    pub fn new(
+        inputs: Vec<String>,
+        horizon: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
         if inputs.len() < 2 {
             return Err(OryonError::InvalidInput {
                 msg: "inputs must contain x and y columns".into(),
@@ -48,7 +52,11 @@ impl FutureLinearSlope {
                 msg: "outputs must contain exactly 2 names: [slope, r2]".into(),
             });
         }
-        Ok(FutureLinearSlope { inputs, horizon, outputs })
+        Ok(FutureLinearSlope {
+            inputs,
+            horizon,
+            outputs,
+        })
     }
 }
 
@@ -87,8 +95,14 @@ impl Target for FutureLinearSlope {
             let mut valid = true;
             for i in 0..h {
                 match (x_win[i], y_win[i]) {
-                    (Some(xi), Some(yi)) => { x_sum += xi; y_sum += yi; }
-                    _ => { valid = false; break; }
+                    (Some(xi), Some(yi)) => {
+                        x_sum += xi;
+                        y_sum += yi;
+                    }
+                    _ => {
+                        valid = false;
+                        break;
+                    }
                 }
             }
             if !valid {
@@ -114,7 +128,11 @@ impl Target for FutureLinearSlope {
             }
 
             slopes[t] = Some(sxy / sxx);
-            r2s[t] = if syy == 0.0 { None } else { Some(sxy * sxy / (sxx * syy)) };
+            r2s[t] = if syy == 0.0 {
+                None
+            } else {
+                Some(sxy * sxy / (sxx * syy))
+            };
         }
 
         vec![slopes, r2s]
@@ -131,8 +149,13 @@ mod tests {
 
     fn prices() -> Vec<Option<f64>> {
         vec![
-            Some(100.0), Some(101.0), Some(103.0), Some(102.0),
-            Some(105.0), Some(107.0), Some(106.0),
+            Some(100.0),
+            Some(101.0),
+            Some(103.0),
+            Some(102.0),
+            Some(105.0),
+            Some(107.0),
+            Some(106.0),
         ]
     }
 
@@ -141,13 +164,17 @@ mod tests {
             vec!["t".into(), "close".into()],
             3,
             vec!["close_slope_3".into(), "close_r2_3".into()],
-        ).unwrap()
+        )
+        .unwrap()
     }
 
     // Contract tests (manual — target_contract_tests! supports single-input only).
     #[test]
     fn test_contract_input_names() {
-        assert_eq!(fls3().input_names(), vec!["t".to_string(), "close".to_string()]);
+        assert_eq!(
+            fls3().input_names(),
+            vec!["t".to_string(), "close".to_string()]
+        );
     }
 
     #[test]
@@ -215,7 +242,13 @@ mod tests {
     fn test_compute_constant_x_slope_none() {
         // constant x → Sxx=0 → both None
         let flat_x: Vec<Option<f64>> = vec![Some(1.0); 5];
-        let p: Vec<Option<f64>> = vec![Some(100.0), Some(101.0), Some(102.0), Some(103.0), Some(104.0)];
+        let p: Vec<Option<f64>> = vec![
+            Some(100.0),
+            Some(101.0),
+            Some(102.0),
+            Some(103.0),
+            Some(104.0),
+        ];
         let result = fls3().compute(&[&flat_x, &p]);
         assert_eq!(result[0][0], None);
         assert_eq!(result[1][0], None);
