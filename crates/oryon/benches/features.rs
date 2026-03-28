@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::features::{Ema, Kama, Kurtosis, LogReturn, ParkinsonVolatility, SimpleReturn, Skewness, Sma};
+use oryon::features::{Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, SimpleReturn, Skewness, Sma};
 use oryon::traits::Feature;
 
 fn bench_log_return(c: &mut Criterion) {
@@ -130,5 +130,21 @@ fn bench_sma(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_ema, bench_kama, bench_kurtosis, bench_log_return, bench_parkinson_volatility, bench_simple_return, bench_skewness, bench_sma);
+fn bench_linear_slope(c: &mut Criterion) {
+    let mut group = c.benchmark_group("linear_slope_update");
+
+    let mut ls_w20 = LinearSlope::new(vec!["x".into(), "y".into()], 20, vec!["xy_slope_20".into(), "xy_r2_20".into()]).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| ls_w20.update(black_box(&[Some(3.0), Some(6.0)])))
+    });
+
+    let mut ls_w200 = LinearSlope::new(vec!["x".into(), "y".into()], 200, vec!["xy_slope_200".into(), "xy_r2_200".into()]).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| ls_w200.update(black_box(&[Some(3.0), Some(6.0)])))
+    });
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_ema, bench_kama, bench_kurtosis, bench_linear_slope, bench_log_return, bench_parkinson_volatility, bench_simple_return, bench_skewness, bench_sma);
 criterion_main!(benches);
