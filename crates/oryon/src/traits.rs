@@ -33,7 +33,7 @@ pub trait Feature: Send + Sync {
 /// Targets are forward-looking: they label past bars using future information.
 /// They only work in research mode (offline), never live.
 ///
-/// Targets are stateless — `compute()` is `&self`, no `reset()` needed.
+/// Targets are stateless: `compute()` is `&self`, no `reset()` needed.
 pub trait Target: Send + Sync {
     /// Input name(s) this target reads from the dataset.
     fn input_names(&self) -> Vec<String>;

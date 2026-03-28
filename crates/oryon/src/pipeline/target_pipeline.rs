@@ -5,7 +5,7 @@ use crate::traits::Target;
 
 /// Orchestrates multiple targets over a full dataset.
 ///
-/// No DAG needed — targets are independent and don't chain.
+/// Targets are independent and don't chain, so no DAG is needed.
 /// `compute(data)` runs all targets and concatenates their outputs.
 pub struct TargetPipeline {
     targets: Vec<Box<dyn Target>>,

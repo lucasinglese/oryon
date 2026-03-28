@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::features::{Kurtosis, LogReturn, SimpleReturn, Skewness, Sma};
+use oryon::features::{Ema, Kama, Kurtosis, LogReturn, ParkinsonVolatility, SimpleReturn, Skewness, Sma};
 use oryon::traits::Feature;
 
 fn bench_log_return(c: &mut Criterion) {
@@ -13,6 +13,38 @@ fn bench_log_return(c: &mut Criterion) {
     let mut lr_w200 = LogReturn::new(vec!["close".into()], 200, vec!["close_log_return_200".into()]).unwrap();
     group.bench_function("w200", |b| {
         b.iter(|| lr_w200.update(black_box(&[Some(100.0)])))
+    });
+
+    group.finish();
+}
+
+fn bench_ema(c: &mut Criterion) {
+    let mut group = c.benchmark_group("ema_update");
+
+    let mut ema_w20 = Ema::new(vec!["close".into()], 20, vec!["close_ema_20".into()]).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| ema_w20.update(black_box(&[Some(100.0)])))
+    });
+
+    let mut ema_w200 = Ema::new(vec!["close".into()], 200, vec!["close_ema_200".into()]).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| ema_w200.update(black_box(&[Some(100.0)])))
+    });
+
+    group.finish();
+}
+
+fn bench_kama(c: &mut Criterion) {
+    let mut group = c.benchmark_group("kama_update");
+
+    let mut kama_w20 = Kama::new(vec!["close".into()], 20, vec!["close_kama_20".into()], 2, 30).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| kama_w20.update(black_box(&[Some(100.0)])))
+    });
+
+    let mut kama_w200 = Kama::new(vec!["close".into()], 200, vec!["close_kama_200".into()], 2, 30).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| kama_w200.update(black_box(&[Some(100.0)])))
     });
 
     group.finish();
@@ -50,6 +82,22 @@ fn bench_skewness(c: &mut Criterion) {
     group.finish();
 }
 
+fn bench_parkinson_volatility(c: &mut Criterion) {
+    let mut group = c.benchmark_group("parkinson_volatility_update");
+
+    let mut pv_w20 = ParkinsonVolatility::new(vec!["high".into(), "low".into()], 20, vec!["pv_20".into()]).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| pv_w20.update(black_box(&[Some(108.0), Some(105.0)])))
+    });
+
+    let mut pv_w200 = ParkinsonVolatility::new(vec!["high".into(), "low".into()], 200, vec!["pv_200".into()]).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| pv_w200.update(black_box(&[Some(108.0), Some(105.0)])))
+    });
+
+    group.finish();
+}
+
 fn bench_simple_return(c: &mut Criterion) {
     let mut group = c.benchmark_group("simple_return_update");
 
@@ -82,5 +130,5 @@ fn bench_sma(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_kurtosis, bench_log_return, bench_simple_return, bench_skewness, bench_sma);
+criterion_group!(benches, bench_ema, bench_kama, bench_kurtosis, bench_log_return, bench_parkinson_volatility, bench_simple_return, bench_skewness, bench_sma);
 criterion_main!(benches);

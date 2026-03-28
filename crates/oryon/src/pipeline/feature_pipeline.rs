@@ -100,7 +100,7 @@ impl FeaturePipeline {
         results
     }
 
-    /// Reset all features (between CPCV splits).
+    /// Reset all features.
     pub fn reset(&mut self) {
         self.dag.reset();
     }
