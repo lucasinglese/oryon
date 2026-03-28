@@ -1,0 +1,12 @@
+[package]
+name = "oryon-python"
+version = "0.2.0"
+edition = "2021"
+
+[lib]
+name = "_oryon"
+crate-type = ["cdylib"]
+
+[dependencies]
+oryon = { path = "../oryon" }
+pyo3 = { version = "0.22", features = ["extension-module"] }

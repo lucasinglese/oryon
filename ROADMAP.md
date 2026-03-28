@@ -1,14 +1,25 @@
 # Roadmap
 
-## v1 — Core (in progress)
+## v1 — Core (done)
 
-- [ ] Features: EMA, RSI, ATR, Bollinger, MACD, ...
-- [ ] Targets: FutureReturn, FutureDirection, ...
-- [ ] Python facade (PyO3/maturin) — after ~20 features
-- [ ] Documentation (rustdoc + examples)
-- [ ] CI (cargo test + cargo clippy on push)
+- [x] Features: Sma, Ema, Kama, SimpleReturn, LogReturn, Skewness, Kurtosis, LinearSlope, ParkinsonVolatility, RogersSatchellVolatility
+- [x] Targets: FutureReturn, FutureCTCVolatility, FutureLinearSlope
+- [x] FeaturePipeline (DAG) + TargetPipeline
+- [x] Python facade (PyO3/maturin) — submodules oryon.features / oryon.targets
+- [x] Type stubs (.pyi) + py.typed
+- [x] CI — lint + cargo test + pytest (Python 3.9 → 3.14)
+- [x] Benchmarks Rust + Python
+- [x] Makefile
 
-## v2 — Production
+## v2 — Scale
 
-- [ ] Pipeline serialization — save/load internal state (buffers) to disk so a live pipeline can resume after a restart without waiting for warm-up
+- [ ] Features x50 — RSI, ATR, Bollinger, MACD, momentum, rolling beta/corr, ...
+- [ ] Targets x10 — FutureDirection, FutureMaxDrawdown, ...
+- [ ] CHANGELOG — remplir à chaque release, suivre Keep a Changelog
+- [ ] CD — publier les wheels automatiquement sur tag (maturin publish / PyPI privé)
+- [ ] Property-based testing (`proptest`) — inputs aléatoires, invariants sur tous les features
+
+## v3 — Production
+
+- [ ] Pipeline serialization — save/load state pour reprendre sans warm-up
 - [ ] Tick-to-bars module

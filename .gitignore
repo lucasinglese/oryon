@@ -49,6 +49,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.benchmarks/
 cover/
 
 # Translations
@@ -184,10 +185,14 @@ cython_debug/
 # Remove poetry.lock
 poetry.lock
 
+# Rust — library crate, Cargo.lock is not committed
+Cargo.lock
+
 
 # Personal folder
 .DS_Store
 .claude
+demo.ipynb
 
 
 # Website
