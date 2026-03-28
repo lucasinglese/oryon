@@ -1,16 +1,16 @@
 use oryon::checks::{is_none};
-use oryon::features::{Sma, LogReturn};
+use oryon::features::{Sma, LogReturn, Skewness, Kurtosis};
 use oryon::pipeline::FeaturePipeline;
 
 
 fn main() {
     let prices: Vec<Option<f64>> = vec![
-        Some(100.0), Some(101.5), Some(103.0), Some(-102.0), Some(104.5),
+        Some(100.0), Some(101.5), Some(103.0), Some(102.0), Some(104.5),
         Some(106.0), Some(105.5), Some(107.0), Some(109.0), Some(108.0),
     ];
 
     let sma3 = Sma::new(vec!["close".into()], 3, vec!["close_3_sma".into()]).unwrap();
-    let logret5 = LogReturn::new(vec!["close".into()], 5, vec!["close_log_return_5".into()]).unwrap();
+    let logret5 = Kurtosis::new(vec!["close".into()], 5, vec!["close_log_return_5".into()]).unwrap();
 
     let mut feature_pipeline = FeaturePipeline::new(
         vec![Box::new(sma3), Box::new(logret5)],

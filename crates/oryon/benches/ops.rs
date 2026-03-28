@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use oryon::ops::{average, log_return, simple_return, std_dev};
+use oryon::ops::{average, kurtosis, log_return, simple_return, skewness, std_dev};
 
 fn data(window: usize) -> Vec<Option<f64>> {
     (0..window).map(|i| Some(100.0 + i as f64 * 0.01)).collect()
@@ -41,5 +41,25 @@ fn bench_simple_return(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_average, bench_std_dev, bench_log_return, bench_simple_return);
+fn bench_skewness(c: &mut Criterion) {
+    let w20 = data(20);
+    let w200 = data(200);
+
+    let mut group = c.benchmark_group("skewness");
+    group.bench_function("w20", |b| b.iter(|| skewness(black_box(&w20))));
+    group.bench_function("w200", |b| b.iter(|| skewness(black_box(&w200))));
+    group.finish();
+}
+
+fn bench_kurtosis(c: &mut Criterion) {
+    let w20 = data(20);
+    let w200 = data(200);
+
+    let mut group = c.benchmark_group("kurtosis");
+    group.bench_function("w20", |b| b.iter(|| kurtosis(black_box(&w20))));
+    group.bench_function("w200", |b| b.iter(|| kurtosis(black_box(&w200))));
+    group.finish();
+}
+
+criterion_group!(benches, bench_average, bench_std_dev, bench_log_return, bench_simple_return, bench_skewness, bench_kurtosis);
 criterion_main!(benches);
