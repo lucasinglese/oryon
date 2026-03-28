@@ -54,7 +54,7 @@ impl Target for FutureCTCVolatility {
     fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let prices = columns[0];
         let shifted_prices = shift(prices, 1);
-        let lr = pairwise(prices, &shifted_prices, log_return);
+        let lr = pairwise(&shifted_prices, prices, log_return);
         let vol = rolling(&lr, self.horizon, std_dev);
         let result = shift(&vol, -(self.horizon as isize));
         vec![result]

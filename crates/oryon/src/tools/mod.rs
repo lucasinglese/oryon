@@ -120,7 +120,7 @@ mod tests {
     fn test_pairwise_log_return() {
         let prices = vec![Some(100.0), Some(110.0), Some(105.0)];
         let shifted = shift(&prices, 1);
-        let result = pairwise(&prices, &shifted, log_return);
+        let result = pairwise(&shifted, &prices, log_return);
 
         assert_eq!(result[0], None);
         assert!((result[1].unwrap() - (110.0_f64 / 100.0).ln()).abs() < 1e-10);
