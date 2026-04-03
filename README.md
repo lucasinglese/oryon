@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/figures/oryon_logo_text.svg" alt="Oryon" width="380">
+  <img src="docs/docs/assets/figures/oryon_logo_text.svg" alt="Oryon" width="380">
 </p>
 
 <p align="center">
@@ -61,11 +61,14 @@ result = fp.update([bar.close, bar.high, bar.low])
 
 **Research, full dataset at once:**
 
+The same feature pipeline (`fp`) defined above builds your training dataset. See the [full quickstart](https://oryonlib.dev/getting-started/quickstart/) for details.
+
 ```python
 import pandas as pd
 from oryon import run_features_pipeline, run_targets_pipeline, TargetPipeline
 from oryon.targets import FutureReturn
 
+# fp is the pipeline from the live trading example above
 X = run_features_pipeline(fp, df)
 y = run_targets_pipeline(
     TargetPipeline(
@@ -75,9 +78,14 @@ y = run_targets_pipeline(
     df,
 )
 dataset = pd.concat([X, y], axis=1).dropna()
+#            ema_20    pvol_20    ret_5
+# 2024-01-01    NaN        NaN      NaN   <- warm-up
+# ...
+# 2024-01-21  102.4    0.01823   0.0312
+# 2024-01-22  102.7    0.01754   0.0187
+# ...
+# 2024-12-27  118.2    0.02341      NaN   <- forward period
 ```
-
-The same `fp` used in live trading builds your training dataset. No rewrite, no translation layer.
 
 ---
 
