@@ -1,5 +1,6 @@
 site_name: Oryon Docs
 site_description: "Institutional-grade feature and target engineering for quantitative research. Rust core, Python API."
+site_url: https://oryonlib.dev
 
 repo_url: https://github.com/lucasinglese/oryon
 repo_name: lucasinglese/oryon
