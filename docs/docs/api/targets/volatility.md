@@ -79,4 +79,4 @@ name is auto-generated as `{input}_future_ctc_vol_{horizon}`.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/targets/future_ctc_volatility.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/targets/future_ctc_volatility.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/targets/future_ctc_volatility.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/future_ctc_volatility.rs)

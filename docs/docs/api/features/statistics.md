@@ -82,7 +82,7 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/skewness.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/skewness.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/skewness.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/skewness.rs)
 
 ---
 
@@ -163,4 +163,4 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/kurtosis.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/kurtosis.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/kurtosis.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/kurtosis.rs)

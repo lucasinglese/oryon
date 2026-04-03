@@ -100,7 +100,7 @@ larger the window, the smoother and the slower.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/sma.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/sma.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/sma.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/sma.rs)
 
 === "Contribute"
 
@@ -211,7 +211,7 @@ It reacts faster to price changes than the SMA and maintains only a single state
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/ema.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/ema.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/ema.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/ema.rs)
 
 ---
 
@@ -306,7 +306,7 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/kama.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/kama.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/kama.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/kama.rs)
 
 ---
 
@@ -404,7 +404,7 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/linear_slope.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/linear_slope.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/linear_slope.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/linear_slope.rs)
 
 === "Contribute"
 

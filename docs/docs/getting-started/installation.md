@@ -46,7 +46,7 @@ print(fp.output_names())  # ['close_sma_3']
 Requires a stable Rust toolchain (`rustup`) and `maturin`.
 
 ```bash
-git clone https://github.com/Quantreo/oryon.git
+git clone https://github.com/lucasinglese/oryon.git
 cd oryon
 pip install maturin pytest
 maturin develop --release

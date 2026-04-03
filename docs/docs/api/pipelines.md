@@ -135,8 +135,8 @@ is scheduled after A. Features with no shared dependency run at the same level.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/pipeline/feature_pipeline.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/pipeline/feature_pipeline.rs)
-    · [:octicons-mark-github-16: `crates/oryon/src/pipeline/dag.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/pipeline/dag.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/pipeline/feature_pipeline.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/pipeline/feature_pipeline.rs)
+    · [:octicons-mark-github-16: `crates/oryon/src/pipeline/dag.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/pipeline/dag.rs)
 
 ---
 
@@ -218,7 +218,7 @@ stateless: no DAG is needed and there is no `update()` method.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/pipeline/target_pipeline.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/pipeline/target_pipeline.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/pipeline/target_pipeline.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/pipeline/target_pipeline.rs)
 
 ---
 
@@ -288,4 +288,4 @@ the original index (integer, datetime, or otherwise).
 
 === "Source"
 
-    [:octicons-mark-github-16: `python/oryon/__init__.py`](https://github.com/Quantreo/oryon/blob/main/python/oryon/__init__.py)
+    [:octicons-mark-github-16: `python/oryon/__init__.py`](https://github.com/lucasinglese/oryon/blob/main/python/oryon/__init__.py)

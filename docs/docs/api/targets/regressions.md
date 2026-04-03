@@ -79,7 +79,7 @@ Simple return from bar `t` to bar `t + horizon`. Identical formula to
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/targets/future_return.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/targets/future_return.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/targets/future_return.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/future_return.rs)
 
 ---
 
@@ -194,4 +194,4 @@ typically a time index or cumulative volume, `y` is the price series.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/targets/future_linear_slope.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/targets/future_linear_slope.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/targets/future_linear_slope.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/future_linear_slope.rs)

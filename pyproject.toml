@@ -29,10 +29,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://quantreo.github.io/oryon"
-Documentation = "https://quantreo.github.io/oryon"
-Repository = "https://github.com/Quantreo/oryon"
-Changelog = "https://github.com/Quantreo/oryon/blob/main/CHANGELOG.md"
+Homepage = "https://oryonlib.dev"
+Documentation = "https://oryonlib.dev"
+Repository = "https://github.com/lucasinglese/oryon"
+Changelog = "https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md"
 
 [tool.maturin]
 python-source = "python"

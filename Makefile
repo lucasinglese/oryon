@@ -1,6 +1,6 @@
 .PHONY: lint test test-rust test-python build bench docs docs-serve
 
-# Mirrors CI exactly — run before pushing
+# Mirrors CI exactly. Run before pushing
 
 lint:
 	cargo fmt --all -- --check

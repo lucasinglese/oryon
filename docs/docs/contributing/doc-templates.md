@@ -66,7 +66,7 @@ You can paste the Rust source and the template below into an LLM to generate the
 
     === "Source"
 
-        [:octicons-mark-github-16: `crates/oryon/src/features/your_feature.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/your_feature.rs)
+        [:octicons-mark-github-16: `crates/oryon/src/features/your_feature.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/your_feature.rs)
     ````
 
 === "Target"
@@ -130,7 +130,7 @@ You can paste the Rust source and the template below into an LLM to generate the
 
     === "Source"
 
-        [:octicons-mark-github-16: `crates/oryon/src/targets/your_target.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/targets/your_target.rs)
+        [:octicons-mark-github-16: `crates/oryon/src/targets/your_target.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/your_target.rs)
     ````
 
 ---

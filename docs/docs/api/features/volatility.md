@@ -83,7 +83,7 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/parkinson_volatility.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/parkinson_volatility.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/parkinson_volatility.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/parkinson_volatility.rs)
 
 ---
 
@@ -174,4 +174,4 @@ must be positive for a valid output.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/rogers_satchell_volatility.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/rogers_satchell_volatility.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/rogers_satchell_volatility.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/rogers_satchell_volatility.rs)

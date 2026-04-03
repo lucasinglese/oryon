@@ -1,8 +1,8 @@
 site_name: Oryon Docs
 site_description: "Institutional-grade feature and target engineering for quantitative research. Rust core, Python API."
 
-repo_url: https://github.com/Quantreo/oryon
-repo_name: Quantreo/oryon
+repo_url: https://github.com/lucasinglese/oryon
+repo_name: lucasinglese/oryon
 use_directory_urls: true
 
 theme:
@@ -112,7 +112,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/Quantreo/oryon
+      link: https://github.com/lucasinglese/oryon
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/lucas-inglese-75574817b/
 

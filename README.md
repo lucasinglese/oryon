@@ -5,9 +5,9 @@
 <p align="center">
   <a href="https://pypi.org/project/oryon/"><img src="https://img.shields.io/pypi/v/oryon.svg" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/python-3.9--3.13-blue" alt="Python versions">
-  <a href="https://github.com/Quantreo/oryon/actions/workflows/ci.yml"><img src="https://github.com/Quantreo/oryon/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/Quantreo/oryon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Quantreo/oryon.svg" alt="License"></a>
-  <img src="https://img.shields.io/github/last-commit/Quantreo/oryon" alt="Last commit">
+  <a href="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml"><img src="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/lucasinglese/oryon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/lucasinglese/oryon.svg" alt="License"></a>
+  <img src="https://img.shields.io/github/last-commit/lucasinglese/oryon" alt="Last commit">
 </p>
 
 <p align="center">
@@ -120,13 +120,13 @@ Every feature and target in Oryon ships with contract tests that enforce `warm_u
 
 ## Documentation
 
-Full API reference, guides, and benchmarks at **[quantreo.github.io/oryon](https://quantreo.github.io/oryon)**.
+Full API reference, guides, and benchmarks at **[oryonlib.dev](https://oryonlib.dev)**.
 
 ---
 
 ## Contributing
 
-Contributions of features and targets are welcome. See the [contributing guide](https://quantreo.github.io/oryon/contributing/guide/) for the full workflow and checklist.
+Contributions of features and targets are welcome. See the [contributing guide](https://oryonlib.dev/contributing/guide/) for the full workflow and checklist.
 
 ---
 

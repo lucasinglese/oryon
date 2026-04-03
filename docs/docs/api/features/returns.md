@@ -82,7 +82,7 @@ reference price is zero or negative.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/simple_return.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/simple_return.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/simple_return.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/simple_return.rs)
 
 ---
 
@@ -170,4 +170,4 @@ Returns `None` if either price is zero or negative.
 
 === "Source"
 
-    [:octicons-mark-github-16: `crates/oryon/src/features/log_return.rs`](https://github.com/Quantreo/oryon/blob/main/crates/oryon/src/features/log_return.rs)
+    [:octicons-mark-github-16: `crates/oryon/src/features/log_return.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/log_return.rs)
