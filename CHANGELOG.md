@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 > Oryon is a full rewrite of [Quantreo](https://github.com/Quantreo/quantreo),
 > the original pure-Python library. **Quantreo is deprecated in favour of Oryon.**
-> The API has been redesigned alongside the rewrite — migration is not drop-in.
+> The API has been redesigned alongside the rewrite. Migration is not drop-in.
 > This changelog starts at v0.2.0, the first public release of Oryon.
 
 ---
@@ -44,6 +44,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 **Infrastructure**
 
 - Rust core via PyO3/maturin, pre-built wheels for Linux, macOS, Windows
-- Python 3.9 to 3.14 support
+- Python 3.9 to 3.13 support
 - CI: lint (`cargo fmt`, `clippy`), `cargo test`, `pytest` on all supported Python versions
 - Criterion.rs benchmarks for all features and targets
