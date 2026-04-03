@@ -4,11 +4,11 @@ build-backend = "maturin"
 
 [project]
 name = "oryon"
-version = "0.2.5"
+version = "0.2.6"
 requires-python = ">=3.9,<3.14"
 description = "Production-grade feature and target engineering for quantitative research."
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 authors = [
     { name = "Lucas Inglese", email = "lucas@quantreo.com" }
 ]
@@ -38,6 +38,10 @@ Changelog = "https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md"
 python-source = "python"
 module-name = "oryon._oryon"
 manifest-path = "crates/oryon-python/Cargo.toml"
+include = [
+    { path = "LICENSE", format = "sdist" },
+    { path = "README.md", format = "sdist" },
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/features", "tests/targets"]
