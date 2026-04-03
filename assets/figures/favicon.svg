@@ -1,0 +1,11 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="10" x2="80" y2="70">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#C2410C" />
+    </linearGradient>
+  </defs>
+  <polygon points="40,4 76,40 40,76 4,40" fill="url(#fg)" opacity="0.12" />
+  <polygon points="40,4 76,40 40,76 4,40" fill="none" stroke="url(#fg)" stroke-width="3" />
+  <text x="40" y="48" font-family="'Courier New', monospace" font-size="22" font-weight="bold" fill="url(#fg)" text-anchor="middle" letter-spacing="-1">Nα</text>
+</svg>
