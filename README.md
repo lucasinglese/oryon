@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="docs/docs/assets/figures/oryon_logo_text.svg" alt="Oryon" width="380">
+  <img src="https://raw.githubusercontent.com/lucasinglese/oryon/main/docs/docs/assets/figures/oryon_logo_text.png" alt="Oryon" width="380">
 </p>
 
 <p align="center">
   <a href="https://pypi.org/project/oryon/"><img src="https://img.shields.io/pypi/v/oryon.svg" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/python-3.9--3.13-blue" alt="Python versions">
   <a href="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml"><img src="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/lucasinglese/oryon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/lucasinglese/oryon.svg" alt="License"></a>
+  <a href="https://github.com/lucasinglese/oryon/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <img src="https://img.shields.io/github/last-commit/lucasinglese/oryon" alt="Last commit">
 </p>
 
