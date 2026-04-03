@@ -25,6 +25,11 @@ jobs:
         run: cargo clippy --all-targets -- -D warnings
       - name: Check docs
         run: cargo doc --no-deps
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Lint Python
+        run: pip install ruff && ruff check python/
 
   test:
     name: Test (Rust)

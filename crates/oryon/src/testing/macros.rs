@@ -5,7 +5,7 @@
 /// - `output_names()` matches expected value
 /// - `forward_period()` matches expected value
 /// - `warm_up_period()` matches expected value
-/// - smoke: `compute()` returns correct number of columns, each with correct length
+/// - smoke: `run_research()` returns correct number of columns, each with correct length
 ///
 /// # Usage
 /// ```ignore
@@ -44,7 +44,7 @@ macro_rules! target_contract_tests {
         #[test]
         fn test_contract_compute_shape() {
             let t = $target;
-            let result = t.compute(&[$data]);
+            let result = t.run_research(&[$data]);
             assert_eq!(result.len(), t.output_names().len());
             assert!(result.iter().all(|col| col.len() == $data.len()));
         }

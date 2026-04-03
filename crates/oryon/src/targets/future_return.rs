@@ -61,7 +61,7 @@ impl Target for FutureReturn {
         self.horizon
     }
 
-    fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
+    fn run_research(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let prices = columns[0];
         let future_prices = shift(prices, -(self.horizon as isize));
         // simple_return(data): data[0]=previous=price[t], data[1]=current=price[t+horizon]
@@ -111,14 +111,14 @@ mod tests {
 
     #[test]
     fn test_compute_forward_none() {
-        let col = &fr2().compute(&[&prices()])[0];
+        let col = &fr2().run_research(&[&prices()])[0];
         assert_eq!(col[5], None);
         assert_eq!(col[6], None);
     }
 
     #[test]
     fn test_compute_valid_values() {
-        let col = &fr2().compute(&[&prices()])[0];
+        let col = &fr2().run_research(&[&prices()])[0];
         // bar 0: (105 - 100) / 100 = 0.05
         assert!((col[0].unwrap() - 0.05).abs() < 1e-10);
         // bar 1: (103 - 102) / 102 = 0.009803921...
@@ -133,7 +133,7 @@ mod tests {
     fn test_compute_stateless() {
         let target = fr2();
         let p = prices();
-        assert_eq!(target.compute(&[&p]), target.compute(&[&p]));
+        assert_eq!(target.run_research(&[&p]), target.run_research(&[&p]));
     }
 
     #[test]

@@ -646,7 +646,7 @@ class TargetPipeline:
     """Orchestrates multiple targets over a full dataset.
 
     Targets are stateless and independent — no DAG needed.
-    Use ``compute()`` to label an entire dataset at once (research only).
+    Use ``run_research()`` to label an entire dataset at once (research only).
     """
 
     def __init__(
@@ -658,7 +658,7 @@ class TargetPipeline:
 
         Args:
             targets: List of target objects (FutureReturn, FutureCTCVolatility, etc.).
-            input_columns: Column names in the order passed to ``compute()``.
+            input_columns: Column names in the order passed to ``run_research()``.
 
         Raises:
             ValueError: If there are duplicate output keys or required input
@@ -666,8 +666,8 @@ class TargetPipeline:
         """
         ...
 
-    def compute(self, data: List[List[float]]) -> List[List[float]]:
-        """Compute all targets over the full dataset.
+    def run_research(self, data: List[List[float]]) -> List[List[float]]:
+        """Run all targets over the full dataset (research mode).
 
         Args:
             data: One list per input column, each containing one float per bar.
@@ -683,7 +683,7 @@ class TargetPipeline:
         ...
 
     def input_names(self) -> List[str]:
-        """Input columns in the order expected by ``compute()``."""
+        """Input columns in the order expected by ``run_research()``."""
         ...
 
     def forward_period(self) -> int:

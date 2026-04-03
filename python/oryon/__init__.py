@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ._oryon import FeaturePipeline, TargetPipeline
 from .features import (
     Ema,
@@ -13,8 +17,11 @@ from .features import (
 )
 from .targets import FutureCTCVolatility, FutureLinearSlope, FutureReturn
 
+if TYPE_CHECKING:
+    from pandas import DataFrame
 
-def run_dataframe(pipeline: FeaturePipeline, df):
+
+def run_features_pipeline(pipeline: FeaturePipeline, df: DataFrame) -> DataFrame:
     """Run a FeaturePipeline on a pandas DataFrame, preserving the index.
 
     Args:
@@ -32,7 +39,7 @@ def run_dataframe(pipeline: FeaturePipeline, df):
     return pd.DataFrame(result, index=df.index, columns=pipeline.output_names())
 
 
-def run_target_dataframe(pipeline: TargetPipeline, df):
+def run_targets_pipeline(pipeline: TargetPipeline, df: DataFrame) -> DataFrame:
     """Run a TargetPipeline on a pandas DataFrame, preserving the index.
 
     Args:
@@ -46,7 +53,7 @@ def run_target_dataframe(pipeline: TargetPipeline, df):
     import pandas as pd
 
     data = [df[col].tolist() for col in pipeline.input_names()]
-    result = pipeline.compute(data)
+    result = pipeline.run_research(data)
     return pd.DataFrame(
         dict(zip(pipeline.output_names(), result)),
         index=df.index,
@@ -73,6 +80,6 @@ __all__ = [
     "FeaturePipeline",
     "TargetPipeline",
     # helpers
-    "run_dataframe",
-    "run_target_dataframe",
+    "run_features_pipeline",
+    "run_targets_pipeline",
 ]

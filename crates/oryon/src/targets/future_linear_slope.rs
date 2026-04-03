@@ -73,7 +73,7 @@ impl Target for FutureLinearSlope {
         self.horizon
     }
 
-    fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
+    fn run_research(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let x = columns[0];
         let y = columns[1];
         let n = x.len();
@@ -199,7 +199,7 @@ mod tests {
     fn test_contract_compute_shape() {
         let x = time_idx(7);
         let p = prices();
-        let result = fls3().compute(&[&x, &p]);
+        let result = fls3().run_research(&[&x, &p]);
         assert_eq!(result.len(), 2);
         assert!(result.iter().all(|col| col.len() == 7));
     }
@@ -207,7 +207,7 @@ mod tests {
     #[test]
     fn test_compute_forward_none() {
         let x = time_idx(7);
-        let result = fls3().compute(&[&x, &prices()]);
+        let result = fls3().run_research(&[&x, &prices()]);
         for col in &result {
             assert_eq!(col[5], None);
             assert_eq!(col[6], None);
@@ -217,7 +217,7 @@ mod tests {
     #[test]
     fn test_compute_valid_values() {
         let x = time_idx(7);
-        let result = fls3().compute(&[&x, &prices()]);
+        let result = fls3().run_research(&[&x, &prices()]);
         let slopes = &result[0];
         let r2s = &result[1];
 
@@ -235,7 +235,7 @@ mod tests {
         let target = fls3();
         let x = time_idx(7);
         let p = prices();
-        assert_eq!(target.compute(&[&x, &p]), target.compute(&[&x, &p]));
+        assert_eq!(target.run_research(&[&x, &p]), target.run_research(&[&x, &p]));
     }
 
     #[test]
@@ -249,7 +249,7 @@ mod tests {
             Some(103.0),
             Some(104.0),
         ];
-        let result = fls3().compute(&[&flat_x, &p]);
+        let result = fls3().run_research(&[&flat_x, &p]);
         assert_eq!(result[0][0], None);
         assert_eq!(result[1][0], None);
     }
@@ -259,7 +259,7 @@ mod tests {
         // constant y → slope=0, R²=None
         let x = time_idx(5);
         let flat_y: Vec<Option<f64>> = vec![Some(100.0); 5];
-        let result = fls3().compute(&[&x, &flat_y]);
+        let result = fls3().run_research(&[&x, &flat_y]);
         assert!((result[0][0].unwrap() - 0.0).abs() < 1e-10);
         assert_eq!(result[1][0], None);
     }

@@ -1,4 +1,4 @@
-.PHONY: lint test test-rust test-python build bench
+.PHONY: lint test test-rust test-python build bench docs docs-serve
 
 # Mirrors CI exactly — run before pushing
 
@@ -26,3 +26,9 @@ bench-rust:
 
 bench-python:
 	pytest tests/benchmarks/ --benchmark-only
+
+docs-serve:
+	cd docs && mkdocs serve
+
+docs:
+	cd docs && mkdocs build

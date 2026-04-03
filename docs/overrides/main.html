@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block header %}
+<div class="banner">
+  <p style="margin: 0;">
+    This documentation reflects <strong>Oryon v{{ config.extra.version }}</strong>. &nbsp;·&nbsp;
+    <a href="https://github.com/Quantreo/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
+  </p>
+</div>
+
+{{ super() }}
+{% endblock %}

@@ -50,6 +50,11 @@ def test_kama_update_w20(benchmark):
     benchmark(kama.update, [100.0])
 
 
+def test_kama_update_w200(benchmark):
+    kama = Kama(inputs=["close"], window=200, outputs=["out"])
+    benchmark(kama.update, [100.0])
+
+
 # --- SimpleReturn ------------------------------------------------------------
 
 
@@ -63,6 +68,11 @@ def test_simple_return_update_w20(benchmark):
     benchmark(sr.update, [100.0])
 
 
+def test_simple_return_update_w200(benchmark):
+    sr = SimpleReturn(inputs=["close"], window=200, outputs=["out"])
+    benchmark(sr.update, [100.0])
+
+
 # --- LogReturn ---------------------------------------------------------------
 
 
@@ -73,6 +83,11 @@ def test_log_return_update_w1(benchmark):
 
 def test_log_return_update_w20(benchmark):
     lr = LogReturn(inputs=["close"], window=20, outputs=["out"])
+    benchmark(lr.update, [100.0])
+
+
+def test_log_return_update_w200(benchmark):
+    lr = LogReturn(inputs=["close"], window=200, outputs=["out"])
     benchmark(lr.update, [100.0])
 
 

@@ -55,7 +55,7 @@ impl Target for FutureCTCVolatility {
         self.horizon
     }
 
-    fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
+    fn run_research(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let prices = columns[0];
         let shifted_prices = shift(prices, 1);
         let lr = pairwise(&shifted_prices, prices, log_return);
@@ -97,7 +97,7 @@ mod tests {
 
     #[test]
     fn test_compute_forward_none() {
-        let col = &vol3().compute(&[&prices()])[0];
+        let col = &vol3().run_research(&[&prices()])[0];
         // last horizon values must be None
         assert_eq!(col[4], None);
         assert_eq!(col[5], None);
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_compute_valid_values() {
-        let col = &vol3().compute(&[&prices()])[0];
+        let col = &vol3().run_research(&[&prices()])[0];
         assert!((col[0].unwrap() - 0.014_966_120_092_234_598).abs() < 1e-10);
         assert!((col[1].unwrap() - 0.020_212_720_949_768_705).abs() < 1e-10);
         assert!((col[2].unwrap() - 0.020_094_947_737_925_43).abs() < 1e-10);
@@ -117,7 +117,7 @@ mod tests {
     fn test_compute_stateless() {
         let target = vol3();
         let p = prices();
-        assert_eq!(target.compute(&[&p]), target.compute(&[&p]));
+        assert_eq!(target.run_research(&[&p]), target.run_research(&[&p]));
     }
 
     #[test]

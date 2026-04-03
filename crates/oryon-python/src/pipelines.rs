@@ -92,7 +92,7 @@ impl FeaturePipeline {
 /// Orchestrates multiple targets over a full dataset.
 ///
 /// Targets are stateless and independent — no DAG needed.
-/// Use ``compute()`` to label an entire dataset at once.
+/// Use ``run_research()`` to label an entire dataset at once.
 #[pyclass(module = "oryon")]
 pub(crate) struct TargetPipeline {
     inner: RustTargetPipeline,
@@ -104,7 +104,7 @@ impl TargetPipeline {
     ///
     /// Args:
     ///     targets: List of target objects.
-    ///     input_columns: Column names in the order passed to ``compute()``.
+    ///     input_columns: Column names in the order passed to ``run_research()``.
     #[new]
     pub fn new(targets: Vec<Bound<'_, PyAny>>, input_columns: Vec<String>) -> PyResult<Self> {
         let rust_targets = targets
@@ -116,7 +116,7 @@ impl TargetPipeline {
         Ok(TargetPipeline { inner })
     }
 
-    /// Compute all targets over the full dataset.
+    /// Run all targets over the full dataset (research mode).
     ///
     /// Args:
     ///     data: One list per input column, each containing one float per bar.
@@ -124,11 +124,11 @@ impl TargetPipeline {
     ///
     /// Returns:
     ///     One list per output column, in ``output_names()`` order.
-    fn compute(&self, data: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    fn run_research(&self, data: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
         let rust_cols: Vec<Vec<Option<f64>>> = data.iter().map(|col| to_rust(col)).collect();
         let refs: Vec<&[Option<f64>]> = rust_cols.iter().map(|c| c.as_slice()).collect();
         self.inner
-            .compute(&refs)
+            .run_research(&refs)
             .iter()
             .map(|col| to_python(col))
             .collect()
@@ -139,7 +139,7 @@ impl TargetPipeline {
         self.inner.output_names().to_vec()
     }
 
-    /// Input columns in the order expected by ``compute()``.
+    /// Input columns in the order expected by ``run_research()``.
     fn input_names(&self) -> Vec<String> {
         self.inner.input_names().to_vec()
     }

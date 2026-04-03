@@ -22,7 +22,7 @@ def test_compute_shape():
         inputs=["t", "close"], horizon=5, outputs=["slope_5", "r2_5"]
     )
     pipeline = TargetPipeline(targets=[t], input_columns=["t", "close"])
-    result = pipeline.compute([TIME_IDX, PRICES])
+    result = pipeline.run_research([TIME_IDX, PRICES])
     assert len(result) == 2
     assert len(result[0]) == N
     assert len(result[1]) == N
@@ -35,7 +35,7 @@ def test_forward_none():
         inputs=["t", "close"], horizon=5, outputs=["slope_5", "r2_5"]
     )
     pipeline = TargetPipeline(targets=[t], input_columns=["t", "close"])
-    result = pipeline.compute([TIME_IDX, PRICES])
+    result = pipeline.run_research([TIME_IDX, PRICES])
     for col in result:
         assert math.isnan(col[-1])
         assert math.isnan(col[-2])
@@ -50,7 +50,7 @@ def test_perfect_linear_trend():
         inputs=["t", "close"], horizon=5, outputs=["slope_5", "r2_5"]
     )
     pipeline = TargetPipeline(targets=[t], input_columns=["t", "close"])
-    result = pipeline.compute([TIME_IDX, PRICES])
+    result = pipeline.run_research([TIME_IDX, PRICES])
     assert abs(result[0][0] - 0.5) < 1e-10   # slope
     assert abs(result[1][0] - 1.0) < 1e-10   # r2
 

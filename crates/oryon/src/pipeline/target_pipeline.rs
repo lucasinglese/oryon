@@ -74,11 +74,11 @@ impl TargetPipeline {
         })
     }
 
-    /// Compute all targets over the full dataset.
+    /// Run all targets over the full dataset (research mode).
     ///
     /// `data` contains one slice per entry in `input_columns`, in the same order.
     /// Returns one `Vec<Option<f64>>` per output key (see `output_names()`).
-    pub fn compute(&self, data: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
+    pub fn run_research(&self, data: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
         let mut result: Vec<Vec<Option<f64>>> = Vec::new();
 
         for target in &self.targets {
@@ -91,7 +91,7 @@ impl TargetPipeline {
                 })
                 .collect();
 
-            let outputs = target.compute(&target_columns);
+            let outputs = target.run_research(&target_columns);
             result.extend(outputs);
         }
 
@@ -185,7 +185,7 @@ mod tests {
         let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
-        let result = pipeline.compute(&[&prices]);
+        let result = pipeline.run_research(&[&prices]);
 
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].len(), prices.len());
@@ -204,7 +204,7 @@ mod tests {
             TargetPipeline::new(vec![Box::new(t1), Box::new(t2)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
-        let result = pipeline.compute(&[&prices]);
+        let result = pipeline.run_research(&[&prices]);
 
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].len(), prices.len());

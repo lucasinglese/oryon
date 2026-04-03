@@ -13,12 +13,12 @@ fn bench_future_ctc_volatility(c: &mut Criterion) {
 
     let vol_h20 = FutureCTCVolatility::new("close", 20).unwrap();
     group.bench_function("h20/1000_bars", |b| {
-        b.iter(|| vol_h20.compute(black_box(&[&p1000])))
+        b.iter(|| vol_h20.run_research(black_box(&[&p1000])))
     });
 
     let vol_h200 = FutureCTCVolatility::new("close", 200).unwrap();
     group.bench_function("h200/1000_bars", |b| {
-        b.iter(|| vol_h200.compute(black_box(&[&p1000])))
+        b.iter(|| vol_h200.run_research(black_box(&[&p1000])))
     });
 
     group.finish();
@@ -37,7 +37,7 @@ fn bench_future_linear_slope(c: &mut Criterion) {
     )
     .unwrap();
     group.bench_function("h20/1000_bars", |b| {
-        b.iter(|| fls_h20.compute(black_box(&[&x, &p])))
+        b.iter(|| fls_h20.run_research(black_box(&[&x, &p])))
     });
 
     let fls_h200 = FutureLinearSlope::new(
@@ -47,7 +47,7 @@ fn bench_future_linear_slope(c: &mut Criterion) {
     )
     .unwrap();
     group.bench_function("h200/1000_bars", |b| {
-        b.iter(|| fls_h200.compute(black_box(&[&x, &p])))
+        b.iter(|| fls_h200.run_research(black_box(&[&x, &p])))
     });
 
     group.finish();
@@ -65,7 +65,7 @@ fn bench_future_return(c: &mut Criterion) {
     )
     .unwrap();
     group.bench_function("h20/1000_bars", |b| {
-        b.iter(|| fr_h20.compute(black_box(&[&p])))
+        b.iter(|| fr_h20.run_research(black_box(&[&p])))
     });
 
     let fr_h200 = FutureReturn::new(
@@ -75,7 +75,7 @@ fn bench_future_return(c: &mut Criterion) {
     )
     .unwrap();
     group.bench_function("h200/1000_bars", |b| {
-        b.iter(|| fr_h200.compute(black_box(&[&p])))
+        b.iter(|| fr_h200.run_research(black_box(&[&p])))
     });
 
     group.finish();

@@ -193,7 +193,9 @@ Cargo.lock
 .DS_Store
 .claude
 demo.ipynb
+PERSONAL_ROADMAP.md
 
 
 # Website
 docs/site/
+docs/.cache/

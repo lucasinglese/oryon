@@ -56,7 +56,7 @@ def test_target_pipeline_single():
 def test_target_pipeline_compute_shape():
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
     pipeline = TargetPipeline(targets=[t], input_columns=["close"])
-    result = pipeline.compute([PRICES])
+    result = pipeline.run_research([PRICES])
     assert len(result) == 1
     assert len(result[0]) == len(PRICES)
 
@@ -64,7 +64,7 @@ def test_target_pipeline_compute_shape():
 def test_target_pipeline_forward_none():
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
     pipeline = TargetPipeline(targets=[t], input_columns=["close"])
-    result = pipeline.compute([PRICES])
+    result = pipeline.run_research([PRICES])
     assert math.isnan(result[0][-1])
     assert math.isnan(result[0][-2])
 
@@ -72,7 +72,7 @@ def test_target_pipeline_forward_none():
 def test_target_pipeline_valid_value():
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
     pipeline = TargetPipeline(targets=[t], input_columns=["close"])
-    result = pipeline.compute([PRICES])
+    result = pipeline.run_research([PRICES])
     # bar 0: (105 - 100) / 100 = 0.05
     assert abs(result[0][0] - 0.05) < 1e-10
 
@@ -83,7 +83,7 @@ def test_target_pipeline_multiple_targets():
     pipeline = TargetPipeline(targets=[t1, t2], input_columns=["close"])
     assert len(pipeline) == 2
     assert pipeline.forward_period() == 3
-    result = pipeline.compute([PRICES])
+    result = pipeline.run_research([PRICES])
     assert len(result) == 2
 
 

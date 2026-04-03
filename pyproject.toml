@@ -16,3 +16,16 @@ manifest-path = "crates/oryon-python/Cargo.toml"
 
 [tool.pytest.ini_options]
 testpaths = ["tests/features", "tests/targets"]
+
+
+[tool.poetry.dependencies]
+notebook = "^7.5.5"
+[dependency-groups]
+doc = [
+    "mkdocs (>=1.6.1,<2.0.0)",
+    "mkdocs-material (>=9.7.6,<10.0.0)",
+    "mkdocstrings[python]>=0.25"
+]
+dev = [
+    "ruff (>=0.15.8,<0.16.0)"
+]

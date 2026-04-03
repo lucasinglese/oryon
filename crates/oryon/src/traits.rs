@@ -49,9 +49,9 @@ pub trait Target: Send + Sync {
         0
     }
 
-    /// Compute the target over a full series.
+    /// Run the target over a full series (research mode).
     ///
     /// `columns` contains one slice per entry in `input_names()`,
     /// in the same order. Returns one `Vec<Option<f64>>` per output name.
-    fn compute(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>>;
+    fn run_research(&self, columns: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>>;
 }
