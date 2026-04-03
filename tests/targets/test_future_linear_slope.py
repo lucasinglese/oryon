@@ -1,7 +1,8 @@
 import math
+
 import pytest
-from oryon.targets import FutureLinearSlope
 from oryon import TargetPipeline
+from oryon.targets import FutureLinearSlope
 
 N = 20
 TIME_IDX = [float(i) for i in range(N)]

@@ -6,8 +6,33 @@ build-backend = "maturin"
 name = "oryon"
 version = "0.2.0"
 requires-python = ">=3.9,<3.15"
-description = "Institutional-grade feature and target engineering for quantitative research."
+description = "Production-grade feature and target engineering for quantitative research."
+readme = "README.md"
 license = { text = "MIT" }
+authors = [
+    { name = "Lucas Inglese", email = "lucas@quantreo.com" }
+]
+keywords = ["quantitative finance", "feature engineering", "machine learning", "trading", "rust"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://quantreo.github.io/oryon"
+Documentation = "https://quantreo.github.io/oryon"
+Repository = "https://github.com/Quantreo/oryon"
+Changelog = "https://github.com/Quantreo/oryon/blob/main/CHANGELOG.md"
 
 [tool.maturin]
 python-source = "python"
@@ -17,15 +42,8 @@ manifest-path = "crates/oryon-python/Cargo.toml"
 [tool.pytest.ini_options]
 testpaths = ["tests/features", "tests/targets"]
 
+[tool.ruff]
+line-length = 120
 
-[tool.poetry.dependencies]
-notebook = "^7.5.5"
-[dependency-groups]
-doc = [
-    "mkdocs (>=1.6.1,<2.0.0)",
-    "mkdocs-material (>=9.7.6,<10.0.0)",
-    "mkdocstrings[python]>=0.25"
-]
-dev = [
-    "ruff (>=0.15.8,<0.16.0)"
-]
+[tool.ruff.lint]
+select = ["E", "F", "I"]

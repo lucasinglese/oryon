@@ -6,6 +6,7 @@ lint:
 	cargo fmt --all -- --check
 	cargo clippy --all-targets -- -D warnings
 	cargo doc --no-deps
+	ruff check python/
 
 test-rust:
 	cargo test --all

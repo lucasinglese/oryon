@@ -1,4 +1,5 @@
 import math
+
 import pytest
 from oryon.features import Kurtosis
 

@@ -235,7 +235,10 @@ mod tests {
         let target = fls3();
         let x = time_idx(7);
         let p = prices();
-        assert_eq!(target.run_research(&[&x, &p]), target.run_research(&[&x, &p]));
+        assert_eq!(
+            target.run_research(&[&x, &p]),
+            target.run_research(&[&x, &p])
+        );
     }
 
     #[test]

@@ -1,7 +1,7 @@
 import math
-import pytest
-from oryon import FutureReturn, FutureCTCVolatility, TargetPipeline
 
+import pytest
+from oryon import FutureCTCVolatility, FutureReturn, TargetPipeline
 
 PRICES = [100.0, 102.0, 105.0, 103.0, 108.0, 107.0, 110.0]
 
