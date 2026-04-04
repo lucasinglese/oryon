@@ -2,70 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://oryonlib.dev/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/benchmarks/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/pipelines/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/features/returns/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/features/statistics/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/features/trend/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/features/volatility/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/targets/regressions/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/api/targets/volatility/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/contributing/architecture/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/contributing/doc-templates/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/contributing/guide/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/contributing/test-templates/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/getting-started/installation/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/getting-started/nan-convention/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/getting-started/quickstart/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
     <url>
          <loc>https://oryonlib.dev/getting-started/streaming-vs-research/</loc>
-         <lastmod>2026-04-03</lastmod>
+         <lastmod>2026-04-04</lastmod>
     </url>
 </urlset>
