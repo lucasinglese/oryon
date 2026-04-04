@@ -16,6 +16,7 @@ from .features import (
     Sma,
 )
 from .targets import FutureCTCVolatility, FutureLinearSlope, FutureReturn
+from .datasets import load_sample_bars
 
 if TYPE_CHECKING:
     from pandas import DataFrame
@@ -82,4 +83,6 @@ __all__ = [
     # helpers
     "run_features_pipeline",
     "run_targets_pipeline",
+    # datasets
+    "load_sample_bars",
 ]

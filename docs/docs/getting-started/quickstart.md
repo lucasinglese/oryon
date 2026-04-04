@@ -36,11 +36,11 @@ contexts.
 ```python
 import pandas as pd
 from oryon import FeaturePipeline, TargetPipeline
-from oryon import run_features_pipeline, run_targets_pipeline
+from oryon import run_features_pipeline, run_targets_pipeline, load_sample_bars
 from oryon.features import Ema, LogReturn, ParkinsonVolatility
 from oryon.targets import FutureReturn
 
-df = pd.read_parquet("btc_1h.parquet")  # your OHLCV data
+df = load_sample_bars()  # ~14 000 OHLCV bars, ready to use
 
 fp = FeaturePipeline(
     features=[
@@ -71,11 +71,11 @@ Features run under 1µs per update in Python at `window=200`
 (measured via pytest-benchmark on Apple M-series):
 
 | Feature | Median (w=200) |
-|---|---|
-| EMA, SimpleReturn, LogReturn | `<200ns` |
-| Parkinson, Rogers-Satchell, SMA | `<500ns` |
-| LinearSlope, Skewness, Kurtosis | `<1µs` |
-| KAMA | `<2µs` |
+|---|----------------|
+| EMA, SimpleReturn, LogReturn | `<200ns`       |
+| Parkinson, Rogers-Satchell, SMA | `<500ns`       |
+| LinearSlope, Skewness, Kurtosis | `<1µs`         |
+| KAMA | `≈1µs`          |
 
 See the full table on the [Benchmarks](../benchmarks/) page.
 

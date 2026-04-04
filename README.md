@@ -8,6 +8,7 @@
   <a href="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml"><img src="https://github.com/lucasinglese/oryon/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/lucasinglese/oryon/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <img src="https://img.shields.io/github/last-commit/lucasinglese/oryon" alt="Last commit">
+  <a href="https://oryonlib.dev/llms.txt"><img src="https://img.shields.io/badge/llms.txt-available-blue" alt="llms.txt"></a>
 </p>
 
 <p align="center">

@@ -1,0 +1,53 @@
+# Oryon
+
+Rust library for feature and target engineering in quantitative trading.
+Python API via PyO3/maturin. Version 0.2.x.
+
+## What it does
+
+Oryon builds ML datasets from financial time series (OHLCV bars).
+Two core operations:
+- Features: streaming transforms. Work live (one bar at a time) and in research (full dataset).
+- Targets: batch labels. Require future bars, research-only.
+
+Every feature is a stateful object. Same code, same logic in live trading and in backtesting.
+No separate research implementation.
+
+## Features (v0.2)
+
+- Trend: Sma, Ema, Kama
+- Returns: SimpleReturn, LogReturn
+- Statistics: Skewness, Kurtosis, LinearSlope
+- Volatility: ParkinsonVolatility, RogersSatchellVolatility
+
+## Targets (v0.2)
+
+- FutureReturn
+- FutureCTCVolatility
+- FutureLinearSlope
+
+## Pipelines
+
+- FeaturePipeline: runs a DAG of features on a dataset or one bar at a time.
+- TargetPipeline: runs a list of targets on a full dataset (research only).
+
+## Key conventions
+
+- Missing values are Option<f64> in Rust, NaN in Python. Never sentinel floats.
+- warm_up_period: number of NaN bars at the start of a feature output.
+- forward_period: number of NaN bars at the end of a target output.
+- reset() clears internal state. Call between walk-forward folds.
+
+## Datasets
+
+- load_sample_bars(): ~14 000 OHLCV bars (time, open, high, low, close, volume), embedded in the package.
+
+## Install
+
+pip install oryon
+
+## Links
+
+- Docs: https://oryonlib.dev
+- Source: https://github.com/lucasinglese/oryon
+- PyPI: https://pypi.org/project/oryon
