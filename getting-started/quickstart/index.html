@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.6</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.7</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -1391,11 +1391,11 @@ contexts.</p>
 <h2 id="build-a-dataset-in-10-lines">Build a dataset in 10 lines<a class="headerlink" href="#build-a-dataset-in-10-lines" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">TargetPipeline</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline</span><span class="p">,</span> <span class="n">run_targets_pipeline</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline</span><span class="p">,</span> <span class="n">run_targets_pipeline</span><span class="p">,</span> <span class="n">load_sample_bars</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ema</span><span class="p">,</span> <span class="n">LogReturn</span><span class="p">,</span> <span class="n">ParkinsonVolatility</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.targets</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureReturn</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;btc_1h.parquet&quot;</span><span class="p">)</span>  <span class="c1"># your OHLCV data</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">df</span> <span class="o">=</span> <span class="n">load_sample_bars</span><span class="p">()</span>  <span class="c1"># ~14 000 OHLCV bars, ready to use</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span>
@@ -1442,7 +1442,7 @@ on every new tick. No rewrite, no translation layer.</p>
 </tr>
 <tr>
 <td>KAMA</td>
-<td><code>&lt;2µs</code></td>
+<td><code>≈1µs</code></td>
 </tr>
 </tbody>
 </table>
@@ -1581,7 +1581,7 @@ on every new tick. No rewrite, no translation layer.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.6"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.7"}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
