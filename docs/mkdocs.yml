@@ -65,7 +65,6 @@ hooks:
 
 plugins:
   - search
-  - social
   - mkdocstrings:
       default_handler: python
       handlers:
