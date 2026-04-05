@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://oryonlib.dev/api/targets/regressions/">
       
       
-        <link rel="prev" href="../../features/returns/">
+        <link rel="prev" href="../../fitting/">
       
       
         <link rel="next" href="../volatility/">
@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.7</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -822,6 +822,90 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -838,10 +922,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
             
   
   
@@ -859,8 +943,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1313,7 +1397,7 @@ y_t = \frac{P_{t+h} - P_t}{P_t}
 \]</div>
 <p>Simple return from bar <code>t</code> to bar <code>t + horizon</code>. Identical formula to
 <code>SimpleReturn</code> but looks forward instead of backward.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Properties</label><label for="__tabbed_1_4">Behavior</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Properties</label><label for="__tabbed_1_4">Behavior</label><label for="__tabbed_1_5">Interpretation</label><label for="__tabbed_1_6">Example</label><label for="__tabbed_1_7">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1386,14 +1470,37 @@ y_t = \frac{P_{t+h} - P_t}{P_t}
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Forward None.</strong> The last <code>horizon</code> values are <code>None</code> because the future
 window is not complete. The first valid value appears at bar 0.</p>
+</li>
+<li>
 <p><strong>None in prices.</strong> If any price in the window is <code>None</code> or the reference
 price <code>P_t</code> is zero or negative, the output is <code>None</code> for that bar.</p>
+</li>
+<li>
 <p><strong>Stateless.</strong> <code>run_research()</code> has no internal state. Calling it twice with
 the same input always returns the same output.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Shifts the price series by <code>-horizon</code>, then applies
 <code>simple_return</code> pairwise: <code>(P_{t+h} - P_t) / P_t</code> (<code>O(N)</code> total).</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Label.</strong> The standard continuous label for return prediction. A supervised
+model trained on this output learns to predict the percentage change over
+the next <code>horizon</code> bars.</p>
+</li>
+<li>
+<p><strong>Scale.</strong> Simple return scale: a 5% move gives <code>0.05</code>. Not additive across
+horizons.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1441,7 +1548,7 @@ typically a time index or cumulative volume, <code>y</code> is the price series.
 <p class="admonition-title">Choosing x</p>
 <p>Use a simple integer index <code>[0, 1, 2, ...]</code> as <code>x</code> to get slope in price-per-bar units. If you pass timestamps, the slope becomes price-per-nanosecond and is much harder to read.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Properties</label><label for="__tabbed_2_4">Behavior</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:7"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><input id="__tabbed_2_7" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Properties</label><label for="__tabbed_2_4">Behavior</label><label for="__tabbed_2_5">Interpretation</label><label for="__tabbed_2_6">Example</label><label for="__tabbed_2_7">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1525,18 +1632,32 @@ so the last valid bar is <code>N - h</code>, leaving <code>h - 1</code> trailing
 </div>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Forward None.</strong> The last <code>horizon - 1</code> values are <code>None</code> for both outputs.</p>
+</li>
+<li>
 <p><strong>None in inputs.</strong> Any <code>None</code> within the <code>horizon</code> window produces <code>None</code>
 for that bar in both outputs.</p>
+</li>
+<li>
 <p><strong>Constant x (<code>Sxx = 0</code>).</strong> If <code>x</code> is constant over the window, the slope
 is undefined. Both slope and R² are <code>None</code>.</p>
+</li>
+<li>
 <p><strong>Constant y (<code>Syy = 0</code>).</strong> If <code>y</code> is constant over the window, the slope
 is <code>0.0</code> (the regression is exact but flat). R² is <code>None</code> (variance is zero,
 so the coefficient of determination is undefined).</p>
+</li>
+<li>
 <p><strong>Stateless.</strong> <code>run_research()</code> has no internal state. Calling it twice with
 the same input always returns the same output.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Two-pass computation per window: first pass computes means
 and validates inputs, second pass computes <code>Sxx</code>, <code>Sxy</code>, <code>Syy</code>. (<code>O(N · h)</code> total).</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1573,6 +1694,20 @@ and validates inputs, second pass computes <code>Sxx</code>, <code>Sxy</code>, <
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Label.</strong> Captures both the direction and quality of the future price move.
+A high slope with high R² means the price moved cleanly in one direction over
+the horizon. A high slope with low R² means the same net move happened noisily.</p>
+</li>
+<li>
+<p><strong>Two outputs.</strong> Slope and R² together make a richer label than return alone.
+A model can learn to distinguish clean trends from random walks without explicit
+regime labeling.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1644,7 +1779,7 @@ Bars 3 and 4 are <code>NaN</code> (<code>horizon - 1 = 2</code> trailing <code>N
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../features/returns/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Returns">
+          <a href="../../fitting/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Fitting">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1654,7 +1789,7 @@ Bars 3 and 4 are <code>NaN</code> (<code>horizon - 1 = 2</code> trailing <code>N
                 Previous
               </span>
               <div class="md-ellipsis">
-                Returns
+                Fitting
               </div>
             </div>
           </a>
@@ -1736,7 +1871,7 @@ Bars 3 and 4 are <code>NaN</code> (<code>horizon - 1 = 2</code> trailing <code>N
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.7"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>

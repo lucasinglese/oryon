@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.7</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -917,6 +917,90 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../scalers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -929,10 +1013,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
         
           
-          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
             
   
   
@@ -950,8 +1034,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1358,7 +1442,7 @@ and are safe for live streaming (<code>forward_period = 0</code>).</p>
 <p>The arithmetic mean of the last <span class="arithmatex">\(N\)</span> bars, with equal weight on every observation.
 The simplest trend smoother: it reduces noise, but it lags by construction. The
 larger the window, the smoother and the slower.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Example</label><label for="__tabbed_1_5">Source</label><label for="__tabbed_1_6">Contribute</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label><label for="__tabbed_1_7">Contribute</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1411,19 +1495,31 @@ larger the window, the smoother and the slower.</p>
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code>. The buffer must hold
 exactly <code>window</code> values before a mean can be computed.</p>
+</li>
+<li>
 <p><strong><code>NaN</code> propagation.</strong> A single <code>NaN</code> input contaminates the buffer.
 The output stays <code>NaN</code> until that value is evicted, i.e. until <code>window</code>
 consecutive valid bars have been seen.</p>
+</li>
+<li>
 <p><strong><code>window = 1</code>.</strong> No warm-up. Output equals the input at every bar.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears the buffer entirely. Call it between backtest folds
 (CPCV, walk-forward) to avoid state leaking across splits. After reset,
 the full <code>window - 1</code> warm-up applies again.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Recomputes the sum over the full buffer on every <code>update()</code> call
 (<code>O(N)</code> per bar, <code>O(N)</code> memory). For typical window sizes the overhead is negligible;
 see <a href="../../../benchmarks/">Benchmarks</a>. A running-sum approach would
 bring this to <code>O(1)</code> per bar with no change to output.</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1454,6 +1550,20 @@ bring this to <code>O(1)</code> per bar with no change to output.</p>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Signal.</strong> Price above SMA suggests an uptrend; price below suggests a downtrend.
+A crossover of two SMAs with different windows is one of the most widely traded
+trend signals.</p>
+</li>
+<li>
+<p><strong>Lag.</strong> Equal weight on every bar in the window. The larger the window, the
+smoother the output but the more it lags behind the actual price. This lag is
+structural and by design.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1559,11 +1669,7 @@ This brings the per-update cost from <code>O(N)</code> to <code>O(1)</code> with
 \]</div>
 <p>Weights recent observations more heavily than older ones using an exponential decay factor.
 It reacts faster to price changes than the SMA and maintains only a single state value, making it <code>O(1)</code> per update after seeding.</p>
-<div class="admonition warning">
-<p class="admonition-title">NaN triggers a full state reset</p>
-<p>Unlike SMA where a <code>NaN</code> contaminates the buffer for <code>window</code> bars, EMA discards its entire state on any <code>NaN</code> input and reseeds from scratch. In datasets with frequent missing values, EMA produces much longer dead zones than SMA. Consider SMA if data quality is inconsistent.</p>
-</div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Example</label><label for="__tabbed_2_5">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1616,19 +1722,36 @@ It reacts faster to price changes than the SMA and maintains only a single state
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> The first <code>window</code> bars are used to seed the EMA with their SMA.
 The first valid output appears at bar <code>window - 1</code>.</p>
-<p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input fully resets the state: <code>prev_ema</code> is cleared
-and the seeding phase restarts from scratch. This differs from SMA where <code>NaN</code>
-merely contaminates the buffer until evicted. Here, <code>window</code> consecutive valid
-bars are required after any <code>NaN</code> before output resumes.</p>
+</li>
+<li>
+<p><strong><code>NaN</code> propagation.</strong> Behavior depends on the phase:</p>
+<ul>
+<li><em>During seeding</em>: a <code>NaN</code> slides through the rolling seed buffer naturally.
+  The seed is computed as soon as <code>window</code> consecutive valid values are available.
+  No bars are wasted.</li>
+<li><em>During recursive phase</em>: a <code>NaN</code> fully resets <code>prev_ema</code> and clears the
+  buffer. The seeding phase restarts from scratch, requiring <code>window</code>
+  consecutive valid bars before output resumes.</li>
+</ul>
+</li>
+<li>
 <p><strong><code>window = 1</code>.</strong> Alpha equals <code>1.0</code>. Output equals the input at every bar, no warm-up.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears <code>prev_ema</code> and the seed buffer entirely. Call it between
 backtest folds (CPCV, walk-forward) to avoid state leaking across splits. After
 reset, the full <code>window - 1</code> warm-up applies again.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> After seeding, only <code>prev_ema</code> is maintained in memory (<code>O(1)</code>
 per update, <code>O(1)</code> memory in the recursive phase). The seed buffer is cleared once
 seeding completes.</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1650,7 +1773,11 @@ seeding completes.</p>
 <td>EMA value</td>
 </tr>
 <tr>
-<td>Any <code>NaN</code> input</td>
+<td><code>NaN</code> during seeding</td>
+<td><code>NaN</code>, slides through buffer (no reset)</td>
+</tr>
+<tr>
+<td><code>NaN</code> during recursive phase</td>
 <td><code>NaN</code> + full state reset</td>
 </tr>
 <tr>
@@ -1663,6 +1790,19 @@ seeding completes.</p>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Signal.</strong> Exponentially weighted smoother with recency bias. Recent bars have
+more influence than older ones, making EMA faster at tracking regime changes than
+equal-weight smoothers.</p>
+</li>
+<li>
+<p><strong>Production.</strong> Recursive update with a single state variable: <code>O(1)</code> time and
+memory after seeding. The cheapest smoother to run in a live pipeline.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1755,8 +1895,9 @@ seeding completes.</p>
 </tr>
 </tbody>
 </table>
-<p>At bar 4, <code>NaN</code> triggers a full state reset. The EMA reseeds from scratch rather
-than waiting for the <code>NaN</code> to be evicted from a buffer.</p>
+<p>At bar 4, <code>NaN</code> arrives in the recursive phase and triggers a full state reset.
+The EMA reseeds from scratch. If the <code>NaN</code> had arrived during the seeding phase
+instead, it would have slid through the buffer naturally without resetting.</p>
 </div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/ema.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/ema.rs</code></a></p>
@@ -1782,7 +1923,7 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.</p>
 <p class="admonition-title">Default parameters</p>
 <p><code>fast=2, slow=30</code> match Kaufman's original 1998 paper and are well market-tested. Only change them if you have a specific calibration reason.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:5"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Example</label><label for="__tabbed_3_5">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:6"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label><label for="__tabbed_3_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1847,16 +1988,26 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.</p>
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> Requires <code>window + 1</code> bars to compute the first ER. The first valid
 output appears at bar <code>window</code> (one bar later than SMA/EMA with the same <code>window</code>).</p>
+</li>
+<li>
 <p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> anywhere in the current window resets <code>prev_kama</code>
 and returns <code>None</code>. Once the window no longer contains the <code>NaN</code>, KAMA re-seeds
 automatically using <code>prices[window - 1]</code> as the starting value.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears <code>prev_kama</code> and the price buffer. Call it between backtest
 folds (CPCV, walk-forward) to avoid state leaking across splits. After reset,
 the full <code>window</code> warm-up applies again.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Iterates over the full buffer on every <code>update()</code> to compute
 direction, volatility, and ER (<code>O(N)</code> per bar, <code>O(N)</code> memory).</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1883,6 +2034,25 @@ direction, volatility, and ER (<code>O(N)</code> per bar, <code>O(N)</code> memo
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Signal.</strong> Adaptive smoother. Smoothing speed adjusts automatically based on
+the Efficiency Ratio (ER): fast during directional moves (ER near 1), slow
+during noisy/ranging markets (ER near 0). This built-in regime detection
+reduces false signals compared to fixed-speed smoothers.</p>
+</li>
+<li>
+<p><strong>The ER as a standalone feature.</strong> The Efficiency Ratio that KAMA uses internally
+is independently useful. It quantifies how directional the market is over a window,
+a direct measure of signal-to-noise ratio in price movement.</p>
+</li>
+<li>
+<p><strong>References.</strong> Kaufman, P.J. (1995), <em>Smarter Trading</em>. Expanded in <em>Trading
+Systems and Methods</em> (6th ed., 2020).</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1928,7 +2098,7 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
 <p class="admonition-title">Choosing x</p>
 <p>Pass a simple integer index <code>[0, 1, 2, ...]</code> as <code>x</code> to get slope in price-per-bar units. If you pass timestamps, the slope becomes price-per-nanosecond and is much harder to read.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:6"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><input id="__tabbed_4_6" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Behavior</label><label for="__tabbed_4_4">Example</label><label for="__tabbed_4_5">Source</label><label for="__tabbed_4_6">Contribute</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:7"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><input id="__tabbed_4_6" name="__tabbed_4" type="radio" /><input id="__tabbed_4_7" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Behavior</label><label for="__tabbed_4_4">Interpretation</label><label for="__tabbed_4_5">Example</label><label for="__tabbed_4_6">Source</label><label for="__tabbed_4_7">Contribute</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1986,19 +2156,31 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code> for both outputs. A full
 window of <code>x</code> and <code>y</code> values is required before regression can be computed.</p>
+</li>
+<li>
 <p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> in either <code>x</code> or <code>y</code> contaminates both outputs.
 They stay <code>NaN</code> until that bar is evicted, i.e. until <code>window</code> consecutive valid
 pairs have been seen.</p>
+</li>
+<li>
 <p><strong>Degenerate cases.</strong> If <code>x</code> is constant over the window (<code>S_xx = 0</code>), both outputs
 are <code>NaN</code>. If <code>y</code> is constant (<code>S_yy = 0</code>), slope is valid (returns <code>0.0</code>) but R²
 is <code>NaN</code>.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears both the <code>x</code> and <code>y</code> buffers entirely. Call it between
 backtest folds (CPCV, walk-forward) to avoid state leaking across splits. After
 reset, the full <code>window - 1</code> warm-up applies again.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Two passes over the window on every <code>update()</code>: one to compute
 means, one for <span class="arithmatex">\(S_{xx}\)</span>, <span class="arithmatex">\(S_{xy}\)</span>, <span class="arithmatex">\(S_{yy}\)</span> (<code>O(N)</code> per bar, <code>O(N)</code> memory).</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -2040,6 +2222,15 @@ means, one for <span class="arithmatex">\(S_{xx}\)</span>, <span class="arithmat
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li><strong>Signal.</strong> Slope and R² together give a richer picture than any moving average.
+Slope captures trend direction and magnitude. R² captures trend quality - how
+linear the movement is over the window. What counts as a "high" R² depends
+entirely on the inputs: time-vs-price regressions can reach 0.9, while
+volume-vs-price rarely exceeds 0.2.</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -2208,7 +2399,7 @@ online algorithm.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.7"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>

@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.7</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -895,6 +895,90 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../scalers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -907,10 +991,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
         
           
-          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
             
   
   
@@ -928,8 +1012,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1314,7 +1398,7 @@ rolling window. All have <code>forward_period = 0</code> and are safe for live s
 <p>Fisher-Pearson corrected skewness over a rolling window, identical to <code>pandas .skew()</code>.
 Positive values indicate a long right tail (rare large gains), negative values a long left
 tail (rare large losses). Useful for detecting regime shifts and tail risk.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Example</label><label for="__tabbed_1_5">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1367,16 +1451,28 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.</p>
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code>. A full buffer of <code>window</code>
 values is required.</p>
+</li>
+<li>
 <p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input contaminates the buffer. Output stays <code>NaN</code>
 until the <code>NaN</code> is evicted after <code>window</code> consecutive valid bars.</p>
+</li>
+<li>
 <p><strong>All values equal.</strong> If all <code>window</code> values are identical, the standard deviation
 is zero and the output is <code>NaN</code>.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears the buffer entirely. Call it between backtest folds
 (CPCV, walk-forward) to avoid state leaking across splits.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Recomputes over the full buffer on every <code>update()</code> (<code>O(N)</code> per bar).
 Uses sample standard deviation (N-1 denominator) for the standardization step.</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1407,6 +1503,20 @@ Uses sample standard deviation (N-1 denominator) for the standardization step.</
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Signal.</strong> Positive: right tail dominates - extreme positive deviations are
+farther from the mean than extreme negative ones. Negative: left tail dominates.
+Zero: the distribution is symmetric over the window.</p>
+</li>
+<li>
+<p><strong>Rolling.</strong> Changes in sign or magnitude capture distributional shifts in the
+series. A transition from positive to negative skewness signals that the left tail
+is growing relative to the right.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1443,7 +1553,7 @@ evenly spaced values always give zero skewness). Results match <code>pandas .ske
 <p>Fisher excess kurtosis over a rolling window, identical to <code>pandas .kurt()</code>.
 Values above 0 indicate fat tails (leptokurtic). A normal distribution gives 0.
 Uniformly spaced returns give negative kurtosis (platykurtic).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Example</label><label for="__tabbed_2_5">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1496,16 +1606,28 @@ Uniformly spaced returns give negative kurtosis (platykurtic).</p>
 </table>
 </div>
 <div class="tabbed-block">
+<ul>
+<li>
 <p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code>. A full buffer of <code>window</code>
 values is required.</p>
+</li>
+<li>
 <p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input contaminates the buffer. Output stays <code>NaN</code>
 until the <code>NaN</code> is evicted after <code>window</code> consecutive valid bars.</p>
+</li>
+<li>
 <p><strong>All values equal.</strong> If all <code>window</code> values are identical, the standard deviation
 is zero and the output is <code>NaN</code>.</p>
+</li>
+<li>
 <p><strong><code>reset()</code>.</strong> Clears the buffer entirely. Call it between backtest folds
 (CPCV, walk-forward) to avoid state leaking across splits.</p>
+</li>
+<li>
 <p><strong>Implementation.</strong> Recomputes over the full buffer on every <code>update()</code> (<code>O(N)</code> per bar).
 Uses sample standard deviation (N-1 denominator) for the standardization step.</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1536,6 +1658,19 @@ Uses sample standard deviation (N-1 denominator) for the standardization step.</
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Signal.</strong> Excess kurtosis &gt; 0: more probability mass in the tails than a
+normal distribution (leptokurtic). = 0: consistent with normal. &lt; 0: lighter
+tails than normal (platykurtic).</p>
+</li>
+<li>
+<p><strong>Rolling.</strong> Spikes in excess kurtosis indicate concentration of extreme
+observations within the window, the tail behavior is changing.</p>
+</li>
+</ul>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1690,7 +1825,7 @@ Uses sample standard deviation (N-1 denominator) for the standardization step.</
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.7"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>

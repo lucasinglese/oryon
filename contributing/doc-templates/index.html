@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.7</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -817,6 +817,90 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../api/scalers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fitting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -829,10 +913,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
         
           
-          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
             
   
   
@@ -850,8 +934,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1281,7 +1365,7 @@
 <p>The source code is the single source of truth. Before writing any statement about behavior, parameters, formulas, or output, read the Rust implementation in <code>crates/oryon/src/</code>.</p>
 <p>You can paste the Rust source and the template below into an LLM to generate the entry.</p>
 <hr />
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Feature</label><label for="__tabbed_1_2">Target</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Feature</label><label for="__tabbed_1_2">Target</label><label for="__tabbed_1_3">Scaler</label><label for="__tabbed_1_4">Operator</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Append to the matching category page in <code>docs/docs/api/features/&lt;category&gt;.md</code>.</p>
@@ -1400,6 +1484,103 @@
 <a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a>=== &quot;Source&quot;
 <a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>
 <a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>    [<span class="nt">:octicons-mark-github-16: `crates/oryon/src/targets/your_target.rs`</span>](<span class="na">https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/your_target.rs</span>)
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Append to <code>docs/docs/api/scalers.md</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gu">## Full Name</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&lt;a href=&quot;../../getting-started/streaming-vs-research/#streaming-live-trading&quot; class=&quot;oryon-badge oryon-badge--streaming&quot;&gt;Streaming&lt;/a&gt; &lt;a href=&quot;../../benchmarks/&quot; class=&quot;oryon-badge oryon-badge--perf&quot;&gt;&amp;lt;1µs/update&lt;/a&gt; &lt;a href=&quot;../../getting-started/streaming-vs-research/#research-full-dataset&quot; class=&quot;oryon-badge oryon-badge--research&quot;&gt;Research&lt;/a&gt;
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>$$
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>\text{formula}
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>$$
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>One or two sentences describing what the scaler computes and when outputs are <span class="sb">`None`</span>.
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>=== &quot;Parameters&quot;
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    | Name | Type | Constraint | Description |
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    |---|---|---|---|
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    | <span class="sb">`inputs`</span> | <span class="sb">`list[str]`</span> | len = 1 | Input column, e.g. <span class="sb">`[&quot;close&quot;]`</span> |
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    | <span class="sb">`window`</span> | <span class="sb">`int`</span> | &gt;= 2 | Rolling window size (omit if stateless) |
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    | <span class="sb">`outputs`</span> | <span class="sb">`list[str]`</span> | len &gt;= 1 | Output column, e.g. <span class="sb">`[&quot;close_scaled&quot;]`</span> |
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>=== &quot;Output&quot;
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    | Column | When valid | Description |
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    |---|---|---|
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    | <span class="sb">`outputs[0]`</span> | <span class="sb">`t &gt;= warm_up_period`</span>, no <span class="sb">`NaN`</span> in buffer | What the value represents |
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>=== &quot;Behavior&quot;
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**Warm-up.**</span> The first <span class="sb">`warm_up_period`</span> bars return <span class="sb">`NaN`</span>.
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**`NaN` propagation.**</span> Describe how <span class="sb">`None`</span> inputs propagate.
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**`reset()`.**</span> Describe what is cleared (or &quot;No-op&quot; if stateless).
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>=== &quot;Example&quot;
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="sb">    ```python</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">oryon.scalers</span><span class="w"> </span><span class="kn">import</span> <span class="n">YourScaler</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>    <span class="n">s</span> <span class="o">=</span> <span class="n">YourScaler</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_scaled&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">100.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">101.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">102.0</span><span class="p">])</span>  <span class="c1"># -&gt; [expected value]</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="sb">    ```</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>=== &quot;Source&quot;
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>    [<span class="nt">:octicons-mark-github-16: `crates/oryon/src/scalers/your_scaler.rs`</span>](<span class="na">https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/scalers/your_scaler.rs</span>)
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Append to <code>docs/docs/api/operators.md</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gu">## Full Name</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&lt;a href=&quot;../../getting-started/streaming-vs-research/#streaming-live-trading&quot; class=&quot;oryon-badge oryon-badge--streaming&quot;&gt;Streaming&lt;/a&gt; &lt;a href=&quot;../../benchmarks/&quot; class=&quot;oryon-badge oryon-badge--perf&quot;&gt;&amp;lt;1µs/update&lt;/a&gt; &lt;a href=&quot;../../getting-started/streaming-vs-research/#research-full-dataset&quot; class=&quot;oryon-badge oryon-badge--research&quot;&gt;Research&lt;/a&gt;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>$$
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>\text{formula}
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>$$
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>One sentence describing what the operator computes and when output is <span class="sb">`None`</span>.
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>=== &quot;Parameters&quot;
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    | Name | Type | Constraint | Description |
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    |---|---|---|---|
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    | <span class="sb">`inputs`</span> | <span class="sb">`list[str]`</span> | len = N | Input columns |
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    | <span class="sb">`outputs`</span> | <span class="sb">`list[str]`</span> | len &gt;= 1 | Output column |
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>=== &quot;Output&quot;
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    | Column | When valid | Description |
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>    |---|---|---|
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    | <span class="sb">`outputs[0]`</span> | All inputs not <span class="sb">`NaN`</span> | What the value represents |
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>=== &quot;Behavior&quot;
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**No warm-up.**</span> Output is valid from the first bar.
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**`NaN` propagation.**</span> Describe which <span class="sb">`None`</span> inputs trigger <span class="sb">`None`</span> output.
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="gs">**`reset()`.**</span> No-op. There is no state to clear.
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>=== &quot;Example&quot;
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="sb">    ```python</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">oryon.operators</span><span class="w"> </span><span class="kn">import</span> <span class="n">YourOperator</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>    <span class="n">op</span> <span class="o">=</span> <span class="n">YourOperator</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>    <span class="n">op</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># -&gt; [expected value]</span>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="sb">    ```</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>=== &quot;Source&quot;
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>    [<span class="nt">:octicons-mark-github-16: `crates/oryon/src/operators/your_operator.rs`</span>](<span class="na">https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/operators/your_operator.rs</span>)
 </code></pre></div>
 </div>
 </div>
@@ -1541,7 +1722,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.7"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
