@@ -100,6 +100,7 @@ macro_rules! feature_contract_tests {
         fn test_contract_reset() {
             if $warm_up > 0 {
                 let mut f = $feature;
+                #[allow(clippy::reversed_empty_ranges)]
                 for _ in 0..$warm_up {
                     f.update($state);
                 }
@@ -112,6 +113,7 @@ macro_rules! feature_contract_tests {
         fn test_contract_fresh() {
             if $warm_up > 0 {
                 let mut f = $feature;
+                #[allow(clippy::reversed_empty_ranges)]
                 for _ in 0..$warm_up {
                     f.update($state);
                 }
