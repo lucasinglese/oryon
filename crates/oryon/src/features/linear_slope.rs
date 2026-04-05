@@ -1,5 +1,5 @@
 use crate::error::OryonError;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -59,7 +59,7 @@ impl LinearSlope {
     }
 }
 
-impl Feature for LinearSlope {
+impl StreamingTransform for LinearSlope {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -72,7 +72,7 @@ impl Feature for LinearSlope {
         self.window - 1
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             LinearSlope::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

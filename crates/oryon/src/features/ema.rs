@@ -1,6 +1,6 @@
 use crate::error::OryonError;
 use crate::ops::average;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -58,7 +58,7 @@ impl Ema {
     }
 }
 
-impl Feature for Ema {
+impl StreamingTransform for Ema {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -71,7 +71,7 @@ impl Feature for Ema {
         self.window - 1
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             Ema::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

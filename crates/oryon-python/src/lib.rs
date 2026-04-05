@@ -1,15 +1,19 @@
 mod features;
+mod operators;
 mod pipelines;
+mod scalers;
 mod targets;
 
 use features::{
     Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, RogersSatchellVolatility,
     SimpleReturn, Skewness, Sma,
 };
+use operators::{NegLog, Subtract};
+use scalers::{fit_standard_scaler, FixedZScore, RollingZScore};
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
 use oryon::targets::FutureLinearSlope as RustFutureLinearSlope;
 use oryon::targets::FutureReturn as RustFutureReturn;
-use oryon::traits::{Feature, Target};
+use oryon::traits::{StreamingTransform, Target};
 use pipelines::{FeaturePipeline, TargetPipeline};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -30,10 +34,10 @@ pub(crate) fn to_python(values: &[Option<f64>]) -> Vec<f64> {
 
 // --- dispatch helpers --------------------------------------------------------
 
-/// Extract a `Box<dyn Feature>` from a Python feature object.
+/// Extract a `Box<dyn StreamingTransform>` from a Python feature object.
 /// Uses `fresh()` so the pipeline always starts with a clean state.
 /// Add a branch here for each new feature type.
-pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Feature>> {
+pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn StreamingTransform>> {
     if let Ok(f) = obj.extract::<PyRef<Sma>>() {
         return Ok(f.inner.fresh());
     }
@@ -62,6 +66,20 @@ pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Featur
         return Ok(f.inner.fresh());
     }
     if let Ok(f) = obj.extract::<PyRef<RogersSatchellVolatility>>() {
+        return Ok(f.inner.fresh());
+    }
+    // operators
+    if let Ok(f) = obj.extract::<PyRef<Subtract>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<NegLog>>() {
+        return Ok(f.inner.fresh());
+    }
+    // scalers
+    if let Ok(f) = obj.extract::<PyRef<RollingZScore>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<FixedZScore>>() {
         return Ok(f.inner.fresh());
     }
     Err(PyValueError::new_err(format!(
@@ -112,6 +130,13 @@ fn _oryon(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<LinearSlope>()?;
     m.add_class::<ParkinsonVolatility>()?;
     m.add_class::<RogersSatchellVolatility>()?;
+    // operators
+    m.add_class::<Subtract>()?;
+    m.add_class::<NegLog>()?;
+    // scalers
+    m.add_class::<RollingZScore>()?;
+    m.add_class::<FixedZScore>()?;
+    m.add_function(wrap_pyfunction!(fit_standard_scaler, m)?)?;
     // targets
     m.add_class::<FutureReturn>()?;
     m.add_class::<FutureCTCVolatility>()?;

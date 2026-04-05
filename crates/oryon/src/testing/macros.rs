@@ -51,7 +51,7 @@ macro_rules! target_contract_tests {
     };
 }
 
-/// Generates the standard contract tests for any [`Feature`] implementation.
+/// Generates the standard contract tests for any [`StreamingTransform`] implementation.
 ///
 /// Checks:
 /// - `input_names()` matches expected value

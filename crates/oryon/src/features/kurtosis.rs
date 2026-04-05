@@ -1,6 +1,6 @@
 use crate::error::OryonError;
 use crate::ops::kurtosis;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -52,7 +52,7 @@ impl Kurtosis {
     }
 }
 
-impl Feature for Kurtosis {
+impl StreamingTransform for Kurtosis {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -65,7 +65,7 @@ impl Feature for Kurtosis {
         self.window - 1
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             Kurtosis::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

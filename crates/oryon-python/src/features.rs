@@ -8,7 +8,7 @@ use oryon::features::RogersSatchellVolatility as RustRogersSatchellVolatility;
 use oryon::features::SimpleReturn as RustSimpleReturn;
 use oryon::features::Skewness as RustSkewness;
 use oryon::features::Sma as RustSma;
-use oryon::Feature;
+use oryon::StreamingTransform;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 

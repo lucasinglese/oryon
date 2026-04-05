@@ -39,17 +39,25 @@ name is auto-generated as `{input}_future_ctc_vol_{horizon}`.
 
 === "Behavior"
 
-    **Forward NaN.** The last `horizon` values are `NaN` because the future window
+    - **Forward NaN.** The last `horizon` values are `NaN` because the future window
     is not complete. The first valid value appears at bar 0.
 
-    **`NaN` in prices.** If any price in the forward window is `NaN` or non-positive,
+    - **`NaN` in prices.** If any price in the forward window is `NaN` or non-positive,
     the corresponding log return is `NaN`, and the standard deviation returns `NaN`.
 
-    **Stateless.** `run_research()` has no internal state. Calling it twice with the
+    - **Stateless.** `run_research()` has no internal state. Calling it twice with the
     same input always returns the same output.
 
-    **Implementation.** Computes log returns via a pairwise pass, then applies a
+    - **Implementation.** Computes log returns via a pairwise pass, then applies a
     rolling sample standard deviation with `shift` to align results to bar `t`.
+
+=== "Interpretation"
+
+    - **Label.** The standard label for realized volatility forecasting. Captures
+    how much the price moved over the next `horizon` bars, regardless of direction.
+
+    - **Units.** Log-return scale, not annualized. To annualize, multiply by
+    `sqrt(periods_per_year)`.
 
 === "Example"
 

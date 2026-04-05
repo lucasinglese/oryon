@@ -1,7 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 
 use crate::error::OryonError;
-use crate::traits::Feature;
+use crate::traits::StreamingTransform;
 
 /// Resolves execution order of features as a DAG.
 ///
@@ -13,7 +13,7 @@ use crate::traits::Feature;
 pub struct FeatureDag {
     /// Features grouped by execution level.
     /// Within a level, features are independent and could run in parallel.
-    execution_order: Vec<Vec<Box<dyn Feature>>>,
+    execution_order: Vec<Vec<Box<dyn StreamingTransform>>>,
     /// All output column names produced by the DAG, in execution order.
     output_names: Vec<String>,
     /// Columns that must come from the input data (not produced by any feature).
@@ -28,7 +28,7 @@ impl FeatureDag {
     /// are placed in the same execution level.
     ///
     /// Returns `Err` if output keys are duplicated or if a cyclic dependency is detected.
-    pub fn new(features: Vec<Box<dyn Feature>>) -> Result<Self, OryonError> {
+    pub fn new(features: Vec<Box<dyn StreamingTransform>>) -> Result<Self, OryonError> {
         let n = features.len();
 
         // 1. Build output_key → feature index mapping
@@ -102,11 +102,11 @@ impl FeatureDag {
 
         // 4. Build output_names in execution order + move features into levels
         let mut output_names: Vec<String> = Vec::new();
-        let mut slots: Vec<Option<Box<dyn Feature>>> = features.into_iter().map(Some).collect();
+        let mut slots: Vec<Option<Box<dyn StreamingTransform>>> = features.into_iter().map(Some).collect();
 
-        let mut execution_order: Vec<Vec<Box<dyn Feature>>> = Vec::new();
+        let mut execution_order: Vec<Vec<Box<dyn StreamingTransform>>> = Vec::new();
         for level in &level_indices {
-            let mut level_features: Vec<Box<dyn Feature>> = Vec::new();
+            let mut level_features: Vec<Box<dyn StreamingTransform>> = Vec::new();
             for &idx in level {
                 let feature = slots[idx].take().unwrap();
                 for name in feature.output_names() {
@@ -125,12 +125,12 @@ impl FeatureDag {
     }
 
     /// Features grouped by execution level.
-    pub fn execution_order(&self) -> &[Vec<Box<dyn Feature>>] {
+    pub fn execution_order(&self) -> &[Vec<Box<dyn StreamingTransform>>] {
         &self.execution_order
     }
 
     /// Mutable access to execution levels (needed by pipeline for calling update).
-    pub fn execution_order_mut(&mut self) -> &mut [Vec<Box<dyn Feature>>] {
+    pub fn execution_order_mut(&mut self) -> &mut [Vec<Box<dyn StreamingTransform>>] {
         &mut self.execution_order
     }
 
@@ -179,14 +179,14 @@ mod tests {
     use super::*;
     use crate::testing::{AddOneStub, WarmUpOneStub};
 
-    fn a(inputs: &[&str], outputs: &[&str]) -> Box<dyn Feature> {
+    fn a(inputs: &[&str], outputs: &[&str]) -> Box<dyn StreamingTransform> {
         Box::new(AddOneStub::new(
             inputs.iter().map(|s| s.to_string()).collect(),
             outputs.iter().map(|s| s.to_string()).collect(),
         ))
     }
 
-    fn w(inputs: &[&str], outputs: &[&str]) -> Box<dyn Feature> {
+    fn w(inputs: &[&str], outputs: &[&str]) -> Box<dyn StreamingTransform> {
         Box::new(WarmUpOneStub::new(
             inputs.iter().map(|s| s.to_string()).collect(),
             outputs.iter().map(|s| s.to_string()).collect(),

@@ -133,6 +133,109 @@ You can paste the Rust source and the template below into an LLM to generate the
         [:octicons-mark-github-16: `crates/oryon/src/targets/your_target.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/your_target.rs)
     ````
 
+=== "Scaler"
+
+    Append to `docs/docs/api/scalers.md`.
+
+    ````markdown
+    ## Full Name
+
+    <a href="../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+    $$
+    \text{formula}
+    $$
+
+    One or two sentences describing what the scaler computes and when outputs are `None`.
+
+    === "Parameters"
+
+        | Name | Type | Constraint | Description |
+        |---|---|---|---|
+        | `inputs` | `list[str]` | len = 1 | Input column, e.g. `["close"]` |
+        | `window` | `int` | >= 2 | Rolling window size (omit if stateless) |
+        | `outputs` | `list[str]` | len >= 1 | Output column, e.g. `["close_scaled"]` |
+
+    === "Output"
+
+        | Column | When valid | Description |
+        |---|---|---|
+        | `outputs[0]` | `t >= warm_up_period`, no `NaN` in buffer | What the value represents |
+
+    === "Behavior"
+
+        **Warm-up.** The first `warm_up_period` bars return `NaN`.
+
+        **`NaN` propagation.** Describe how `None` inputs propagate.
+
+        **`reset()`.** Describe what is cleared (or "No-op" if stateless).
+
+    === "Example"
+
+        ```python
+        from oryon.scalers import YourScaler
+
+        s = YourScaler(["close"], window=3, outputs=["close_scaled"])
+        s.update([100.0])  # -> [NaN]
+        s.update([101.0])  # -> [NaN]
+        s.update([102.0])  # -> [expected value]
+        ```
+
+    === "Source"
+
+        [:octicons-mark-github-16: `crates/oryon/src/scalers/your_scaler.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/scalers/your_scaler.rs)
+    ````
+
+=== "Operator"
+
+    Append to `docs/docs/api/operators.md`.
+
+    ````markdown
+    ## Full Name
+
+    <a href="../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+    $$
+    \text{formula}
+    $$
+
+    One sentence describing what the operator computes and when output is `None`.
+
+    === "Parameters"
+
+        | Name | Type | Constraint | Description |
+        |---|---|---|---|
+        | `inputs` | `list[str]` | len = N | Input columns |
+        | `outputs` | `list[str]` | len >= 1 | Output column |
+
+    === "Output"
+
+        | Column | When valid | Description |
+        |---|---|---|
+        | `outputs[0]` | All inputs not `NaN` | What the value represents |
+
+    === "Behavior"
+
+        **No warm-up.** Output is valid from the first bar.
+
+        **`NaN` propagation.** Describe which `None` inputs trigger `None` output.
+
+        **`reset()`.** No-op. There is no state to clear.
+
+    === "Example"
+
+        ```python
+        from oryon.operators import YourOperator
+
+        op = YourOperator(["a", "b"], outputs=["result"])
+        op.update([10.0, 3.0])  # -> [expected value]
+        ```
+
+    === "Source"
+
+        [:octicons-mark-github-16: `crates/oryon/src/operators/your_operator.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/operators/your_operator.rs)
+    ````
+
 ---
 
 ## Checklist before submitting

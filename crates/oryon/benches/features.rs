@@ -3,7 +3,7 @@ use oryon::features::{
     Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, RogersSatchellVolatility,
     SimpleReturn, Skewness, Sma,
 };
-use oryon::traits::Feature;
+use oryon::traits::StreamingTransform;
 
 fn bench_log_return(c: &mut Criterion) {
     let mut group = c.benchmark_group("log_return_update");

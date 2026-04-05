@@ -32,20 +32,20 @@ reference price is zero or negative.
 
 === "Behavior"
 
-    **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
+    - **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
     must be in the buffer before a return can be computed.
 
-    **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
+    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
     until the `NaN` value is evicted after `window` consecutive valid bars.
 
-    **Zero or negative reference.** If `P_{t-window} <= 0`, the output is `NaN`
+    - **Zero or negative reference.** If `P_{t-window} <= 0`, the output is `NaN`
     for that bar only (the buffer is not affected).
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits. After reset,
     the full `window` warm-up applies again.
 
-    **Implementation.** Maintains a rolling buffer of size `window + 1`.
+    - **Implementation.** Maintains a rolling buffer of size `window + 1`.
     Computes `(buffer[window] - buffer[0]) / buffer[0]` on each valid bar (`O(1)` per update).
 
     | Situation | Output |
@@ -55,6 +55,14 @@ reference price is zero or negative.
     | `P_{t-n} <= 0` | `NaN` |
     | Any `NaN` in the buffer | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** The actual percentage change over the lookback. Used when the
+    percentage scale matters directly: portfolio attribution, position sizing, PnL.
+
+    - **Not additive.** Compounding multiple periods requires multiplication, not
+    addition. `r(A→C) ≠ r(A→B) + r(B→C)`.
 
 === "Example"
 
@@ -98,9 +106,6 @@ Natural log of the price ratio from bar `t - window` to bar `t`. Log returns are
 additive over time and better suited for statistical modeling than simple returns.
 Returns `None` if either price is zero or negative.
 
-!!! tip "SimpleReturn vs LogReturn"
-    Prefer log returns for ML feature engineering: `ln(P_t / P_0)` equals the sum of all bar-to-bar log returns, which makes them composable and better approximated by a normal distribution for small moves. Use simple returns when you need the original percentage change scale.
-
 === "Parameters"
 
     | Name | Type | Constraint | Description |
@@ -117,23 +122,21 @@ Returns `None` if either price is zero or negative.
 
 === "Behavior"
 
-    **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
+    - **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
     must be in the buffer before a return can be computed.
 
-    **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
+    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
     until the `NaN` value is evicted after `window` consecutive valid bars.
 
-    **Zero or negative prices.** If either `P_{t-window} <= 0` or `P_t <= 0`, the
-    output is `NaN` for that bar only (the buffer is not affected). This differs from
-    `SimpleReturn` which only guards the reference price.
+    - **Zero or negative prices.** If either `P_{t-window} <= 0` or `P_t <= 0`, the
+    output is `NaN` for that bar only (the buffer is not affected).
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits. After reset,
     the full `window` warm-up applies again.
 
-    **Implementation.** Same rolling buffer as `SimpleReturn` (`O(1)` per update,
-    `O(N)` memory). The key difference: `ln(P_t / P_{t-n})` is antisymmetric -
-    a move up followed by the same move down gives exactly zero in total.
+    - **Implementation.** Rolling buffer of size `window + 1`. `O(1)` per update,
+    `O(N)` memory.
 
     | Situation | Output |
     |---|---|
@@ -142,6 +145,15 @@ Returns `None` if either price is zero or negative.
     | Either price `<= 0` | `NaN` |
     | Any `NaN` in the buffer | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Additive.** `ln(P_t / P_0) = Σ ln(P_{t_i} / P_{t_{i-1}})` exactly. The sum
+    of bar-to-bar log returns equals the log return over the full period. Simple
+    returns do not have this property.
+
+    - **Statistical modeling.** For small moves, log returns are better approximated
+    by a normal distribution and are closer to stationary than price levels.
 
 === "Example"
 

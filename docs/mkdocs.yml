@@ -49,6 +49,9 @@ nav:
           - Volatility: api/features/volatility.md
           - Statistics: api/features/statistics.md
           - Returns: api/features/returns.md
+      - Scalers: api/scalers.md
+      - Operators: api/operators.md
+      - Fitting: api/fitting.md
       - Targets:
           - Regressions: api/targets/regressions.md
           - Volatility: api/targets/volatility.md

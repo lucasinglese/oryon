@@ -6,7 +6,7 @@ import pandas as pd
 def load_sample_bars() -> pd.DataFrame:
     """Load the built-in OHLCV sample dataset.
 
-    Returns a DataFrame with columns: time, open, high, low, close, volume.
+    Returns a DataFrame with columns: open, high, low, close, volume.
     The time column is parsed as datetime and set as the index.
     Contains ~14 000 bars suitable for testing features and targets.
     """

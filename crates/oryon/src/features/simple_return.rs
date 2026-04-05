@@ -1,6 +1,6 @@
 use crate::error::OryonError;
 use crate::ops::simple_return;
-use crate::{Feature, Output};
+use crate::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -52,7 +52,7 @@ impl SimpleReturn {
     }
 }
 
-impl Feature for SimpleReturn {
+impl StreamingTransform for SimpleReturn {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -65,7 +65,7 @@ impl Feature for SimpleReturn {
         self.window
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             SimpleReturn::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

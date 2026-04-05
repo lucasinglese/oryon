@@ -1,6 +1,6 @@
 use crate::error::OryonError;
 use crate::ops::{average, rogers_satchell_sq};
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -61,7 +61,7 @@ impl RogersSatchellVolatility {
     }
 }
 
-impl Feature for RogersSatchellVolatility {
+impl StreamingTransform for RogersSatchellVolatility {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -74,7 +74,7 @@ impl Feature for RogersSatchellVolatility {
         self.window - 1
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             RogersSatchellVolatility::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

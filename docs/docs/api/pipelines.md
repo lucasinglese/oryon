@@ -31,7 +31,7 @@ is scheduled after A. Features with no shared dependency run at the same level.
 
     | Parameter | Type | Description |
     |---|---|---|
-    | `features` | `list[Feature]` | Feature instances in any order |
+    | `features` | `list[StreamingTransform]` | Features, scalers, and operators in any order |
     | `input_columns` | `list[str]` | Raw input columns provided at each `update()` call, in order |
 
     Raises `ValueError` if output keys are duplicated, a cyclic dependency is

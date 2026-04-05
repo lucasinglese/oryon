@@ -6,11 +6,15 @@ Python API via PyO3/maturin. Version 0.2.x.
 ## What it does
 
 Oryon builds ML datasets from financial time series (OHLCV bars).
-Two core operations:
-- Features: streaming transforms. Work live (one bar at a time) and in research (full dataset).
-- Targets: batch labels. Require future bars, research-only.
+Three types of streaming transforms (all implement StreamingTransform, run live + research):
+- Features: stateful indicators with internal rolling state.
+- Scalers: normalization transforms, rolling or pre-fitted.
+- Operators: stateless math combining or transforming feature outputs.
 
-Every feature is a stateful object. Same code, same logic in live trading and in backtesting.
+Plus batch labels for research:
+- Targets: forward-looking labels. Require future bars, research-only.
+
+Every StreamingTransform runs identically in live trading and backtesting.
 No separate research implementation.
 
 ## Features (v0.2)
@@ -20,6 +24,21 @@ No separate research implementation.
 - Statistics: Skewness, Kurtosis, LinearSlope
 - Volatility: ParkinsonVolatility, RogersSatchellVolatility
 
+## Scalers (v0.2)
+
+- RollingZScore: rolling (x - mean) / std over a sliding window. Live-compatible.
+- FixedZScore: (x - mean) / std with pre-fitted parameters. Use with fit_standard_scaler.
+
+## Operators (v0.2)
+
+- Subtract: A - B. Returns None if either input is None.
+- NegLog: -ln(x). Returns None if x <= 0 or None.
+
+## Fitting (v0.2)
+
+- fit_standard_scaler(data): computes mean and std from a column. Returns (mean, std).
+  Skips None values. Use the result to construct FixedZScore.
+
 ## Targets (v0.2)
 
 - FutureReturn
@@ -28,15 +47,18 @@ No separate research implementation.
 
 ## Pipelines
 
-- FeaturePipeline: runs a DAG of features on a dataset or one bar at a time.
+- FeaturePipeline: runs a DAG of StreamingTransforms (features, scalers, operators) on a
+  dataset or one bar at a time. Dependencies resolved automatically by output/input names.
 - TargetPipeline: runs a list of targets on a full dataset (research only).
 
 ## Key conventions
 
 - Missing values are Option<f64> in Rust, NaN in Python. Never sentinel floats.
-- warm_up_period: number of NaN bars at the start of a feature output.
+- warm_up_period: number of NaN bars at the start of a StreamingTransform output.
 - forward_period: number of NaN bars at the end of a target output.
 - reset() clears internal state. Call between walk-forward folds.
+- Operators have warm_up_period = 0 and no internal state.
+- FixedZScore has warm_up_period = 0 (params are pre-fitted).
 
 ## Datasets
 

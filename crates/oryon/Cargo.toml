@@ -1,6 +1,6 @@
 [package]
 name = "oryon"
-version = "0.2.7"
+version = "0.2.8"
 edition = "2021"
 description = "Institutional-grade feature and target engineering for quantitative research."
 license = "MIT"
@@ -23,6 +23,14 @@ harness = false
 
 [[bench]]
 name = "targets"
+harness = false
+
+[[bench]]
+name = "operators"
+harness = false
+
+[[bench]]
+name = "scalers"
 harness = false
 
 [[bench]]

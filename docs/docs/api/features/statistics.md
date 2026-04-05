@@ -33,19 +33,19 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
     values is required.
 
-    **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
+    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
     until the `NaN` is evicted after `window` consecutive valid bars.
 
-    **All values equal.** If all `window` values are identical, the standard deviation
+    - **All values equal.** If all `window` values are identical, the standard deviation
     is zero and the output is `NaN`.
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits.
 
-    **Implementation.** Recomputes over the full buffer on every `update()` (`O(N)` per bar).
+    - **Implementation.** Recomputes over the full buffer on every `update()` (`O(N)` per bar).
     Uses sample standard deviation (N-1 denominator) for the standardization step.
 
     | Situation | Output |
@@ -55,6 +55,16 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.
     | Any `NaN` in the buffer | `NaN` |
     | All values in the buffer are equal | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Positive: right tail dominates - extreme positive deviations are
+    farther from the mean than extreme negative ones. Negative: left tail dominates.
+    Zero: the distribution is symmetric over the window.
+
+    - **Rolling.** Changes in sign or magnitude capture distributional shifts in the
+    series. A transition from positive to negative skewness signals that the left tail
+    is growing relative to the right.
 
 === "Example"
 
@@ -114,19 +124,19 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
     values is required.
 
-    **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
+    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
     until the `NaN` is evicted after `window` consecutive valid bars.
 
-    **All values equal.** If all `window` values are identical, the standard deviation
+    - **All values equal.** If all `window` values are identical, the standard deviation
     is zero and the output is `NaN`.
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits.
 
-    **Implementation.** Recomputes over the full buffer on every `update()` (`O(N)` per bar).
+    - **Implementation.** Recomputes over the full buffer on every `update()` (`O(N)` per bar).
     Uses sample standard deviation (N-1 denominator) for the standardization step.
 
     | Situation | Output |
@@ -136,6 +146,15 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
     | Any `NaN` in the buffer | `NaN` |
     | All values in the buffer are equal | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Excess kurtosis > 0: more probability mass in the tails than a
+    normal distribution (leptokurtic). = 0: consistent with normal. < 0: lighter
+    tails than normal (platykurtic).
+
+    - **Rolling.** Spikes in excess kurtosis indicate concentration of extreme
+    observations within the window, the tail behavior is changing.
 
 === "Example"
 

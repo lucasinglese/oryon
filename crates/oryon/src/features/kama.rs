@@ -1,5 +1,5 @@
 use crate::error::OryonError;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -90,7 +90,7 @@ impl Kama {
     }
 }
 
-impl Feature for Kama {
+impl StreamingTransform for Kama {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -103,7 +103,7 @@ impl Feature for Kama {
         self.window
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(Kama {
             inputs: self.inputs.clone(),
             window: self.window,

@@ -1,13 +1,15 @@
 use smallvec::SmallVec;
 
-/// Return type for Feature::update(). Stack-allocated for up to 4 outputs.
+/// Return type for StreamingTransform::update(). Stack-allocated for up to 4 outputs.
 pub type Output = SmallVec<[Option<f64>; 4]>;
 
 /// A streaming transformation that processes data one bar at a time.
 ///
-/// Features are backward-looking: they only use past and present data.
-/// They work in both live trading and research contexts.
-pub trait Feature: Send + Sync {
+/// Backward-looking only: uses past and present data.
+/// Works in both live trading and research contexts.
+///
+/// Implemented by features, scalers, and operators.
+pub trait StreamingTransform: Send + Sync {
     /// Input name(s) this feature reads from the bar state.
     fn input_names(&self) -> Vec<String>;
 
@@ -20,7 +22,7 @@ pub trait Feature: Send + Sync {
     }
 
     /// Create a new instance with the same config but clean state.
-    fn fresh(&self) -> Box<dyn Feature>;
+    fn fresh(&self) -> Box<dyn StreamingTransform>;
 
     /// Reset internal state to initial values (e.g. between CPCV splits).
     fn reset(&mut self);

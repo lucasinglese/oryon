@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::error::OryonError;
 use crate::pipeline::dag::FeatureDag;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 
 /// Orchestrates features in DAG-resolved order.
 ///
@@ -26,7 +26,7 @@ impl FeaturePipeline {
     /// Returns `Err` if there are duplicate output keys, cyclic dependencies,
     /// or required input columns missing from `input_columns`.
     pub fn new(
-        features: Vec<Box<dyn Feature>>,
+        features: Vec<Box<dyn StreamingTransform>>,
         input_columns: Vec<String>,
     ) -> Result<Self, OryonError> {
         let dag = FeatureDag::new(features)?;

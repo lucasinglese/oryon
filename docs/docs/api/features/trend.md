@@ -33,20 +33,20 @@ larger the window, the smoother and the slower.
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`. The buffer must hold
+    - **Warm-up.** The first `window - 1` bars return `NaN`. The buffer must hold
     exactly `window` values before a mean can be computed.
 
-    **`NaN` propagation.** A single `NaN` input contaminates the buffer.
+    - **`NaN` propagation.** A single `NaN` input contaminates the buffer.
     The output stays `NaN` until that value is evicted, i.e. until `window`
     consecutive valid bars have been seen.
 
-    **`window = 1`.** No warm-up. Output equals the input at every bar.
+    - **`window = 1`.** No warm-up. Output equals the input at every bar.
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits. After reset,
     the full `window - 1` warm-up applies again.
 
-    **Implementation.** Recomputes the sum over the full buffer on every `update()` call
+    - **Implementation.** Recomputes the sum over the full buffer on every `update()` call
     (`O(N)` per bar, `O(N)` memory). For typical window sizes the overhead is negligible;
     see [Benchmarks](../../../benchmarks/). A running-sum approach would
     bring this to `O(1)` per bar with no change to output.
@@ -58,6 +58,16 @@ larger the window, the smoother and the slower.
     | Any value in the buffer is `NaN` | `NaN` |
     | `window = 1` | Input value (immediate, no warm-up) |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Price above SMA suggests an uptrend; price below suggests a downtrend.
+    A crossover of two SMAs with different windows is one of the most widely traded
+    trend signals.
+
+    - **Lag.** Equal weight on every bar in the window. The larger the window, the
+    smoother the output but the more it lags behind the actual price. This lag is
+    structural and by design.
 
 === "Example"
 
@@ -123,9 +133,6 @@ $$
 Weights recent observations more heavily than older ones using an exponential decay factor.
 It reacts faster to price changes than the SMA and maintains only a single state value, making it `O(1)` per update after seeding.
 
-!!! warning "NaN triggers a full state reset"
-    Unlike SMA where a `NaN` contaminates the buffer for `window` bars, EMA discards its entire state on any `NaN` input and reseeds from scratch. In datasets with frequent missing values, EMA produces much longer dead zones than SMA. Consider SMA if data quality is inconsistent.
-
 === "Parameters"
 
     | Name | Type | Constraint | Description |
@@ -142,21 +149,20 @@ It reacts faster to price changes than the SMA and maintains only a single state
 
 === "Behavior"
 
-    **Warm-up.** The first `window` bars are used to seed the EMA with their SMA.
+    - **Warm-up.** The first `window` bars are used to seed the EMA with their SMA.
     The first valid output appears at bar `window - 1`.
 
-    **`NaN` propagation.** A `NaN` input fully resets the state: `prev_ema` is cleared
-    and the seeding phase restarts from scratch. This differs from SMA where `NaN`
-    merely contaminates the buffer until evicted. Here, `window` consecutive valid
-    bars are required after any `NaN` before output resumes.
+    - **`NaN` propagation.** A `NaN` input fully resets the state: `prev_ema` is cleared
+    and the seeding phase restarts from scratch. `window` consecutive valid bars are
+    required after any `NaN` before output resumes.
 
-    **`window = 1`.** Alpha equals `1.0`. Output equals the input at every bar, no warm-up.
+    - **`window = 1`.** Alpha equals `1.0`. Output equals the input at every bar, no warm-up.
 
-    **`reset()`.** Clears `prev_ema` and the seed buffer entirely. Call it between
+    - **`reset()`.** Clears `prev_ema` and the seed buffer entirely. Call it between
     backtest folds (CPCV, walk-forward) to avoid state leaking across splits. After
     reset, the full `window - 1` warm-up applies again.
 
-    **Implementation.** After seeding, only `prev_ema` is maintained in memory (`O(1)`
+    - **Implementation.** After seeding, only `prev_ema` is maintained in memory (`O(1)`
     per update, `O(1)` memory in the recursive phase). The seed buffer is cleared once
     seeding completes.
 
@@ -168,6 +174,15 @@ It reacts faster to price changes than the SMA and maintains only a single state
     | Any `NaN` input | `NaN` + full state reset |
     | `window = 1` | Input value (immediate, no warm-up) |
     | After `reset()` | `NaN` until reseeded |
+
+=== "Interpretation"
+
+    - **Signal.** Exponentially weighted smoother with recency bias. Recent bars have
+    more influence than older ones, making EMA faster at tracking regime changes than
+    equal-weight smoothers.
+
+    - **Production.** Recursive update with a single state variable: `O(1)` time and
+    memory after seeding. The cheapest smoother to run in a live pipeline.
 
 === "Example"
 
@@ -256,18 +271,18 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.
 
 === "Behavior"
 
-    **Warm-up.** Requires `window + 1` bars to compute the first ER. The first valid
+    - **Warm-up.** Requires `window + 1` bars to compute the first ER. The first valid
     output appears at bar `window` (one bar later than SMA/EMA with the same `window`).
 
-    **`NaN` propagation.** A `NaN` anywhere in the current window resets `prev_kama`
+    - **`NaN` propagation.** A `NaN` anywhere in the current window resets `prev_kama`
     and returns `None`. Once the window no longer contains the `NaN`, KAMA re-seeds
     automatically using `prices[window - 1]` as the starting value.
 
-    **`reset()`.** Clears `prev_kama` and the price buffer. Call it between backtest
+    - **`reset()`.** Clears `prev_kama` and the price buffer. Call it between backtest
     folds (CPCV, walk-forward) to avoid state leaking across splits. After reset,
     the full `window` warm-up applies again.
 
-    **Implementation.** Iterates over the full buffer on every `update()` to compute
+    - **Implementation.** Iterates over the full buffer on every `update()` to compute
     direction, volatility, and ER (`O(N)` per bar, `O(N)` memory).
 
     | Situation | Output |
@@ -276,6 +291,20 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.
     | Buffer full, all values valid | KAMA value |
     | Any `NaN` in the window | `NaN` + `prev_kama` reset |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Adaptive smoother. Smoothing speed adjusts automatically based on
+    the Efficiency Ratio (ER): fast during directional moves (ER near 1), slow
+    during noisy/ranging markets (ER near 0). This built-in regime detection
+    reduces false signals compared to fixed-speed smoothers.
+
+    - **The ER as a standalone feature.** The Efficiency Ratio that KAMA uses internally
+    is independently useful. It quantifies how directional the market is over a window,
+    a direct measure of signal-to-noise ratio in price movement.
+
+    - **References.** Kaufman, P.J. (1995), *Smarter Trading*. Expanded in *Trading
+    Systems and Methods* (6th ed., 2020).
 
 === "Example"
 
@@ -345,22 +374,22 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN` for both outputs. A full
+    - **Warm-up.** The first `window - 1` bars return `NaN` for both outputs. A full
     window of `x` and `y` values is required before regression can be computed.
 
-    **`NaN` propagation.** A `NaN` in either `x` or `y` contaminates both outputs.
+    - **`NaN` propagation.** A `NaN` in either `x` or `y` contaminates both outputs.
     They stay `NaN` until that bar is evicted, i.e. until `window` consecutive valid
     pairs have been seen.
 
-    **Degenerate cases.** If `x` is constant over the window (`S_xx = 0`), both outputs
+    - **Degenerate cases.** If `x` is constant over the window (`S_xx = 0`), both outputs
     are `NaN`. If `y` is constant (`S_yy = 0`), slope is valid (returns `0.0`) but R²
     is `NaN`.
 
-    **`reset()`.** Clears both the `x` and `y` buffers entirely. Call it between
+    - **`reset()`.** Clears both the `x` and `y` buffers entirely. Call it between
     backtest folds (CPCV, walk-forward) to avoid state leaking across splits. After
     reset, the full `window - 1` warm-up applies again.
 
-    **Implementation.** Two passes over the window on every `update()`: one to compute
+    - **Implementation.** Two passes over the window on every `update()`: one to compute
     means, one for $S_{xx}$, $S_{xy}$, $S_{yy}$ (`O(N)` per bar, `O(N)` memory).
 
     | Situation | Slope | R² |
@@ -371,6 +400,14 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
     | `x` constant (`S_xx = 0`) | `NaN` | `NaN` |
     | `y` constant (`S_yy = 0`) | `0.0` | `NaN` |
     | After `reset()` | `NaN` | `NaN` |
+
+=== "Interpretation"
+
+    - **Signal.** Slope and R² together give a richer picture than any moving average.
+    Slope captures trend direction and magnitude. R² captures trend quality - how
+    linear the movement is over the window. What counts as a "high" R² depends
+    entirely on the inputs: time-vs-price regressions can reach 0.9, while
+    volume-vs-price rarely exceeds 0.2.
 
 === "Example"
 

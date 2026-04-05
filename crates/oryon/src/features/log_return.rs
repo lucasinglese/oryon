@@ -1,6 +1,6 @@
 use crate::error::OryonError;
 use crate::ops::log_return;
-use crate::{Feature, Output};
+use crate::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
@@ -55,7 +55,7 @@ impl LogReturn {
     }
 }
 
-impl Feature for LogReturn {
+impl StreamingTransform for LogReturn {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -68,7 +68,7 @@ impl Feature for LogReturn {
         self.window
     }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
             LogReturn::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),

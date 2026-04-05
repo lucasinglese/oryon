@@ -1,4 +1,4 @@
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 
 /// Stub feature that adds 1.0 to its input. No warm-up.
@@ -13,7 +13,7 @@ impl AddOneStub {
     }
 }
 
-impl Feature for AddOneStub {
+impl StreamingTransform for AddOneStub {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -24,7 +24,7 @@ impl Feature for AddOneStub {
         smallvec![state[0].map(|x| x + 1.0)]
     }
     fn reset(&mut self) {}
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(AddOneStub::new(self.inputs.clone(), self.outputs.clone()))
     }
 }
@@ -46,7 +46,7 @@ impl WarmUpOneStub {
     }
 }
 
-impl Feature for WarmUpOneStub {
+impl StreamingTransform for WarmUpOneStub {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -67,7 +67,7 @@ impl Feature for WarmUpOneStub {
     fn reset(&mut self) {
         self.seen_one = false;
     }
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(WarmUpOneStub::new(
             self.inputs.clone(),
             self.outputs.clone(),

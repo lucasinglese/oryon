@@ -36,18 +36,18 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer is required.
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer is required.
 
-    **`NaN` propagation.** A `NaN` in either high or low contaminates the per-bar term
+    - **`NaN` propagation.** A `NaN` in either high or low contaminates the per-bar term
     stored in the buffer. Output stays `NaN` until that bar is evicted.
 
-    **Invalid bar.** If `high < low` or either value is zero or negative, the per-bar
+    - **Invalid bar.** If `high < low` or either value is zero or negative, the per-bar
     term is stored as `NaN`, propagating as described above.
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
     (CPCV, walk-forward) to avoid state leaking across splits.
 
-    **Implementation.** Stores the per-bar `ln(H/L)^2` term in the buffer, then
+    - **Implementation.** Stores the per-bar `ln(H/L)^2` term in the buffer, then
     computes `sqrt(mean(buffer) / (4 * ln(2)))` (`O(N)` per bar).
 
     | Situation | Output |
@@ -56,6 +56,20 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
     | Buffer full, all bars valid | Parkinson volatility |
     | Any `NaN` or invalid bar (`high < low`) in buffer | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Higher values indicate greater intra-bar price dispersion. The output
+    is in the same units as log-returns (not annualized). To annualize, multiply by
+    `sqrt(periods_per_year)`.
+
+    - **Efficiency.** Uses the intra-bar H/L range, which contains more information
+    about realized volatility than the close-to-close move alone. Parkinson (1980)
+    showed this estimator has roughly 4-5x lower variance than close-to-close for
+    the same window length.
+
+    - **References.** Parkinson, M. (1980), "The Extreme Value Method for Estimating
+    the Variance of the Rate of Return," *Journal of Business*, 53(1), 61-65.
 
 === "Example"
 
@@ -119,18 +133,18 @@ must be positive for a valid output.
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`.
+    - **Warm-up.** The first `window - 1` bars return `NaN`.
 
-    **`NaN` propagation.** A `NaN` in any of the four OHLC values, or an invalid bar
+    - **`NaN` propagation.** A `NaN` in any of the four OHLC values, or an invalid bar
     (`high < low` or any value zero/negative), stores `NaN` in the buffer. Output
     stays `NaN` until that bar is evicted.
 
-    **Non-positive mean.** If the rolling mean of per-bar terms is zero or negative
+    - **Non-positive mean.** If the rolling mean of per-bar terms is zero or negative
     (unusual price action with many reversals), the output is `NaN`.
 
-    **`reset()`.** Clears the buffer entirely. Call it between backtest folds.
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds.
 
-    **Implementation.** Stores the per-bar RS term in the buffer, then computes
+    - **Implementation.** Stores the per-bar RS term in the buffer, then computes
     `sqrt(mean(buffer))` if positive (`O(N)` per bar).
 
     | Situation | Output |
@@ -140,6 +154,17 @@ must be positive for a valid output.
     | Any `NaN` or invalid bar in buffer | `NaN` |
     | Rolling mean of terms <= 0 | `NaN` |
     | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Same units as Parkinson: log-return scale, not annualized. Multiply
+    by `sqrt(periods_per_year)` to annualize.
+
+    - **Drift correction.** By incorporating open and close alongside the H/L range,
+    the per-bar term removes the upward bias Parkinson has in trending markets.
+
+    - **References.** Rogers, L.C.G. & Satchell, S.E. (1994), "Estimating Variance
+    From High, Low, Opening and Closing Prices," *Annals of Applied Probability*.
 
 === "Example"
 

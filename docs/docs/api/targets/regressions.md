@@ -39,17 +39,26 @@ Simple return from bar `t` to bar `t + horizon`. Identical formula to
 
 === "Behavior"
 
-    **Forward None.** The last `horizon` values are `None` because the future
+    - **Forward None.** The last `horizon` values are `None` because the future
     window is not complete. The first valid value appears at bar 0.
 
-    **None in prices.** If any price in the window is `None` or the reference
+    - **None in prices.** If any price in the window is `None` or the reference
     price `P_t` is zero or negative, the output is `None` for that bar.
 
-    **Stateless.** `run_research()` has no internal state. Calling it twice with
+    - **Stateless.** `run_research()` has no internal state. Calling it twice with
     the same input always returns the same output.
 
-    **Implementation.** Shifts the price series by `-horizon`, then applies
+    - **Implementation.** Shifts the price series by `-horizon`, then applies
     `simple_return` pairwise: `(P_{t+h} - P_t) / P_t` (`O(N)` total).
+
+=== "Interpretation"
+
+    - **Label.** The standard continuous label for return prediction. A supervised
+    model trained on this output learns to predict the percentage change over
+    the next `horizon` bars.
+
+    - **Scale.** Simple return scale: a 5% move gives `0.05`. Not additive across
+    horizons.
 
 === "Example"
 
@@ -133,22 +142,22 @@ typically a time index or cumulative volume, `y` is the price series.
 
 === "Behavior"
 
-    **Forward None.** The last `horizon - 1` values are `None` for both outputs.
+    - **Forward None.** The last `horizon - 1` values are `None` for both outputs.
 
-    **None in inputs.** Any `None` within the `horizon` window produces `None`
+    - **None in inputs.** Any `None` within the `horizon` window produces `None`
     for that bar in both outputs.
 
-    **Constant x (`Sxx = 0`).** If `x` is constant over the window, the slope
+    - **Constant x (`Sxx = 0`).** If `x` is constant over the window, the slope
     is undefined. Both slope and R² are `None`.
 
-    **Constant y (`Syy = 0`).** If `y` is constant over the window, the slope
+    - **Constant y (`Syy = 0`).** If `y` is constant over the window, the slope
     is `0.0` (the regression is exact but flat). R² is `None` (variance is zero,
     so the coefficient of determination is undefined).
 
-    **Stateless.** `run_research()` has no internal state. Calling it twice with
+    - **Stateless.** `run_research()` has no internal state. Calling it twice with
     the same input always returns the same output.
 
-    **Implementation.** Two-pass computation per window: first pass computes means
+    - **Implementation.** Two-pass computation per window: first pass computes means
     and validates inputs, second pass computes `Sxx`, `Sxy`, `Syy`. (`O(N · h)` total).
 
     | Situation | Slope | R² |
@@ -158,6 +167,16 @@ typically a time index or cumulative volume, `y` is the price series.
     | `Sxx = 0` (constant x) | `None` | `None` |
     | `Syy = 0` (constant y) | `0.0` | `None` |
     | Normal case | `Sxy / Sxx` | `Sxy² / (Sxx · Syy)` |
+
+=== "Interpretation"
+
+    - **Label.** Captures both the direction and quality of the future price move.
+    A high slope with high R² means the price moved cleanly in one direction over
+    the horizon. A high slope with low R² means the same net move happened noisily.
+
+    - **Two outputs.** Slope and R² together make a richer label than return alone.
+    A model can learn to distinguish clean trends from random walks without explicit
+    regime labeling.
 
 === "Example"
 

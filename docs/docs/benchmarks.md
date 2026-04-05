@@ -26,6 +26,8 @@ run them on your own hardware.
 
 *Measured per `update()` call, buffer full, valid input. This is the cost paid on every live bar.*
 
+### Features
+
 | Feature | w=20 | w=200 |
 |---|---|---|
 | `Ema` | 4 ns | 4 ns |
@@ -50,6 +52,28 @@ full buffer on each update (`O(N)`) and scale with window size.
     process a dataset is simply `update latency × number of bars`.
 
     Example: `Sma` at w=200 (144 ns/update) over 1 000 000 bars ≈ **144 ms**.
+
+### Scalers
+
+| Scaler | w=20 | w=200  |
+|---|---|--------|
+| `FixedZScore` | 1 ns | 1 ns   |
+| `RollingZScore` | 35 ns | 496 ns |
+
+`FixedZScore` is stateless: fixed parameters mean no buffer to maintain (`O(1)`, constant).
+`RollingZScore` recomputes mean and std over the full buffer on each update (`O(N)`) and
+scales with window size, matching `Sma` in character.
+
+### Operators
+
+*Operators are stateless. No window parameter. a single latency is reported.*
+
+| Operator | Latency |
+|---|---|
+| `Subtract` | 2 ns |
+| `NegLog` | 4 ns |
+
+All operators are `O(1)`: they perform a fixed arithmetic operation with no buffer or state.
 
 ---
 
@@ -83,9 +107,11 @@ At w=200, the most expensive feature in Python is therefore `Kama` at roughly
 ## Reproduce
 
 ```bash
-cargo bench --bench features -- --output-format bencher
-cargo bench --bench targets  -- --output-format bencher
-cargo bench --bench ops      -- --output-format bencher
+cargo bench --bench features  -- --output-format bencher
+cargo bench --bench scalers   -- --output-format bencher
+cargo bench --bench operators -- --output-format bencher
+cargo bench --bench targets   -- --output-format bencher
+cargo bench --bench ops       -- --output-format bencher
 ```
 
 Or with `make`:
