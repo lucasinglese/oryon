@@ -152,9 +152,13 @@ It reacts faster to price changes than the SMA and maintains only a single state
     - **Warm-up.** The first `window` bars are used to seed the EMA with their SMA.
     The first valid output appears at bar `window - 1`.
 
-    - **`NaN` propagation.** A `NaN` input fully resets the state: `prev_ema` is cleared
-    and the seeding phase restarts from scratch. `window` consecutive valid bars are
-    required after any `NaN` before output resumes.
+    - **`NaN` propagation.** Behavior depends on the phase:
+        - *During seeding*: a `NaN` slides through the rolling seed buffer naturally.
+          The seed is computed as soon as `window` consecutive valid values are available.
+          No bars are wasted.
+        - *During recursive phase*: a `NaN` fully resets `prev_ema` and clears the
+          buffer. The seeding phase restarts from scratch, requiring `window`
+          consecutive valid bars before output resumes.
 
     - **`window = 1`.** Alpha equals `1.0`. Output equals the input at every bar, no warm-up.
 
@@ -171,7 +175,8 @@ It reacts faster to price changes than the SMA and maintains only a single state
     | `t < window - 1` (seeding) | `NaN` |
     | `t == window - 1` (seed bar) | SMA of first `window` bars |
     | Recursive phase, valid input | EMA value |
-    | Any `NaN` input | `NaN` + full state reset |
+    | `NaN` during seeding | `NaN`, slides through buffer (no reset) |
+    | `NaN` during recursive phase | `NaN` + full state reset |
     | `window = 1` | Input value (immediate, no warm-up) |
     | After `reset()` | `NaN` until reseeded |
 
@@ -221,8 +226,9 @@ It reacts faster to price changes than the SMA and maintains only a single state
     | 6 | 105.0 | Seeding | buffer=`[104, 105]` | `NaN` |
     | 7 | 106.0 | Seeding | seed = SMA(`[104, 105, 106]`) = 105.0 | **105.0** |
 
-    At bar 4, `NaN` triggers a full state reset. The EMA reseeds from scratch rather
-    than waiting for the `NaN` to be evicted from a buffer.
+    At bar 4, `NaN` arrives in the recursive phase and triggers a full state reset.
+    The EMA reseeds from scratch. If the `NaN` had arrived during the seeding phase
+    instead, it would have slid through the buffer naturally without resetting.
 
 === "Source"
 

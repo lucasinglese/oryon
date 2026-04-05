@@ -41,8 +41,11 @@ impl FeaturePipeline {
     ///
     /// Returns:
     ///     Flat list of output values matching ``output_names()``.
-    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
-        to_python(&self.inner.update(&to_rust(&values)))
+    fn update(&mut self, values: Vec<f64>) -> PyResult<Vec<f64>> {
+        self.inner
+            .update(&to_rust(&values))
+            .map(|v| to_python(&v))
+            .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 
     /// Process a full dataset bar by bar (research mode).
@@ -52,13 +55,12 @@ impl FeaturePipeline {
     ///
     /// Returns:
     ///     List of bars, each bar is a list of output values.
-    fn run_research(&mut self, data: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    fn run_research(&mut self, data: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
         let rust_data: Vec<Vec<Option<f64>>> = data.iter().map(|row| to_rust(row)).collect();
         self.inner
             .run_research(&rust_data)
-            .iter()
-            .map(|row| to_python(row))
-            .collect()
+            .map(|rows| rows.iter().map(|row| to_python(row)).collect())
+            .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 
     /// Reset all features (e.g. between CPCV splits).
@@ -124,14 +126,13 @@ impl TargetPipeline {
     ///
     /// Returns:
     ///     One list per output column, in ``output_names()`` order.
-    fn run_research(&self, data: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    fn run_research(&self, data: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
         let rust_cols: Vec<Vec<Option<f64>>> = data.iter().map(|col| to_rust(col)).collect();
         let refs: Vec<&[Option<f64>]> = rust_cols.iter().map(|c| c.as_slice()).collect();
         self.inner
             .run_research(&refs)
-            .iter()
-            .map(|col| to_python(col))
-            .collect()
+            .map(|cols| cols.iter().map(|col| to_python(col)).collect())
+            .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 
     /// Output column names, in order.

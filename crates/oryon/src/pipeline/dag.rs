@@ -194,6 +194,16 @@ mod tests {
     }
 
     #[test]
+    fn test_empty_features() {
+        let dag = FeatureDag::new(vec![]).unwrap();
+        assert_eq!(dag.len(), 0);
+        assert!(dag.is_empty());
+        assert!(dag.output_names().is_empty());
+        assert!(dag.input_names().is_empty());
+        assert_eq!(dag.warm_up_period(), 0);
+    }
+
+    #[test]
     fn test_single_feature() {
         let dag = FeatureDag::new(vec![a(&["close"], &["out"])]).unwrap();
 

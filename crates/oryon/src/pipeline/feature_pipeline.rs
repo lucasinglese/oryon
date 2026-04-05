@@ -29,6 +29,21 @@ impl FeaturePipeline {
         features: Vec<Box<dyn StreamingTransform>>,
         input_columns: Vec<String>,
     ) -> Result<Self, OryonError> {
+        if features.is_empty() {
+            return Err(OryonError::InvalidConfig {
+                msg: "features must not be empty".into(),
+            });
+        }
+
+        let mut seen = std::collections::HashSet::new();
+        for col in &input_columns {
+            if !seen.insert(col) {
+                return Err(OryonError::InvalidConfig {
+                    msg: format!("duplicate input column: \"{col}\""),
+                });
+            }
+        }
+
         let dag = FeatureDag::new(features)?;
 
         let input_names = dag.input_names();
@@ -61,7 +76,18 @@ impl FeaturePipeline {
     ///
     /// Returns a flat `Vec<Option<f64>>` with all feature outputs,
     /// in the same order as `output_names()`.
-    pub fn update(&mut self, state: &[Option<f64>]) -> Vec<Option<f64>> {
+    pub fn update(&mut self, state: &[Option<f64>]) -> Result<Vec<Option<f64>>, OryonError> {
+        if state.len() != self.input_columns.len() {
+            return Err(OryonError::InvalidInput {
+                msg: format!(
+                    "expected {} input value(s) {:?}, got {}",
+                    self.input_columns.len(),
+                    self.input_columns,
+                    state.len()
+                ),
+            });
+        }
+
         let mut all_values: HashMap<String, Option<f64>> = HashMap::new();
 
         for (col_name, &col_idx) in &self.input_col_mapping {
@@ -91,20 +117,20 @@ impl FeaturePipeline {
             }
         }
 
-        result
+        Ok(result)
     }
 
     /// Process a full dataset bar by bar (research mode).
     /// Each inner slice is one bar's raw input values.
     ///
     /// Returns a matrix: one row per bar, columns matching `output_names()`.
-    pub fn run_research(&mut self, data: &[Vec<Option<f64>>]) -> Vec<Vec<Option<f64>>> {
+    pub fn run_research(&mut self, data: &[Vec<Option<f64>>]) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
         self.dag.reset();
         let mut results: Vec<Vec<Option<f64>>> = Vec::with_capacity(data.len());
         for bar in data {
-            results.push(self.update(bar));
+            results.push(self.update(bar)?);
         }
-        results
+        Ok(results)
     }
 
     /// Reset all features.
@@ -144,12 +170,18 @@ mod tests {
     use crate::testing::{AddOneStub, WarmUpOneStub};
 
     #[test]
+    fn test_empty_pipeline_error() {
+        let err = FeaturePipeline::new(vec![], vec![]).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("empty")));
+    }
+
+    #[test]
     fn test_update_single() {
         let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
         let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0)]);
-        assert_eq!(pipeline.update(&[Some(5.0)]), vec![Some(6.0)]);
+        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![Some(2.0)]);
+        assert_eq!(pipeline.update(&[Some(5.0)]).unwrap(), vec![Some(6.0)]);
     }
 
     #[test]
@@ -159,8 +191,8 @@ mod tests {
         let mut pipeline =
             FeaturePipeline::new(vec![Box::new(a), Box::new(b)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0), Some(2.0)]);
-        assert_eq!(pipeline.update(&[Some(4.0)]), vec![Some(5.0), Some(5.0)]);
+        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![Some(2.0), Some(2.0)]);
+        assert_eq!(pipeline.update(&[Some(4.0)]).unwrap(), vec![Some(5.0), Some(5.0)]);
     }
 
     #[test]
@@ -170,8 +202,8 @@ mod tests {
         let mut pipeline =
             FeaturePipeline::new(vec![Box::new(b), Box::new(a)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]), vec![Some(2.0), Some(3.0)]);
-        assert_eq!(pipeline.update(&[Some(10.0)]), vec![Some(11.0), Some(12.0)]);
+        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![Some(2.0), Some(3.0)]);
+        assert_eq!(pipeline.update(&[Some(10.0)]).unwrap(), vec![Some(11.0), Some(12.0)]);
     }
 
     #[test]
@@ -181,7 +213,7 @@ mod tests {
 
         let data = vec![vec![Some(1.0)], vec![Some(2.0)], vec![Some(3.0)]];
 
-        let results = pipeline.run_research(&data);
+        let results = pipeline.run_research(&data).unwrap();
         assert_eq!(results.len(), 3);
         assert_eq!(results[0], vec![Some(2.0)]);
         assert_eq!(results[1], vec![Some(3.0)]);
@@ -193,12 +225,12 @@ mod tests {
         let f = WarmUpOneStub::new(vec!["close".into()], vec!["out".into()]);
         let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]), vec![None]);
-        assert_eq!(pipeline.update(&[Some(2.0)]), vec![Some(2.0)]);
+        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![None]);
+        assert_eq!(pipeline.update(&[Some(2.0)]).unwrap(), vec![Some(2.0)]);
 
         pipeline.reset();
-        assert_eq!(pipeline.update(&[Some(10.0)]), vec![None]);
-        assert_eq!(pipeline.update(&[Some(20.0)]), vec![Some(20.0)]);
+        assert_eq!(pipeline.update(&[Some(10.0)]).unwrap(), vec![None]);
+        assert_eq!(pipeline.update(&[Some(20.0)]).unwrap(), vec![Some(20.0)]);
     }
 
     #[test]
@@ -226,9 +258,27 @@ mod tests {
     }
 
     #[test]
+    fn test_duplicate_input_column_error() {
+        let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
+        let err = FeaturePipeline::new(
+            vec![Box::new(f)],
+            vec!["close".into(), "close".into()],
+        ).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("duplicate")));
+    }
+
+    #[test]
     fn test_missing_input_column() {
         let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
         let result = FeaturePipeline::new(vec![Box::new(f)], vec!["volume".into()]);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_update_wrong_state_length() {
+        let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
+        let mut pipeline = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into()]).unwrap();
+        let err = pipeline.update(&[]).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("expected 1")));
     }
 }

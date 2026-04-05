@@ -8,8 +8,10 @@ use std::collections::VecDeque;
 ///
 /// Uses `α = 2 / (window + 1)`. The first output is the SMA of the first `window`
 /// bars (seed). Subsequent outputs apply `EMA_t = α * P_t + (1 - α) * EMA_{t-1}`.
-/// Returns `None` during warm-up (first `window - 1` bars). A `None` input resets
-/// the state and restarts the warm-up.
+/// Returns `None` during warm-up (first `window - 1` bars). During seeding, a `None`
+/// slides through the rolling buffer without wasting bars - the seed is computed as
+/// soon as `window` consecutive valid values are available. After seeding, a `None`
+/// resets the state and restarts the warm-up.
 #[derive(Debug)]
 pub struct Ema {
     inputs: Vec<String>,
@@ -85,13 +87,18 @@ impl StreamingTransform for Ema {
 
     fn update(&mut self, state: &[Option<f64>]) -> Output {
         if self.prev_ema.is_none() {
-            // Seeding phase: accumulate until window is full.
+            // Seeding phase: slide a rolling window until all values are valid.
+            // A None slides out naturally — no bars are wasted.
             self.buffer.push_back(state[0]);
+            if self.buffer.len() > self.window {
+                self.buffer.pop_front();
+            }
             if self.buffer.len() == self.window {
-                let slices = self.buffer.make_contiguous();
-                self.prev_ema = average(slices);
-                self.buffer.clear();
-                return smallvec![self.prev_ema];
+                if let Some(seed) = average(self.buffer.make_contiguous()) {
+                    self.prev_ema = Some(seed);
+                    self.buffer.clear();
+                    return smallvec![Some(seed)];
+                }
             }
             return smallvec![None];
         }
@@ -146,6 +153,16 @@ mod tests {
         assert_eq!(e.update(&[Some(400.0)]), out(Some(300.0)));
         // 0.5*500 + 0.5*300 = 400
         assert_eq!(e.update(&[Some(500.0)]), out(Some(400.0)));
+    }
+
+    #[test]
+    fn test_update_none_input_resets_state_while_seeding() {
+        let mut ema = ema_3();
+        assert_eq!(ema.update(&[Some(100.0)]), out(None));
+        assert_eq!(ema.update(&[None]), out(None));
+        assert_eq!(ema.update(&[Some(200.0)]), out(None));
+        assert_eq!(ema.update(&[Some(300.0)]), out(None));
+        assert_eq!(ema.update(&[Some(400.0)]), out(Some(300.0)));
     }
 
     #[test]

@@ -34,7 +34,7 @@ fn main() {
     )
     .unwrap();
 
-    let result = pipeline.run_research(&[&t, &prices]);
+    let result = pipeline.run_research(&[&t, &prices]).unwrap();
 
     println!(
         "{:<5} {:<8} {:<16} {:<14} r2_4",

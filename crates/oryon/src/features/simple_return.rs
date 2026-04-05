@@ -8,7 +8,10 @@ use std::collections::VecDeque;
 ///
 /// Computes `(P_t - P_{t-n}) / P_{t-n}` where `n` is the window. Returns `None`
 /// during warm-up (first `window` bars) or if the previous price is <= 0.
-/// Unlike log return, a negative current price yields a valid negative return.
+/// Only the two endpoints of the window matter: a `None` at the current bar or
+/// at the lookback bar returns `None`, but a `None` at an intermediate position
+/// does not affect the output. Unlike log return, a negative current price yields
+/// a valid negative return.
 #[derive(Debug)]
 pub struct SimpleReturn {
     inputs: Vec<String>,
@@ -132,6 +135,21 @@ mod tests {
         assert_eq!(sr.update(&[Some(100.0)]), out(None));
         assert!((sr.update(&[Some(110.0)])[0].unwrap() - 0.1).abs() < 1e-10);
         assert!((sr.update(&[Some(120.0)])[0].unwrap() - 0.2).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_update_none_input() {
+        let mut sr = simple_return_2(); // window = 2, buffer size = 3
+        assert_eq!(sr.update(&[Some(100.0)]), out(None)); // bar 1
+        assert_eq!(sr.update(&[Some(100.0)]), out(None)); // bar 2
+        // None at current (end position) → None
+        assert_eq!(sr.update(&[None]), out(None)); // bar 3: buffer=[100, 100, None]
+        // None now in middle position → valid (only endpoints matter)
+        assert!((sr.update(&[Some(110.0)])[0].unwrap() - 0.1).abs() < 1e-10); // bar 4: buffer=[100, None, 110]
+        // None at lookback (start position) → None
+        assert_eq!(sr.update(&[Some(115.0)]), out(None)); // bar 5: buffer=[None, 110, 115]
+        // None flushed — both endpoints valid again
+        assert!((sr.update(&[Some(120.0)])[0].unwrap() - 10.0 / 110.0).abs() < 1e-10); // bar 6: buffer=[110, 115, 120]
     }
 
     #[test]

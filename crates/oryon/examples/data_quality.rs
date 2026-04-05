@@ -28,7 +28,7 @@ fn main() {
     // per-bar check on feature output
     println!("{:<5} {:<10} {:<10} valid", "bar", "close", "sma_3");
     for (i, &price) in prices.iter().enumerate() {
-        let out = pipeline.update(&[price]);
+        let out = pipeline.update(&[price]).unwrap();
         println!(
             "{:<5} {:<10} {:<10} {}",
             i,

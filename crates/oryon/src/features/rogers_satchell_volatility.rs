@@ -14,9 +14,10 @@ use std::collections::VecDeque;
 /// σ_RS = sqrt( (1/N) · Σ [ ln(H/C)·ln(H/O) + ln(L/C)·ln(L/O) ] )
 /// ```
 ///
-/// Returns `None` during warm-up (first `window - 1` bars), if any OHLC value in
-/// the window is invalid (None, zero, or high < low), or if the rolling mean of the
-/// per-bar terms is non-positive (unusual price action).
+/// Returns `None` during warm-up (first `window - 1` bars) or if any OHLC value in
+/// the window is invalid (`None`, zero, or `high < low`). Returns `Some(0.0)` when
+/// all bars in the window are flat (`high = low = open = close`), consistent with
+/// the Parkinson estimator.
 #[derive(Debug)]
 pub struct RogersSatchellVolatility {
     inputs: Vec<String>,
@@ -96,7 +97,7 @@ impl StreamingTransform for RogersSatchellVolatility {
         if self.buffer.len() == self.window {
             let slices = self.buffer.make_contiguous();
             match average(slices) {
-                Some(avg) if avg > 0.0 => smallvec![Some(avg.sqrt())],
+                Some(avg) if avg >= 0.0 => smallvec![Some(avg.sqrt())],
                 _ => smallvec![None],
             }
         } else {
@@ -208,6 +209,16 @@ mod tests {
 
         assert_eq!(original.update(bar), out(None));
         assert!((original.update(bar)[0].unwrap() - expected_sq.sqrt()).abs() < 1e-12);
+    }
+
+    #[test]
+    fn test_update_flat_bars() {
+        // H = L = O = C → RS sq = 0 for every bar → avg = 0 → sqrt(0) = 0.0
+        let mut rs = rs_3();
+        let flat = &[Some(100.0), Some(100.0), Some(100.0), Some(100.0)];
+        rs.update(flat);
+        rs.update(flat);
+        assert_eq!(rs.update(flat), out(Some(0.0)));
     }
 
     #[test]

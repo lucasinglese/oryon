@@ -67,6 +67,13 @@ mod tests {
     }
 
     #[test]
+    fn test_linear_slope_with_none_in_y() {
+        let x = [Some(1.0), Some(2.0), Some(3.0)];
+        let y = [Some(2.0), None, Some(6.0)];
+        assert_eq!(linear_slope(&x, &y), None);
+    }
+
+    #[test]
     fn test_linear_slope_empty() {
         assert_eq!(linear_slope(&[], &[]), None);
     }

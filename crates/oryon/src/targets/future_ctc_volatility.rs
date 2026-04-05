@@ -21,16 +21,16 @@ impl FutureCTCVolatility {
     /// Create a new `FutureCTCVolatility` target.
     ///
     /// - `input` — price series name (e.g. `"close"`).
-    /// - `horizon` — number of bars to look ahead.
+    /// - `horizon` — number of bars to look ahead. Must be >= 2 (std_dev requires at least 2 log returns).
     pub fn new(input: &str, horizon: usize) -> Result<Self, OryonError> {
         if input.is_empty() {
             return Err(OryonError::InvalidInput {
                 msg: "input must not be empty".into(),
             });
         }
-        if horizon == 0 {
+        if horizon < 2 {
             return Err(OryonError::InvalidInput {
-                msg: "horizon must be > 0".into(),
+                msg: "horizon must be >= 2 (std_dev requires at least 2 log returns)".into(),
             });
         }
         let output = format!("{input}_future_ctc_vol_{horizon}");
@@ -129,6 +129,12 @@ mod tests {
     #[test]
     fn test_invalid_horizon_zero() {
         let err = FutureCTCVolatility::new("close", 0).unwrap_err();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("horizon")));
+    }
+
+    #[test]
+    fn test_invalid_horizon_one() {
+        let err = FutureCTCVolatility::new("close", 1).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("horizon")));
     }
 }

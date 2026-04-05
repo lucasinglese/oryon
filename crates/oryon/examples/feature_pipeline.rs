@@ -33,7 +33,7 @@ fn main() {
 
     // research mode — full dataset at once
     let data: Vec<Vec<Option<f64>>> = prices.iter().map(|&p| vec![p]).collect();
-    let matrix = pipeline.run_research(&data);
+    let matrix = pipeline.run_research(&data).unwrap();
 
     println!(
         "{:<5} {:<8} {:<10} {:<12} ema5",
@@ -54,7 +54,7 @@ fn main() {
     println!("\n--- live mode (reset) ---");
     pipeline.reset();
     for (i, &price) in prices.iter().enumerate() {
-        let out = pipeline.update(&[price]);
+        let out = pipeline.update(&[price]).unwrap();
         println!(
             "bar {i}: close={:.2}  lr={}  lr_sma5={}  ema5={}",
             price.unwrap(),

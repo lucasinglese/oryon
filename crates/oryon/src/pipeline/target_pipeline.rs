@@ -26,6 +26,21 @@ impl TargetPipeline {
         targets: Vec<Box<dyn Target>>,
         input_columns: Vec<String>,
     ) -> Result<Self, OryonError> {
+        if targets.is_empty() {
+            return Err(OryonError::InvalidConfig {
+                msg: "targets must not be empty".into(),
+            });
+        }
+
+        let mut seen = std::collections::HashSet::new();
+        for col in &input_columns {
+            if !seen.insert(col) {
+                return Err(OryonError::InvalidConfig {
+                    msg: format!("duplicate input column: \"{col}\""),
+                });
+            }
+        }
+
         // Check for duplicate output keys across targets.
         let mut seen_keys: HashMap<String, usize> = HashMap::new();
         for (i, target) in targets.iter().enumerate() {
@@ -78,7 +93,17 @@ impl TargetPipeline {
     ///
     /// `data` contains one slice per entry in `input_columns`, in the same order.
     /// Returns one `Vec<Option<f64>>` per output key (see `output_names()`).
-    pub fn run_research(&self, data: &[&[Option<f64>]]) -> Vec<Vec<Option<f64>>> {
+    pub fn run_research(&self, data: &[&[Option<f64>]]) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
+        if data.len() != self.input_columns.len() {
+            return Err(OryonError::InvalidInput {
+                msg: format!(
+                    "expected {} input column(s) {:?}, got {}",
+                    self.input_columns.len(),
+                    self.input_columns,
+                    data.len()
+                ),
+            });
+        }
         let mut result: Vec<Vec<Option<f64>>> = Vec::new();
 
         for target in &self.targets {
@@ -95,7 +120,7 @@ impl TargetPipeline {
             result.extend(outputs);
         }
 
-        result
+        Ok(result)
     }
 
     /// Output column names, in order.
@@ -149,6 +174,12 @@ mod tests {
     }
 
     #[test]
+    fn test_empty_pipeline_error() {
+        let err = TargetPipeline::new(vec![], vec![]).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("empty")));
+    }
+
+    #[test]
     fn test_single_target() {
         let target = FutureCTCVolatility::new("close", 3).unwrap();
         let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
@@ -185,7 +216,7 @@ mod tests {
         let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
-        let result = pipeline.run_research(&[&prices]);
+        let result = pipeline.run_research(&[&prices]).unwrap();
 
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].len(), prices.len());
@@ -204,7 +235,7 @@ mod tests {
             TargetPipeline::new(vec![Box::new(t1), Box::new(t2)], vec!["close".into()]).unwrap();
 
         let prices = sample_prices();
-        let result = pipeline.run_research(&[&prices]);
+        let result = pipeline.run_research(&[&prices]).unwrap();
 
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].len(), prices.len());
@@ -212,10 +243,29 @@ mod tests {
     }
 
     #[test]
+    fn test_duplicate_input_column_error() {
+        let target = FutureCTCVolatility::new("close", 3).unwrap();
+        let err = TargetPipeline::new(
+            vec![Box::new(target)],
+            vec!["close".into(), "close".into()],
+        ).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("duplicate")));
+    }
+
+    #[test]
     fn test_missing_column() {
         let target = FutureCTCVolatility::new("close", 3).unwrap();
         let result = TargetPipeline::new(vec![Box::new(target)], vec!["volume".into()]);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_run_research_wrong_column_count() {
+        let target = FutureCTCVolatility::new("close", 3).unwrap();
+        let pipeline = TargetPipeline::new(vec![Box::new(target)], vec!["close".into()]).unwrap();
+        let prices = sample_prices();
+        let err = pipeline.run_research(&[&prices, &prices]).err().unwrap();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("expected 1")));
     }
 
     #[test]

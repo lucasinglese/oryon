@@ -35,8 +35,10 @@ reference price is zero or negative.
     - **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
     must be in the buffer before a return can be computed.
 
-    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
-    until the `NaN` value is evicted after `window` consecutive valid bars.
+    - **`NaN` propagation.** Only the two endpoints are used: `P_{t-window}` (lookback)
+    and `P_t` (current). A `NaN` at either endpoint returns `NaN` for that bar. A `NaN`
+    at an intermediate position does not affect the output — the return is still computed
+    from the two valid endpoints.
 
     - **Zero or negative reference.** If `P_{t-window} <= 0`, the output is `NaN`
     for that bar only (the buffer is not affected).
@@ -53,7 +55,8 @@ reference price is zero or negative.
     | `t < window` (buffer not full) | `NaN` |
     | Buffer full, `P_{t-n} > 0` | Simple return value |
     | `P_{t-n} <= 0` | `NaN` |
-    | Any `NaN` in the buffer | `NaN` |
+    | `P_t` or `P_{t-n}` is `NaN` | `NaN` |
+    | `NaN` at intermediate position | Value computed from endpoints |
     | After `reset()` | `NaN` until buffer refills |
 
 === "Interpretation"
@@ -125,8 +128,10 @@ Returns `None` if either price is zero or negative.
     - **Warm-up.** The first `window` bars return `NaN`. Both `P_{t-window}` and `P_t`
     must be in the buffer before a return can be computed.
 
-    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
-    until the `NaN` value is evicted after `window` consecutive valid bars.
+    - **`NaN` propagation.** Only the two endpoints are used: `P_{t-window}` (lookback)
+    and `P_t` (current). A `NaN` at either endpoint returns `NaN` for that bar. A `NaN`
+    at an intermediate position does not affect the output — the return is still computed
+    from the two valid endpoints.
 
     - **Zero or negative prices.** If either `P_{t-window} <= 0` or `P_t <= 0`, the
     output is `NaN` for that bar only (the buffer is not affected).
@@ -143,7 +148,8 @@ Returns `None` if either price is zero or negative.
     | `t < window` (buffer not full) | `NaN` |
     | Buffer full, both prices `> 0` | Log return value |
     | Either price `<= 0` | `NaN` |
-    | Any `NaN` in the buffer | `NaN` |
+    | `P_t` or `P_{t-n}` is `NaN` | `NaN` |
+    | `NaN` at intermediate position | Value computed from endpoints |
     | After `reset()` | `NaN` until buffer refills |
 
 === "Interpretation"

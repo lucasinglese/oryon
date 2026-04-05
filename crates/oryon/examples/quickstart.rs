@@ -18,7 +18,7 @@ fn main() {
 
     println!("{:<5} {:<8} sma_3", "bar", "close");
     for (i, &price) in prices.iter().enumerate() {
-        let out = pipeline.update(&[price]);
+        let out = pipeline.update(&[price]).unwrap();
         println!("{:<5} {:<8.2} {}", i, price.unwrap(), fmt(out[0]));
     }
 }

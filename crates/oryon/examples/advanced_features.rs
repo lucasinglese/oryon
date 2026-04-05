@@ -65,7 +65,7 @@ fn main() {
         "bar", "high", "low", "pv5", "hl_slope"
     );
     for i in 0..highs.len() {
-        let out = pipeline.update(&[highs[i], lows[i]]);
+        let out = pipeline.update(&[highs[i], lows[i]]).unwrap();
         println!(
             "{:<5} {:<8.1} {:<8.1} {:<12} {:<12} {}",
             i,

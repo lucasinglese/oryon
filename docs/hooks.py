@@ -14,10 +14,13 @@ def on_config(config):
         config.extra["version"] = match.group(1)
 
     features_dir = ROOT / "crates/oryon/src/features"
+    operators_dir = ROOT / "crates/oryon/src/operators"
+    scalers_dir = ROOT / "crates/oryon/src/scalers"
     targets_dir = ROOT / "crates/oryon/src/targets"
-    config.extra["feature_count"] = len(
-        [f for f in features_dir.rglob("*.rs") if f.name != "mod.rs"]
-    )
+    feature_count = len([f for f in features_dir.rglob("*.rs") if f.name != "mod.rs"])
+    operator_count = len([f for f in operators_dir.rglob("*.rs") if f.name != "mod.rs"])
+    scaler_count = len([f for f in scalers_dir.rglob("*.rs") if f.name != "mod.rs"])
+    config.extra["streaming_transform_count"] = feature_count + operator_count + scaler_count
     config.extra["target_count"] = len(
         [f for f in targets_dir.rglob("*.rs") if f.name != "mod.rs"]
     )
