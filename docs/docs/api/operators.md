@@ -31,11 +31,11 @@ Computes `A - B` from two input columns. Returns `NaN` if either input is `NaN`.
 
 === "Behavior"
 
-    **No warm-up.** Output is valid from the first bar.
+    - **No warm-up.** Output is valid from the first bar.
 
-    **`NaN` propagation.** If either input is `NaN`, output is `NaN`.
+    - **`NaN` propagation.** If either input is `NaN`, output is `NaN`.
 
-    **`reset()`.** No-op. There is no state to clear.
+    - **`reset()`.** No-op. There is no state to clear.
 
     | Situation | Output |
     |---|---|
@@ -115,13 +115,13 @@ making them linearly separable for ML models.
 
 === "Behavior"
 
-    **No warm-up.** Output is valid from the first bar.
+    - **No warm-up.** Output is valid from the first bar.
 
-    **Domain.** Input must be strictly positive (`x > 0`). Values of `0` or below return `NaN`.
+    - **Domain.** Input must be strictly positive (`x > 0`). Values of `0` or below return `NaN`.
 
-    **`NaN` input.** Returns `NaN`.
+    - **`NaN` input.** Returns `NaN`.
 
-    **`reset()`.** No-op. There is no state to clear.
+    - **`reset()`.** No-op. There is no state to clear.
 
     | Situation | Output |
     |---|---|

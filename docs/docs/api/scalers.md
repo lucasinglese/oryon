@@ -39,15 +39,15 @@ in the window is `NaN`, or if the standard deviation is zero (all window values 
 
 === "Behavior"
 
-    **Warm-up.** The first `window - 1` bars return `NaN`. A full window is required
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full window is required
     before mean and std can be computed.
 
-    **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
+    - **`NaN` propagation.** A `NaN` input contaminates the buffer. Output stays `NaN`
     until that value is evicted, i.e. until `window` consecutive valid bars have been seen.
 
-    **Zero std.** If all values in the window are equal, std is zero and output is `NaN`.
+    - **Zero std.** If all values in the window are equal, std is zero and output is `NaN`.
 
-    **`reset()`.** Clears the buffer entirely. After reset, the full `window - 1`
+    - **`reset()`.** Clears the buffer entirely. After reset, the full `window - 1`
     warm-up applies again.
 
     | Situation | Output |
@@ -141,13 +141,13 @@ construct `FixedZScore` once and apply it at inference time.
 
 === "Behavior"
 
-    **No warm-up.** Output is valid from the first bar.
+    - **No warm-up.** Output is valid from the first bar.
 
-    **`NaN` input.** Returns `NaN`. No state is affected.
+    - **`NaN` input.** Returns `NaN`. No state is affected.
 
-    **`reset()`.** No-op. There is no internal state to clear.
+    - **`reset()`.** No-op. There is no internal state to clear.
 
-    **Train/test split.** Fit on training data only. Fitting on the full dataset leaks
+    - **Train/test split.** Fit on training data only. Fitting on the full dataset leaks
     future distribution information and overstates out-of-sample performance.
 
     | Situation | Output |

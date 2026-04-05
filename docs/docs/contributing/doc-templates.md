@@ -164,11 +164,11 @@ You can paste the Rust source and the template below into an LLM to generate the
 
     === "Behavior"
 
-        **Warm-up.** The first `warm_up_period` bars return `NaN`.
+        - **Warm-up.** The first `warm_up_period` bars return `NaN`.
 
-        **`NaN` propagation.** Describe how `None` inputs propagate.
+        - **`NaN` propagation.** Describe how `None` inputs propagate.
 
-        **`reset()`.** Describe what is cleared (or "No-op" if stateless).
+        - **`reset()`.** Describe what is cleared (or "No-op" if stateless).
 
     === "Example"
 
@@ -216,11 +216,11 @@ You can paste the Rust source and the template below into an LLM to generate the
 
     === "Behavior"
 
-        **No warm-up.** Output is valid from the first bar.
+        - **No warm-up.** Output is valid from the first bar.
 
-        **`NaN` propagation.** Describe which `None` inputs trigger `None` output.
+        - **`NaN` propagation.** Describe which `None` inputs trigger `None` output.
 
-        **`reset()`.** No-op. There is no state to clear.
+        - **`reset()`.** No-op. There is no state to clear.
 
     === "Example"
 
