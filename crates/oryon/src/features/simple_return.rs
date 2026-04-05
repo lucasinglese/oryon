@@ -142,14 +142,15 @@ mod tests {
         let mut sr = simple_return_2(); // window = 2, buffer size = 3
         assert_eq!(sr.update(&[Some(100.0)]), out(None)); // bar 1
         assert_eq!(sr.update(&[Some(100.0)]), out(None)); // bar 2
-        // None at current (end position) → None
+                                                          // None at current (end position) → None
         assert_eq!(sr.update(&[None]), out(None)); // bar 3: buffer=[100, 100, None]
-        // None now in middle position → valid (only endpoints matter)
+                                                   // None now in middle position → valid (only endpoints matter)
         assert!((sr.update(&[Some(110.0)])[0].unwrap() - 0.1).abs() < 1e-10); // bar 4: buffer=[100, None, 110]
-        // None at lookback (start position) → None
+                                                                              // None at lookback (start position) → None
         assert_eq!(sr.update(&[Some(115.0)]), out(None)); // bar 5: buffer=[None, 110, 115]
-        // None flushed — both endpoints valid again
-        assert!((sr.update(&[Some(120.0)])[0].unwrap() - 10.0 / 110.0).abs() < 1e-10); // bar 6: buffer=[110, 115, 120]
+                                                          // None flushed — both endpoints valid again
+        assert!((sr.update(&[Some(120.0)])[0].unwrap() - 10.0 / 110.0).abs() < 1e-10);
+        // bar 6: buffer=[110, 115, 120]
     }
 
     #[test]

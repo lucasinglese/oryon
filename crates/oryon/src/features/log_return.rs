@@ -144,14 +144,15 @@ mod tests {
         let mut lr = log_return_2(); // window = 2, buffer size = 3
         assert_eq!(lr.update(&[Some(1.0_f64.exp())]), out(None)); // bar 1
         assert_eq!(lr.update(&[Some(1.0_f64.exp())]), out(None)); // bar 2
-        // None at current (end position) → None
+                                                                  // None at current (end position) → None
         assert_eq!(lr.update(&[None]), out(None)); // bar 3: buffer=[e, e, None]
-        // None now in middle position → valid (only endpoints matter)
+                                                   // None now in middle position → valid (only endpoints matter)
         assert!((lr.update(&[Some(1.2_f64.exp())])[0].unwrap() - 0.2).abs() < 1e-10); // bar 4: buffer=[e, None, e^1.2]
-        // None at lookback (start position) → None
+                                                                                      // None at lookback (start position) → None
         assert_eq!(lr.update(&[Some(1.3_f64.exp())]), out(None)); // bar 5: buffer=[None, e^1.2, e^1.3]
-        // None flushed — both endpoints valid again
-        assert!((lr.update(&[Some(1.4_f64.exp())])[0].unwrap() - 0.2).abs() < 1e-10); // bar 6: buffer=[e^1.2, e^1.3, e^1.4]
+                                                                  // None flushed — both endpoints valid again
+        assert!((lr.update(&[Some(1.4_f64.exp())])[0].unwrap() - 0.2).abs() < 1e-10);
+        // bar 6: buffer=[e^1.2, e^1.3, e^1.4]
     }
 
     #[test]

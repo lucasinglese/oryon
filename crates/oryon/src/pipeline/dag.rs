@@ -102,7 +102,8 @@ impl FeatureDag {
 
         // 4. Build output_names in execution order + move features into levels
         let mut output_names: Vec<String> = Vec::new();
-        let mut slots: Vec<Option<Box<dyn StreamingTransform>>> = features.into_iter().map(Some).collect();
+        let mut slots: Vec<Option<Box<dyn StreamingTransform>>> =
+            features.into_iter().map(Some).collect();
 
         let mut execution_order: Vec<Vec<Box<dyn StreamingTransform>>> = Vec::new();
         for level in &level_indices {

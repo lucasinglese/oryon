@@ -23,8 +23,8 @@ impl Subtract {
     ///     outputs: Name of the output column (e.g. ``["spread"]``).
     #[new]
     pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustSubtract::new(inputs, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner =
+            RustSubtract::new(inputs, outputs).map_err(|e| PyValueError::new_err(e.to_string()))?;
         Ok(Subtract { inner })
     }
 

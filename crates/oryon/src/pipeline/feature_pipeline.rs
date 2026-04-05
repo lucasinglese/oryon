@@ -124,7 +124,10 @@ impl FeaturePipeline {
     /// Each inner slice is one bar's raw input values.
     ///
     /// Returns a matrix: one row per bar, columns matching `output_names()`.
-    pub fn run_research(&mut self, data: &[Vec<Option<f64>>]) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
+    pub fn run_research(
+        &mut self,
+        data: &[Vec<Option<f64>>],
+    ) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
         self.dag.reset();
         let mut results: Vec<Vec<Option<f64>>> = Vec::with_capacity(data.len());
         for bar in data {
@@ -191,8 +194,14 @@ mod tests {
         let mut pipeline =
             FeaturePipeline::new(vec![Box::new(a), Box::new(b)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![Some(2.0), Some(2.0)]);
-        assert_eq!(pipeline.update(&[Some(4.0)]).unwrap(), vec![Some(5.0), Some(5.0)]);
+        assert_eq!(
+            pipeline.update(&[Some(1.0)]).unwrap(),
+            vec![Some(2.0), Some(2.0)]
+        );
+        assert_eq!(
+            pipeline.update(&[Some(4.0)]).unwrap(),
+            vec![Some(5.0), Some(5.0)]
+        );
     }
 
     #[test]
@@ -202,8 +211,14 @@ mod tests {
         let mut pipeline =
             FeaturePipeline::new(vec![Box::new(b), Box::new(a)], vec!["close".into()]).unwrap();
 
-        assert_eq!(pipeline.update(&[Some(1.0)]).unwrap(), vec![Some(2.0), Some(3.0)]);
-        assert_eq!(pipeline.update(&[Some(10.0)]).unwrap(), vec![Some(11.0), Some(12.0)]);
+        assert_eq!(
+            pipeline.update(&[Some(1.0)]).unwrap(),
+            vec![Some(2.0), Some(3.0)]
+        );
+        assert_eq!(
+            pipeline.update(&[Some(10.0)]).unwrap(),
+            vec![Some(11.0), Some(12.0)]
+        );
     }
 
     #[test]
@@ -260,10 +275,9 @@ mod tests {
     #[test]
     fn test_duplicate_input_column_error() {
         let f = AddOneStub::new(vec!["close".into()], vec!["out".into()]);
-        let err = FeaturePipeline::new(
-            vec![Box::new(f)],
-            vec!["close".into(), "close".into()],
-        ).err().unwrap();
+        let err = FeaturePipeline::new(vec![Box::new(f)], vec!["close".into(), "close".into()])
+            .err()
+            .unwrap();
         assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("duplicate")));
     }
 

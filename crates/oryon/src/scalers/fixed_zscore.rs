@@ -141,7 +141,10 @@ mod tests {
             FixedZScore::new(vec!["x".into()], vec![], p).unwrap_err(),
             OryonError::InvalidInput { ref msg } if msg.contains("outputs")
         ));
-        let bad = StandardScalerParams { mean: 0.0, std: 0.0 };
+        let bad = StandardScalerParams {
+            mean: 0.0,
+            std: 0.0,
+        };
         assert!(matches!(
             FixedZScore::new(vec!["x".into()], vec!["out".into()], bad).unwrap_err(),
             OryonError::InvalidInput { ref msg } if msg.contains("std")

@@ -93,7 +93,10 @@ impl TargetPipeline {
     ///
     /// `data` contains one slice per entry in `input_columns`, in the same order.
     /// Returns one `Vec<Option<f64>>` per output key (see `output_names()`).
-    pub fn run_research(&self, data: &[&[Option<f64>]]) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
+    pub fn run_research(
+        &self,
+        data: &[&[Option<f64>]],
+    ) -> Result<Vec<Vec<Option<f64>>>, OryonError> {
         if data.len() != self.input_columns.len() {
             return Err(OryonError::InvalidInput {
                 msg: format!(
@@ -245,10 +248,9 @@ mod tests {
     #[test]
     fn test_duplicate_input_column_error() {
         let target = FutureCTCVolatility::new("close", 3).unwrap();
-        let err = TargetPipeline::new(
-            vec![Box::new(target)],
-            vec!["close".into(), "close".into()],
-        ).err().unwrap();
+        let err = TargetPipeline::new(vec![Box::new(target)], vec!["close".into(), "close".into()])
+            .err()
+            .unwrap();
         assert!(matches!(err, OryonError::InvalidConfig { ref msg } if msg.contains("duplicate")));
     }
 

@@ -9,7 +9,6 @@ use features::{
     SimpleReturn, Skewness, Sma,
 };
 use operators::{NegLog, Subtract};
-use scalers::{fit_standard_scaler, FixedZScore, RollingZScore};
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
 use oryon::targets::FutureLinearSlope as RustFutureLinearSlope;
 use oryon::targets::FutureReturn as RustFutureReturn;
@@ -17,6 +16,7 @@ use oryon::traits::{StreamingTransform, Target};
 use pipelines::{FeaturePipeline, TargetPipeline};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use scalers::{fit_standard_scaler, FixedZScore, RollingZScore};
 use targets::{FutureCTCVolatility, FutureLinearSlope, FutureReturn};
 
 // --- conversion helpers ------------------------------------------------------
