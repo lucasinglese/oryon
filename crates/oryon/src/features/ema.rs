@@ -25,9 +25,9 @@ pub struct Ema {
 impl Ema {
     /// Create a new `Ema`.
     ///
-    /// - `inputs` — name of the input column (e.g. `["close"]`).
-    /// - `window` — number of bars for seeding and smoothing factor. Must be > 0.
-    /// - `outputs` — name of the output column (e.g. `["close_ema_20"]`).
+    /// - `inputs` - name of the input column (e.g. `["close"]`).
+    /// - `window` - number of bars for seeding and smoothing factor. Must be > 0.
+    /// - `outputs` - name of the output column (e.g. `["close_ema_20"]`).
     pub fn new(
         inputs: Vec<String>,
         window: usize,

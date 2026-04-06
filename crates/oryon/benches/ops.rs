@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::ops::{
-    average, kurtosis, linear_slope, log_return, parkinson_log_hl_sq, rogers_satchell_sq,
+    average, kurtosis, linear_slope, log_return, median, parkinson_log_hl_sq, rogers_satchell_sq,
     simple_return, skewness, std_dev,
 };
 
@@ -15,6 +15,16 @@ fn bench_average(c: &mut Criterion) {
     let mut group = c.benchmark_group("average");
     group.bench_function("w20", |b| b.iter(|| average(black_box(&w20))));
     group.bench_function("w200", |b| b.iter(|| average(black_box(&w200))));
+    group.finish();
+}
+
+fn bench_median(c: &mut Criterion) {
+    let w20 = data(20);
+    let w200 = data(200);
+
+    let mut group = c.benchmark_group("median");
+    group.bench_function("w20", |b| b.iter(|| median(black_box(&w20))));
+    group.bench_function("w200", |b| b.iter(|| median(black_box(&w200))));
     group.finish();
 }
 
@@ -97,6 +107,7 @@ fn bench_rogers_satchell_sq(c: &mut Criterion) {
 criterion_group!(
     benches,
     bench_average,
+    bench_median,
     bench_std_dev,
     bench_log_return,
     bench_parkinson_log_hl_sq,

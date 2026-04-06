@@ -1,28 +1,28 @@
 use crate::error::OryonError;
-use crate::ops::average;
+use crate::ops::median;
 use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 use std::collections::VecDeque;
 
-/// Simple Moving Average over a rolling window.
+/// Median Moving Average over a rolling window.
 ///
 /// Returns `None` during warm-up (first `window - 1` bars).
 /// A `None` input within the window propagates as `None` output
 /// until the window is fully refilled with valid values.
 #[derive(Debug)]
-pub struct Sma {
+pub struct Mma {
     inputs: Vec<String>,
     window: usize,
     outputs: Vec<String>,
     buffer: VecDeque<Option<f64>>,
 }
 
-impl Sma {
-    /// Create a new `Sma`.
+impl Mma {
+    /// Create a new `Mma`.
     ///
     /// - `inputs` - name of the input column (e.g. `["close"]`).
-    /// - `window` - number of bars to average. Must be > 0.
-    /// - `outputs` - name of the output column (e.g. `["close_sma_3"]`).
+    /// - `window` - number of bars for the rolling median. Must be > 0.
+    /// - `outputs` - name of the output column (e.g. `["close_mma_20"]`).
     pub fn new(
         inputs: Vec<String>,
         window: usize,
@@ -46,7 +46,7 @@ impl Sma {
             });
         }
 
-        Ok(Sma {
+        Ok(Mma {
             inputs,
             window,
             outputs,
@@ -55,7 +55,7 @@ impl Sma {
     }
 }
 
-impl StreamingTransform for Sma {
+impl StreamingTransform for Mma {
     fn input_names(&self) -> Vec<String> {
         self.inputs.clone()
     }
@@ -70,7 +70,7 @@ impl StreamingTransform for Sma {
 
     fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(
-            Sma::new(self.inputs.clone(), self.window, self.outputs.clone())
+            Mma::new(self.inputs.clone(), self.window, self.outputs.clone())
                 .expect("fresh: config was already validated at construction"),
         )
     }
@@ -88,7 +88,7 @@ impl StreamingTransform for Sma {
 
         if self.buffer.len() == self.window {
             let slices = self.buffer.make_contiguous();
-            smallvec![average(slices)]
+            smallvec![median(slices)]
         } else {
             smallvec![None]
         }
@@ -102,15 +102,15 @@ mod tests {
     use smallvec::smallvec;
 
     feature_contract_tests!(
-        Sma::new(vec!["close".into()], 3, vec!["close_sma_3".into()]).unwrap(),
+        Mma::new(vec!["close".into()], 3, vec!["close_mma_3".into()]).unwrap(),
         vec!["close".to_string()],
-        vec!["close_sma_3".to_string()],
+        vec!["close_mma_3".to_string()],
         2,
         &[Some(1.0)],
     );
 
-    fn sma3() -> Sma {
-        Sma::new(vec!["close".into()], 3, vec!["close_sma_3".into()]).unwrap()
+    fn mma3() -> Mma {
+        Mma::new(vec!["close".into()], 3, vec!["close_mma_3".into()]).unwrap()
     }
 
     fn out(v: Option<f64>) -> Output {
@@ -119,48 +119,49 @@ mod tests {
 
     #[test]
     fn test_update() {
-        let mut sma = sma3();
-        assert_eq!(sma.update(&[Some(1.0)]), out(None));
-        assert_eq!(sma.update(&[Some(2.0)]), out(None));
-        assert_eq!(sma.update(&[Some(3.0)]), out(Some(2.0)));
-        assert_eq!(sma.update(&[Some(4.0)]), out(Some(3.0)));
-        assert_eq!(sma.update(&[Some(5.0)]), out(Some(4.0)));
+        let mut mma = mma3();
+        assert_eq!(mma.update(&[Some(1.0)]), out(None));
+        assert_eq!(mma.update(&[Some(3.0)]), out(None));
+        assert_eq!(mma.update(&[Some(2.0)]), out(Some(2.0)));
+        assert_eq!(mma.update(&[Some(2.0)]), out(Some(2.0)));
+        assert_eq!(mma.update(&[Some(5.0)]), out(Some(2.0)));
+        assert_eq!(mma.update(&[Some(3.0)]), out(Some(3.0)));
     }
 
     #[test]
     fn test_update_none_input() {
-        let mut sma = sma3();
-        assert_eq!(sma.update(&[Some(1.0)]), out(None));
-        assert_eq!(sma.update(&[Some(2.0)]), out(None));
-        assert_eq!(sma.update(&[Some(3.0)]), out(Some(2.0)));
-        assert_eq!(sma.update(&[None]), out(None));
-        assert_eq!(sma.update(&[Some(4.0)]), out(None));
-        assert_eq!(sma.update(&[Some(5.0)]), out(None));
-        assert_eq!(sma.update(&[Some(6.0)]), out(Some(5.0)));
+        let mut mma = mma3();
+        assert_eq!(mma.update(&[Some(1.0)]), out(None));
+        assert_eq!(mma.update(&[Some(3.0)]), out(None));
+        assert_eq!(mma.update(&[Some(2.0)]), out(Some(2.0)));
+        assert_eq!(mma.update(&[None]), out(None));
+        assert_eq!(mma.update(&[Some(5.0)]), out(None));
+        assert_eq!(mma.update(&[Some(3.0)]), out(None));
+        assert_eq!(mma.update(&[Some(2.0)]), out(Some(3.0)));
     }
 
     #[test]
     fn test_window_size_is_one() {
-        let mut sma = Sma::new(vec!["close".into()], 1, vec!["close_sma_1".into()]).unwrap();
-        assert_eq!(sma.update(&[Some(1.0)]), out(Some(1.0)));
-        assert_eq!(sma.update(&[Some(2.0)]), out(Some(2.0)));
+        let mut mma = Mma::new(vec!["close".into()], 1, vec!["close_mma_1".into()]).unwrap();
+        assert_eq!(mma.update(&[Some(1.0)]), out(Some(1.0)));
+        assert_eq!(mma.update(&[Some(2.0)]), out(Some(2.0)));
     }
 
     #[test]
     fn test_reset_preserves_capacity() {
-        let mut sma = sma3();
-        sma.update(&[Some(1.0)]);
-        sma.reset();
-        assert_eq!(sma.buffer.len(), 0);
-        assert_eq!(sma.buffer.capacity(), sma.window);
+        let mut mma = mma3();
+        mma.update(&[Some(1.0)]);
+        mma.reset();
+        assert_eq!(mma.buffer.len(), 0);
+        assert_eq!(mma.buffer.capacity(), mma.window);
     }
 
     #[test]
     fn test_fresh_instances_are_independent() {
-        let mut sma = sma3();
-        sma.update(&[Some(1.0)]);
+        let mut mma = mma3();
+        mma.update(&[Some(1.0)]);
 
-        let mut fresh = sma.fresh();
+        let mut fresh = mma.fresh();
 
         // fresh computes correctly from scratch
         assert_eq!(fresh.update(&[Some(1.0)]), out(None));
@@ -168,25 +169,25 @@ mod tests {
         assert_eq!(fresh.update(&[Some(3.0)]), out(Some(2.0)));
 
         // original continues its own state independently
-        assert_eq!(sma.update(&[Some(2.0)]), out(None));
-        assert_eq!(sma.update(&[Some(3.0)]), out(Some(2.0)));
+        assert_eq!(mma.update(&[Some(2.0)]), out(None));
+        assert_eq!(mma.update(&[Some(3.0)]), out(Some(2.0)));
     }
 
     #[test]
     fn test_error_raises_when_empty_inputs() {
-        let err = Sma::new(vec![], 1, vec!["close_sma_1".into()]).unwrap_err();
+        let err = Mma::new(vec![], 1, vec!["close_mma_1".into()]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput {ref msg} if msg.contains("inputs")));
     }
 
     #[test]
     fn test_error_raises_when_empty_outputs() {
-        let err = Sma::new(vec!["close".into()], 1, vec![]).unwrap_err();
+        let err = Mma::new(vec!["close".into()], 1, vec![]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput {ref msg} if msg.contains("outputs")));
     }
 
     #[test]
     fn test_error_raises_when_window_is_zero() {
-        let err = Sma::new(vec!["close".into()], 0, vec!["close_sma_1".into()]).unwrap_err();
+        let err = Mma::new(vec!["close".into()], 0, vec!["close_mma_1".into()]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput {ref msg} if msg.contains("window")));
     }
 }

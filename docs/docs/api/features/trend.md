@@ -48,7 +48,7 @@ larger the window, the smoother and the slower.
 
     - **Implementation.** Recomputes the sum over the full buffer on every `update()` call
     (`O(N)` per bar, `O(N)` memory). For typical window sizes the overhead is negligible;
-    see [Benchmarks](../../../benchmarks/). A running-sum approach would
+    see [Benchmarks](../../benchmarks.md). A running-sum approach would
     bring this to `O(1)` per bar with no change to output.
 
     | Situation | Output |

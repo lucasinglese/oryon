@@ -5,8 +5,8 @@ mod scalers;
 mod targets;
 
 use features::{
-    Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, RogersSatchellVolatility,
-    SimpleReturn, Skewness, Sma,
+    Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
+    RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
 };
 use operators::{NegLog, Subtract};
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
@@ -51,6 +51,9 @@ pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Stream
         return Ok(f.inner.fresh());
     }
     if let Ok(f) = obj.extract::<PyRef<LogReturn>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<Mma>>() {
         return Ok(f.inner.fresh());
     }
     if let Ok(f) = obj.extract::<PyRef<Skewness>>() {
@@ -125,6 +128,7 @@ fn _oryon(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Kama>()?;
     m.add_class::<SimpleReturn>()?;
     m.add_class::<LogReturn>()?;
+    m.add_class::<Mma>()?;
     m.add_class::<Skewness>()?;
     m.add_class::<Kurtosis>()?;
     m.add_class::<LinearSlope>()?;

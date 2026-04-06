@@ -70,6 +70,24 @@ pub fn kurtosis(data: &[Option<f64>]) -> Option<f64> {
     Some(term1 * sum - correction)
 }
 
+/// Median
+/// Returns `None` if empty or any value is `None`.
+pub fn median(data: &[Option<f64>]) -> Option<f64> {
+    if data.is_empty() {
+        return None;
+    }
+
+    let mut sorted: Vec<f64> = data.iter().copied().collect::<Option<Vec<_>>>()?;
+    sorted.sort_by(|a, b| a.total_cmp(b));
+
+    let mid = sorted.len() / 2;
+    if sorted.len().is_multiple_of(2) {
+        Some((sorted[mid - 1] + sorted[mid]) / 2.0)
+    } else {
+        Some(sorted[mid])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -214,5 +232,43 @@ mod tests {
             kurtosis(&[Some(5.0), Some(5.0), Some(5.0), Some(5.0)]),
             None
         );
+    }
+
+    #[test]
+    fn test_median_odd() {
+        assert_eq!(
+            median(&[Some(3.0), Some(2.0), Some(1.0), Some(4.0), Some(5.0)]),
+            Some(3.0)
+        );
+    }
+
+    #[test]
+    fn test_median_even() {
+        assert_eq!(
+            median(&[
+                Some(6.0),
+                Some(3.0),
+                Some(2.0),
+                Some(1.0),
+                Some(4.0),
+                Some(5.0)
+            ]),
+            Some(3.5)
+        );
+    }
+
+    #[test]
+    fn test_median_unique_value() {
+        assert_eq!(median(&[Some(1.0)]), Some(1.0));
+    }
+
+    #[test]
+    fn test_median_with_none() {
+        assert_eq!(median(&[None, Some(2.0), Some(1.0)]), None);
+    }
+
+    #[test]
+    fn test_median_empty() {
+        assert_eq!(median(&[]), None);
     }
 }

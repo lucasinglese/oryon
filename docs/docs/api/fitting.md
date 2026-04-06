@@ -1,7 +1,7 @@
 # Fitting
 
 Fitting functions estimate distribution parameters from a batch dataset. Use them on a
-training set, then pass the results to pre-fitted scalers like [`FixedZScore`](../scalers/#fixed-z-score).
+training set, then pass the results to pre-fitted scalers like [`FixedZScore`](scalers.md#fixed-z-score).
 
 ---
 

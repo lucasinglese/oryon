@@ -77,7 +77,7 @@ Features run under 1µs per update in Python at `window=200`
 | LinearSlope, Skewness, Kurtosis | `<1µs`         |
 | KAMA | `≈1µs`          |
 
-See the full table on the [Benchmarks](../benchmarks/) page.
+See the full table on the [Benchmarks](../benchmarks.md) page.
 
 ---
 

@@ -12,11 +12,11 @@ Every contribution touches **both** layers: the Rust core and the Python binding
 
 Create `crates/oryon/src/features/<your_feature>.rs`.
 
-Implement the `Feature` trait. Use `Sma` as your reference implementation.
+Implement the `StreamingTransform` trait. Use `Sma` as your reference implementation.
 
 ```rust
 use crate::error::OryonError;
-use crate::traits::{Feature, Output};
+use crate::traits::{Output, StreamingTransform};
 use smallvec::smallvec;
 
 pub struct YourFeature {
@@ -45,12 +45,12 @@ impl YourFeature {
     }
 }
 
-impl Feature for YourFeature {
+impl StreamingTransform for YourFeature {
     fn input_names(&self) -> Vec<String> { self.inputs.clone() }
     fn output_names(&self) -> Vec<String> { self.outputs.clone() }
     fn warm_up_period(&self) -> usize { self.window - 1 }
 
-    fn fresh(&self) -> Box<dyn Feature> {
+    fn fresh(&self) -> Box<dyn StreamingTransform> {
         Box::new(YourFeature::new(self.inputs.clone(), self.window, self.outputs.clone())
             .expect("fresh: config was already validated at construction"))
     }
@@ -168,7 +168,22 @@ In `python/oryon/features.py`, add `YourFeature` to the import from `._oryon` an
 
 In `python/oryon/__init__.py`, add `YourFeature` to the import from `.features` and to `__all__`.
 
-### 8. Write documentation
+### 8. Write Python tests
+
+Create `tests/features/test_your_feature.py`. These tests verify the PyO3 binding
+end-to-end — use `test_sma.py` as your reference. Same applies to scalers (`tests/scalers/`)
+and operators (`tests/operators/`).
+
+Mandatory tests:
+
+- `test_warm_up` - first `warm_up_period` outputs are `NaN`
+- `test_valid_value` - correct value after warm-up
+- `test_nan_input_propagates` - `float("nan")` input returns `NaN`
+- `test_reset` - output is `NaN` again after `reset()`
+- `test_input_names` / `test_output_names` / `test_warm_up_period` - binding contract
+- `test_invalid_window` / `test_invalid_inputs` - `ValueError` on bad params
+
+### 9. Write documentation
 
 Add an entry to the correct API Reference page. See [Doc Templates](doc-templates.md).
 
@@ -205,6 +220,7 @@ Checklist:
 - [ ] Benchmarks added with the correct naming convention (the benchmark page is updated by the maintainer before each release)
 - [ ] PyO3 wrapper added and registered in all three places in `lib.rs`
 - [ ] Python re-export updated in `python/oryon/features.py` (or `targets.py`) and `python/oryon/__init__.py`
+- [ ] Python tests added in `tests/features/` (or `tests/targets/`)
 - [ ] Documentation entry added using the template
 - [ ] No `.unwrap()` on `Result` in library code - use `?` or return `OryonError::InvalidInput`
 - [ ] Constructor validates all parameters and returns `OryonError::InvalidInput`

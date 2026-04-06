@@ -121,7 +121,7 @@ Stateless z-score normalization using pre-fitted mean and standard deviation. Pa
 are fixed at construction time and never change. No warm-up, no buffer. Returns `NaN`
 only if the input is `NaN`.
 
-Fit the parameters with [`fit_standard_scaler`](../fitting/) on a training dataset, then
+Fit the parameters with [`fit_standard_scaler`](fitting.md) on a training dataset, then
 construct `FixedZScore` once and apply it at inference time.
 
 === "Parameters"

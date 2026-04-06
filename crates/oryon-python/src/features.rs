@@ -3,6 +3,7 @@ use oryon::features::Kama as RustKama;
 use oryon::features::Kurtosis as RustKurtosis;
 use oryon::features::LinearSlope as RustLinearSlope;
 use oryon::features::LogReturn as RustLogReturn;
+use oryon::features::Mma as RustMma;
 use oryon::features::ParkinsonVolatility as RustParkinsonVolatility;
 use oryon::features::RogersSatchellVolatility as RustRogersSatchellVolatility;
 use oryon::features::SimpleReturn as RustSimpleReturn;
@@ -13,6 +14,64 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::{to_python, to_rust};
+
+// --- Mma ---------------------------------------------------------------------
+
+/// Median Moving Average over a rolling window.
+#[pyclass(module = "oryon")]
+pub(crate) struct Mma {
+    pub(crate) inner: RustMma,
+}
+
+#[pymethods]
+impl Mma {
+    /// Create a new ``Mma``.
+    ///
+    /// Args:
+    ///     inputs: Name of the input column (e.g. ``["close"]``).
+    ///     window: Number of bars in the rolling window. Must be >= 1.
+    ///     outputs: Name of the output column (e.g. ``["close_mma_20"]``).
+    #[new]
+    pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
+        let inner = RustMma::new(inputs, window, outputs)
+            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        Ok(Mma { inner })
+    }
+
+    /// Process one bar. Returns ``[NaN]`` during warm-up or on ``NaN`` input.
+    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
+        to_python(&self.inner.update(&to_rust(&values)))
+    }
+
+    /// Reset internal state (e.g. between CPCV splits).
+    fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Input column names.
+    fn input_names(&self) -> Vec<String> {
+        self.inner.input_names()
+    }
+
+    /// Output column names.
+    fn output_names(&self) -> Vec<String> {
+        self.inner.output_names()
+    }
+
+    /// Number of bars before the first valid output.
+    fn warm_up_period(&self) -> usize {
+        self.inner.warm_up_period()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "Mma(inputs={:?}, window={}, outputs={:?})",
+            self.inner.input_names(),
+            self.inner.warm_up_period() + 1,
+            self.inner.output_names(),
+        )
+    }
+}
 
 // --- Sma ---------------------------------------------------------------------
 

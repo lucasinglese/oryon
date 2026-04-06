@@ -52,6 +52,12 @@ You can paste the Rust source and the template below into an LLM to generate the
 
         **`reset()`.** Describe what is cleared.
 
+    === "Interpretation"
+
+        - **Signal.** What the output value represents and how to read it.
+
+        - **Key consideration.** A practical note about usage (window size, units, edge cases).
+
     === "Example"
 
         ```python

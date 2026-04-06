@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::features::{
-    Ema, Kama, Kurtosis, LinearSlope, LogReturn, ParkinsonVolatility, RogersSatchellVolatility,
-    SimpleReturn, Skewness, Sma,
+    Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
+    RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
 };
 use oryon::traits::StreamingTransform;
 
@@ -158,6 +158,22 @@ fn bench_simple_return(c: &mut Criterion) {
     group.finish();
 }
 
+fn bench_mma(c: &mut Criterion) {
+    let mut group = c.benchmark_group("mma_update");
+
+    let mut mma_w20 = Mma::new(vec!["close".into()], 20, vec!["close_mma_20".into()]).unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| mma_w20.update(black_box(&[Some(100.0)])))
+    });
+
+    let mut mma_w200 = Mma::new(vec!["close".into()], 200, vec!["close_mma_200".into()]).unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| mma_w200.update(black_box(&[Some(100.0)])))
+    });
+
+    group.finish();
+}
+
 fn bench_sma(c: &mut Criterion) {
     let mut group = c.benchmark_group("sma_update");
 
@@ -247,6 +263,7 @@ criterion_group!(
     bench_kurtosis,
     bench_linear_slope,
     bench_log_return,
+    bench_mma,
     bench_parkinson_volatility,
     bench_rogers_satchell_volatility,
     bench_simple_return,

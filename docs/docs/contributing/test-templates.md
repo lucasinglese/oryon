@@ -19,7 +19,7 @@ Tests live in the same file as the implementation, inside `#[cfg(test)]`.
 Recommended if applicable:
 
 ```
-6. test_invalid_params: constructor rejects bad inputs
+6. test_error_raises_when_<condition>: one test per invalid param (e.g. test_error_raises_when_window_is_zero)
 ```
 
 ### The contract macro
@@ -105,11 +105,15 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_params() {
+    fn test_error_raises_when_empty_inputs() {
         assert!(YourFeature::new(vec![], 3, vec!["out".into()]).is_err());
-        assert!(YourFeature::new(vec!["close".into()], 0, vec!["out".into()]).is_err());
-        assert!(YourFeature::new(vec!["close".into()], 3, vec![]).is_err());
     }
+
+    // One test per invalid condition. Name each after the specific case:
+    // test_error_raises_when_window_is_zero
+    // test_error_raises_when_fast_exceeds_slow
+    // test_error_raises_when_empty_outputs
+    // etc.
 }
 ```
 
@@ -129,7 +133,8 @@ mod tests {
 Recommended if applicable:
 
 ```
-5. test_invalid_params
+5. test_error_raises_when_<condition>: one test per invalid param — not one monolithic block
+   e.g. test_error_raises_when_empty_inputs, test_error_raises_when_horizon_is_zero
 ```
 
 ### The contract macro
@@ -209,10 +214,14 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_params() {
+    fn test_error_raises_when_empty_inputs() {
         assert!(YourTarget::new(vec![], 3, vec!["out".into()]).is_err());
-        assert!(YourTarget::new(vec!["close".into()], 0, vec!["out".into()]).is_err());
     }
+
+    // One test per invalid condition. Name each after the specific case:
+    // test_error_raises_when_horizon_is_zero
+    // test_error_raises_when_empty_outputs
+    // etc.
 }
 ```
 

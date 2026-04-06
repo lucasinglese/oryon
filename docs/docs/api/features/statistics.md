@@ -183,3 +183,83 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
 === "Source"
 
     [:octicons-mark-github-16: `crates/oryon/src/features/kurtosis.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/kurtosis.rs)
+
+---
+
+## Median Moving Average
+
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+$$
+\text{MMA}_t = \text{median}(x_{t-n+1}, \ldots, x_t)
+$$
+
+Rolling median over the last `window` bars. More robust to outliers than the SMA -
+a single spike does not shift the output, making it useful as a pre-filter before
+applying trend or signal detection indicators.
+
+=== "Parameters"
+
+    | Name | Type | Constraint | Description |
+    |---|---|---|---|
+    | `inputs` | `list[str]` | len = 1 | Input column, e.g. `["close"]` |
+    | `window` | `int` | >= 1 | Rolling window length |
+    | `outputs` | `list[str]` | len = 1 | Output column, e.g. `["close_mma_20"]` |
+
+=== "Output"
+
+    | Column | When valid | Description |
+    |---|---|---|
+    | `outputs[0]` | `t >= window - 1`, no `NaN` in buffer | Rolling median of the last `window` values |
+
+=== "Properties"
+
+    | Property | Value |
+    |---|---|
+    | `warm_up_period` | `window - 1` |
+    | `forward_period` | `0` |
+
+=== "Behavior"
+
+    - **Warm-up.** The first `window - 1` bars return `NaN`.
+
+    - **`NaN` propagation.** A `NaN` input enters the buffer and contaminates the output.
+    Output stays `NaN` until the `NaN` is evicted after `window` consecutive valid bars.
+
+    - **`reset()`.** Clears the buffer entirely.
+
+    | Situation | Output |
+    |---|---|
+    | `t < window - 1` (buffer not full) | `NaN` |
+    | Buffer full, all values valid | Median value |
+    | Any `NaN` in the buffer | `NaN` |
+    | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Signal.** Tracks the central value of the series while ignoring extreme bars.
+    A single spike does not shift the output, unlike the SMA or EMA.
+
+    - **Window size.** Small windows (`3`-`5`) remove isolated outliers while preserving
+    local structure. Large windows smooth too aggressively and lag significantly behind
+    real price moves.
+
+    - **Use case.** Pre-filter before applying trend or signal detection indicators when
+    the raw series contains frequent outliers (bad ticks, gaps, illiquid bars).
+
+=== "Example"
+
+    ```python
+    from oryon.features import Mma
+
+    mma = Mma(inputs=["close"], window=3, outputs=["close_mma_3"])
+
+    mma.update([1.0])  # -> [NaN]
+    mma.update([3.0])  # -> [NaN]
+    mma.update([2.0])  # -> [2.0]  median([1, 3, 2]) = 2.0
+    mma.update([5.0])  # -> [3.0]  median([3, 2, 5]) = 3.0
+    ```
+
+=== "Source"
+
+    [:octicons-mark-github-16: `crates/oryon/src/features/mma.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/mma.rs)
