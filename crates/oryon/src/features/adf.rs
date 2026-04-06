@@ -143,7 +143,7 @@ impl StreamingTransform for Adf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
 
     // window=20, lags=0 — minimal setup for contract tests.
     fn adf_w20() -> Adf {
@@ -157,7 +157,7 @@ mod tests {
         .unwrap()
     }
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         adf_w20(),
         vec!["close".to_string()],
         vec![

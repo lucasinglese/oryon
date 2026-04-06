@@ -95,10 +95,10 @@ impl StreamingTransform for Kurtosis {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         Kurtosis::new(vec!["close".into()], 4, vec!["close_kurtosis_4".into()]).unwrap(),
         vec!["close".to_string()],
         vec!["close_kurtosis_4".to_string()],

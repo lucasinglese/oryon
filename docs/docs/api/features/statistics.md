@@ -7,7 +7,7 @@ rolling window. All have `forward_period = 0` and are safe for live streaming.
 
 ## Adf
 
-<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;3µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
 
 The Augmented Dickey-Fuller test measures whether a rolling window of prices
 behaves like a stationary (mean-reverting) process or a unit-root (random walk)
@@ -131,6 +131,14 @@ linear interpolation over a 45-point table derived from MacKinnon (2010).
     tables for `N=30`, `50`, `100`, `250`) would improve accuracy for short windows.
     This requires Monte Carlo simulation or MacKinnon (1994) coefficient tables not
     available through statsmodels.
+
+    - **Performance: incremental XtX update.** Each `update()` currently rebuilds the
+    full OLS system from scratch - `O(window * p^2)` per bar, where `p = 3 + lags` is
+    the number of regressors. At `window=200` with `lags=0` this costs ~3µs, and grows
+    further with larger windows or more lags. The bottleneck is avoidable: the `Adf`
+    struct could maintain `XtX` and `Xty` as running state, updating them incrementally
+    in `O(p^2)` per bar by adding the new row and subtracting the evicted row. This
+    would reduce per-bar cost to sub-1µs regardless of window size.
 
 === "Source"
 

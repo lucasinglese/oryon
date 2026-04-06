@@ -109,10 +109,10 @@ impl StreamingTransform for RollingZScore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         RollingZScore::new(vec!["x".into()], 3, vec!["x_z".into()]).unwrap(),
         vec!["x".to_string()],
         vec!["x_z".to_string()],

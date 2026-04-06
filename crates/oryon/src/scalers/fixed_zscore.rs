@@ -77,7 +77,7 @@ impl StreamingTransform for FixedZScore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
     fn params() -> StandardScalerParams {
@@ -87,7 +87,7 @@ mod tests {
         }
     }
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         FixedZScore::new(vec!["x".into()], vec!["x_z".into()], params()).unwrap(),
         vec!["x".to_string()],
         vec!["x_z".to_string()],

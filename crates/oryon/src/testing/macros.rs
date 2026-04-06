@@ -63,7 +63,7 @@ macro_rules! target_contract_tests {
 ///
 /// # Usage
 /// ```ignore
-/// feature_contract_tests!(
+/// streaming_transform_contract_tests!(
 ///     Sma::new(vec!["close".into()], 3, vec!["close_sma_3".into()]).unwrap(),
 ///     vec!["close".to_string()],
 ///     vec!["close_sma_3".to_string()],
@@ -72,7 +72,7 @@ macro_rules! target_contract_tests {
 /// );
 /// ```
 #[macro_export]
-macro_rules! feature_contract_tests {
+macro_rules! streaming_transform_contract_tests {
     ($feature:expr, $input_names:expr, $output_names:expr, $warm_up:expr, $state:expr $(,)?) => {
         #[test]
         fn test_contract_input_names() {

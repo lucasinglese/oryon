@@ -98,10 +98,10 @@ impl StreamingTransform for Mma {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         Mma::new(vec!["close".into()], 3, vec!["close_mma_3".into()]).unwrap(),
         vec!["close".to_string()],
         vec!["close_mma_3".to_string()],

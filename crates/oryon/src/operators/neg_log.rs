@@ -61,10 +61,10 @@ impl StreamingTransform for NegLog {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         NegLog::new(vec!["x".into()], vec!["neg_log_x".into()]).unwrap(),
         vec!["x".to_string()],
         vec!["neg_log_x".to_string()],

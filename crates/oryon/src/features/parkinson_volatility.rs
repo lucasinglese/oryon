@@ -108,10 +108,10 @@ impl StreamingTransform for ParkinsonVolatility {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         ParkinsonVolatility::new(
             vec!["high".into(), "low".into()],
             3,

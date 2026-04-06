@@ -100,10 +100,10 @@ impl StreamingTransform for LogReturn {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::feature_contract_tests;
+    use crate::streaming_transform_contract_tests;
     use smallvec::smallvec;
 
-    feature_contract_tests!(
+    streaming_transform_contract_tests!(
         LogReturn::new(
             vec!["close".to_string()],
             2,

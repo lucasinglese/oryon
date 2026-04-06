@@ -14,7 +14,7 @@ crates/oryon/src/
   pipeline/         FeaturePipeline + TargetPipeline orchestration
   checks/           Bar-level guards (single value)
   diagnostics/      Dataset-level guards (full column slice)
-  testing/          feature_contract_tests! and target_contract_tests! macros
+  testing/          streaming_transform_contract_tests! and target_contract_tests! macros
   error.rs          OryonError enum
   traits.rs         Feature and Target trait definitions
 
