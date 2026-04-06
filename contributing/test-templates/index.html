@@ -1416,7 +1416,7 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>5. test_fresh_instances_are_independent
 </code></pre></div>
 <p>Recommended if applicable:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>6. test_invalid_params: constructor rejects bad inputs
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>6. test_error_raises_when_&lt;condition&gt;: one test per invalid param (e.g. test_error_raises_when_window_is_zero)
 </code></pre></div>
 <h3 id="the-contract-macro">The contract macro<a class="headerlink" href="#the-contract-macro" title="Permanent link">&para;</a></h3>
 <p><code>feature_contract_tests!</code> generates 6 tests automatically:</p>
@@ -1498,12 +1498,16 @@
 <a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a>
 <a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a><span class="w">    </span><span class="cp">#[test]</span>
-<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">test_invalid_params</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">test_error_raises_when_empty_inputs</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a><span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">YourFeature</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[],</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;out&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()]).</span><span class="n">is_err</span><span class="p">());</span>
-<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a><span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">YourFeature</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;close&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()],</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;out&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()]).</span><span class="n">is_err</span><span class="p">());</span>
-<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a><span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">YourFeature</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;close&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()],</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[]).</span><span class="n">is_err</span><span class="p">());</span>
-<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a><span class="p">}</span>
+<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a>
+<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a><span class="w">    </span><span class="c1">// One test per invalid condition. Name each after the specific case:</span>
+<a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a><span class="w">    </span><span class="c1">// test_error_raises_when_window_is_zero</span>
+<a id="__codelineno-2-76" name="__codelineno-2-76" href="#__codelineno-2-76"></a><span class="w">    </span><span class="c1">// test_error_raises_when_fast_exceeds_slow</span>
+<a id="__codelineno-2-77" name="__codelineno-2-77" href="#__codelineno-2-77"></a><span class="w">    </span><span class="c1">// test_error_raises_when_empty_outputs</span>
+<a id="__codelineno-2-78" name="__codelineno-2-78" href="#__codelineno-2-78"></a><span class="w">    </span><span class="c1">// etc.</span>
+<a id="__codelineno-2-79" name="__codelineno-2-79" href="#__codelineno-2-79"></a><span class="p">}</span>
 </code></pre></div>
 <hr />
 <h2 id="target-tests">Target tests<a class="headerlink" href="#target-tests" title="Permanent link">&para;</a></h2>
@@ -1514,7 +1518,8 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>4. test_compute_stateless: same input always returns same output
 </code></pre></div>
 <p>Recommended if applicable:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>5. test_invalid_params
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>5. test_error_raises_when_&lt;condition&gt;: one test per invalid param — not one monolithic block
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>   e.g. test_error_raises_when_empty_inputs, test_error_raises_when_horizon_is_zero
 </code></pre></div>
 <h3 id="the-contract-macro_1">The contract macro<a class="headerlink" href="#the-contract-macro_1" title="Permanent link">&para;</a></h3>
 <p><code>target_contract_tests!</code> generates 5 tests automatically:</p>
@@ -1590,11 +1595,15 @@
 <a id="__codelineno-5-62" name="__codelineno-5-62" href="#__codelineno-5-62"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-5-63" name="__codelineno-5-63" href="#__codelineno-5-63"></a>
 <a id="__codelineno-5-64" name="__codelineno-5-64" href="#__codelineno-5-64"></a><span class="w">    </span><span class="cp">#[test]</span>
-<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">test_invalid_params</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">test_error_raises_when_empty_inputs</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-5-66" name="__codelineno-5-66" href="#__codelineno-5-66"></a><span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">YourTarget</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[],</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;out&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()]).</span><span class="n">is_err</span><span class="p">());</span>
-<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a><span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">YourTarget</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;close&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()],</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;out&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">()]).</span><span class="n">is_err</span><span class="p">());</span>
-<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a><span class="p">}</span>
+<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a>
+<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a><span class="w">    </span><span class="c1">// One test per invalid condition. Name each after the specific case:</span>
+<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a><span class="w">    </span><span class="c1">// test_error_raises_when_horizon_is_zero</span>
+<a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a><span class="w">    </span><span class="c1">// test_error_raises_when_empty_outputs</span>
+<a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a><span class="w">    </span><span class="c1">// etc.</span>
+<a id="__codelineno-5-73" name="__codelineno-5-73" href="#__codelineno-5-73"></a><span class="p">}</span>
 </code></pre></div>
 <hr />
 <h2 id="real-examples-in-the-codebase">Real examples in the codebase<a class="headerlink" href="#real-examples-in-the-codebase" title="Permanent link">&para;</a></h2>

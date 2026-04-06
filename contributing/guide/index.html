@@ -1411,9 +1411,9 @@
 <h2 id="adding-a-feature">Adding a Feature<a class="headerlink" href="#adding-a-feature" title="Permanent link">&para;</a></h2>
 <h3 id="1-write-the-rust-struct">1. Write the Rust struct<a class="headerlink" href="#1-write-the-rust-struct" title="Permanent link">&para;</a></h3>
 <p>Create <code>crates/oryon/src/features/&lt;your_feature&gt;.rs</code>.</p>
-<p>Implement the <code>Feature</code> trait. Use <code>Sma</code> as your reference implementation.</p>
+<p>Implement the <code>StreamingTransform</code> trait. Use <code>Sma</code> as your reference implementation.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">use</span><span class="w"> </span><span class="k">crate</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">OryonError</span><span class="p">;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">use</span><span class="w"> </span><span class="k">crate</span><span class="p">::</span><span class="n">traits</span><span class="p">::{</span><span class="n">Feature</span><span class="p">,</span><span class="w"> </span><span class="n">Output</span><span class="p">};</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">use</span><span class="w"> </span><span class="k">crate</span><span class="p">::</span><span class="n">traits</span><span class="p">::{</span><span class="n">Output</span><span class="p">,</span><span class="w"> </span><span class="n">StreamingTransform</span><span class="p">};</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">use</span><span class="w"> </span><span class="n">smallvec</span><span class="p">::</span><span class="n">smallvec</span><span class="p">;</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">YourFeature</span><span class="w"> </span><span class="p">{</span>
@@ -1442,12 +1442,12 @@
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="p">}</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="k">impl</span><span class="w"> </span><span class="n">Feature</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">YourFeature</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="k">impl</span><span class="w"> </span><span class="n">StreamingTransform</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">YourFeature</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">input_names</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">output_names</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">warm_up_period</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">usize</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">window</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
-<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">fresh</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Feature</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">fresh</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">StreamingTransform</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">        </span><span class="nb">Box</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">YourFeature</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">            </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;fresh: config was already validated at construction&quot;</span><span class="p">))</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">    </span><span class="p">}</span>
@@ -1543,7 +1543,20 @@
 <p>Two files to update:</p>
 <p>In <code>python/oryon/features.py</code>, add <code>YourFeature</code> to the import from <code>._oryon</code> and to <code>__all__</code>.</p>
 <p>In <code>python/oryon/__init__.py</code>, add <code>YourFeature</code> to the import from <code>.features</code> and to <code>__all__</code>.</p>
-<h3 id="8-write-documentation">8. Write documentation<a class="headerlink" href="#8-write-documentation" title="Permanent link">&para;</a></h3>
+<h3 id="8-write-python-tests">8. Write Python tests<a class="headerlink" href="#8-write-python-tests" title="Permanent link">&para;</a></h3>
+<p>Create <code>tests/features/test_your_feature.py</code>. These tests verify the PyO3 binding
+end-to-end — use <code>test_sma.py</code> as your reference. Same applies to scalers (<code>tests/scalers/</code>)
+and operators (<code>tests/operators/</code>).</p>
+<p>Mandatory tests:</p>
+<ul>
+<li><code>test_warm_up</code> - first <code>warm_up_period</code> outputs are <code>NaN</code></li>
+<li><code>test_valid_value</code> - correct value after warm-up</li>
+<li><code>test_nan_input_propagates</code> - <code>float("nan")</code> input returns <code>NaN</code></li>
+<li><code>test_reset</code> - output is <code>NaN</code> again after <code>reset()</code></li>
+<li><code>test_input_names</code> / <code>test_output_names</code> / <code>test_warm_up_period</code> - binding contract</li>
+<li><code>test_invalid_window</code> / <code>test_invalid_inputs</code> - <code>ValueError</code> on bad params</li>
+</ul>
+<h3 id="9-write-documentation">9. Write documentation<a class="headerlink" href="#9-write-documentation" title="Permanent link">&para;</a></h3>
 <p>Add an entry to the correct API Reference page. See <a href="../doc-templates/">Doc Templates</a>.</p>
 <hr />
 <h2 id="adding-a-target">Adding a Target<a class="headerlink" href="#adding-a-target" title="Permanent link">&para;</a></h2>
@@ -1569,6 +1582,7 @@
 <li>[ ] Benchmarks added with the correct naming convention (the benchmark page is updated by the maintainer before each release)</li>
 <li>[ ] PyO3 wrapper added and registered in all three places in <code>lib.rs</code></li>
 <li>[ ] Python re-export updated in <code>python/oryon/features.py</code> (or <code>targets.py</code>) and <code>python/oryon/__init__.py</code></li>
+<li>[ ] Python tests added in <code>tests/features/</code> (or <code>tests/targets/</code>)</li>
 <li>[ ] Documentation entry added using the template</li>
 <li>[ ] No <code>.unwrap()</code> on <code>Result</code> in library code - use <code>?</code> or return <code>OryonError::InvalidInput</code></li>
 <li>[ ] Constructor validates all parameters and returns <code>OryonError::InvalidInput</code></li>
