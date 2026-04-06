@@ -5,7 +5,7 @@ mod scalers;
 mod targets;
 
 use features::{
-    Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
+    Adf, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
     RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
 };
 use operators::{NegLog, Subtract};
@@ -38,6 +38,9 @@ pub(crate) fn to_python(values: &[Option<f64>]) -> Vec<f64> {
 /// Uses `fresh()` so the pipeline always starts with a clean state.
 /// Add a branch here for each new feature type.
 pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn StreamingTransform>> {
+    if let Ok(f) = obj.extract::<PyRef<Adf>>() {
+        return Ok(f.inner.fresh());
+    }
     if let Ok(f) = obj.extract::<PyRef<Sma>>() {
         return Ok(f.inner.fresh());
     }
@@ -123,6 +126,7 @@ pub(crate) fn extract_target(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Target>
 #[pymodule]
 fn _oryon(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // features
+    m.add_class::<Adf>()?;
     m.add_class::<Sma>()?;
     m.add_class::<Ema>()?;
     m.add_class::<Kama>()?;

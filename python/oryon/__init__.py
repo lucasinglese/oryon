@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from ._oryon import FeaturePipeline, TargetPipeline
 from .datasets import load_sample_bars
 from .features import (
+    Adf,
     Ema,
     Kama,
     Kurtosis,
@@ -66,6 +67,7 @@ def run_targets_pipeline(pipeline: TargetPipeline, df: DataFrame) -> DataFrame:
 
 __all__ = [
     # features
+    "Adf",
     "Sma",
     "Ema",
     "Kama",

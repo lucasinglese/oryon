@@ -1,3 +1,4 @@
+use oryon::features::Adf as RustAdf;
 use oryon::features::Ema as RustEma;
 use oryon::features::Kama as RustKama;
 use oryon::features::Kurtosis as RustKurtosis;
@@ -9,11 +10,107 @@ use oryon::features::RogersSatchellVolatility as RustRogersSatchellVolatility;
 use oryon::features::SimpleReturn as RustSimpleReturn;
 use oryon::features::Skewness as RustSkewness;
 use oryon::features::Sma as RustSma;
+use oryon::ops::AdfRegression;
 use oryon::StreamingTransform;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::{to_python, to_rust};
+
+// --- Adf ---------------------------------------------------------------------
+
+fn parse_regression(regression: &str) -> PyResult<AdfRegression> {
+    match regression {
+        "c" => Ok(AdfRegression::Constant),
+        "ct" => Ok(AdfRegression::ConstantTrend),
+        other => Err(PyValueError::new_err(format!(
+            "regression must be 'c' or 'ct', got '{other}'"
+        ))),
+    }
+}
+
+/// Rolling Augmented Dickey-Fuller test.
+///
+/// Produces two outputs per bar: the ADF statistic and its approximate p-value.
+/// A very negative stat (e.g. below -3.5 for ``regression='c'``) and a small
+/// p-value indicate stationarity (rejection of the unit-root null hypothesis).
+///
+/// P-values use the asymptotic MacKinnon (2010) distribution. Results are most
+/// reliable for ``window >= 100``.
+#[pyclass(module = "oryon")]
+pub(crate) struct Adf {
+    pub(crate) inner: RustAdf,
+    window: usize,
+    regression: String,
+}
+
+#[pymethods]
+impl Adf {
+    /// Create a new ``Adf``.
+    ///
+    /// Args:
+    ///     inputs: Name of the input column (e.g. ``["close"]``).
+    ///     window: Number of bars in the rolling window. Must satisfy
+    ///         ``window > 3 + 2 * lags``.
+    ///     outputs: Names of the two output columns ``[adf_stat_col, adf_pval_col]``.
+    ///     lags: Number of lagged differences. ``None`` applies Schwert's rule
+    ///         ``k = floor(12 * (window / 100) ** 0.25)``.
+    ///     regression: ``'c'`` (constant only) or ``'ct'`` (constant + trend).
+    #[new]
+    #[pyo3(signature = (inputs, window, outputs, lags=None, regression="c"))]
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+        lags: Option<usize>,
+        regression: &str,
+    ) -> PyResult<Self> {
+        let reg = parse_regression(regression)?;
+        let inner = RustAdf::new(inputs, window, outputs, lags, reg)
+            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        Ok(Adf {
+            inner,
+            window,
+            regression: regression.to_string(),
+        })
+    }
+
+    /// Process one bar. Returns ``[adf_stat, adf_pval]``, both ``NaN`` during
+    /// warm-up, on ``NaN`` input, or when OLS is singular.
+    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
+        to_python(&self.inner.update(&to_rust(&values)))
+    }
+
+    /// Reset internal state (e.g. between CPCV splits).
+    fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Input column names.
+    fn input_names(&self) -> Vec<String> {
+        self.inner.input_names()
+    }
+
+    /// Output column names.
+    fn output_names(&self) -> Vec<String> {
+        self.inner.output_names()
+    }
+
+    /// Number of bars before the first valid output.
+    fn warm_up_period(&self) -> usize {
+        self.inner.warm_up_period()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "Adf(inputs={:?}, window={}, outputs={:?}, regression={:?})",
+            self.inner.input_names(),
+            self.window,
+            self.inner.output_names(),
+            self.regression,
+        )
+    }
+}
 
 // --- Mma ---------------------------------------------------------------------
 

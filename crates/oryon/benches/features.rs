@@ -1,8 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::features::{
-    Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
+    Adf, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
     RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
 };
+use oryon::ops::AdfRegression;
 use oryon::traits::StreamingTransform;
 
 fn bench_log_return(c: &mut Criterion) {
@@ -256,8 +257,39 @@ fn bench_rogers_satchell_volatility(c: &mut Criterion) {
     group.finish();
 }
 
+fn bench_adf(c: &mut Criterion) {
+    let mut group = c.benchmark_group("adf_update");
+
+    let mut adf_w20 = Adf::new(
+        vec!["close".into()],
+        20,
+        vec!["close_adf_stat_20".into(), "close_adf_pval_20".into()],
+        Some(0),
+        AdfRegression::Constant,
+    )
+    .unwrap();
+    group.bench_function("w20", |b| {
+        b.iter(|| adf_w20.update(black_box(&[Some(100.0)])))
+    });
+
+    let mut adf_w200 = Adf::new(
+        vec!["close".into()],
+        200,
+        vec!["close_adf_stat_200".into(), "close_adf_pval_200".into()],
+        Some(0),
+        AdfRegression::Constant,
+    )
+    .unwrap();
+    group.bench_function("w200", |b| {
+        b.iter(|| adf_w200.update(black_box(&[Some(100.0)])))
+    });
+
+    group.finish();
+}
+
 criterion_group!(
     benches,
+    bench_adf,
     bench_ema,
     bench_kama,
     bench_kurtosis,

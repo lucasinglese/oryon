@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::ops::{
-    average, kurtosis, linear_slope, log_return, median, parkinson_log_hl_sq, rogers_satchell_sq,
-    simple_return, skewness, std_dev,
+    adf_pvalue, adf_stat, average, kurtosis, linear_slope, log_return, median, parkinson_log_hl_sq,
+    rogers_satchell_sq, simple_return, skewness, std_dev, AdfRegression,
 };
 
 fn data(window: usize) -> Vec<Option<f64>> {
@@ -104,8 +104,37 @@ fn bench_rogers_satchell_sq(c: &mut Criterion) {
     });
 }
 
+fn adf_data(window: usize) -> Vec<Option<f64>> {
+    // Sinusoidal series: avoids the degenerate (constant/linear) case that returns None.
+    (0..window)
+        .map(|i| Some(100.0 + (i as f64 * 1.7).sin() * 5.0))
+        .collect()
+}
+
+fn bench_adf_stat(c: &mut Criterion) {
+    let w20 = adf_data(20);
+    let w200 = adf_data(200);
+
+    let mut group = c.benchmark_group("adf_stat");
+    group.bench_function("w20", |b| {
+        b.iter(|| adf_stat(black_box(&w20), 0, AdfRegression::Constant))
+    });
+    group.bench_function("w200", |b| {
+        b.iter(|| adf_stat(black_box(&w200), 0, AdfRegression::Constant))
+    });
+    group.finish();
+}
+
+fn bench_adf_pvalue(c: &mut Criterion) {
+    c.bench_function("adf_pvalue", |b| {
+        b.iter(|| adf_pvalue(black_box(-2.5), AdfRegression::Constant))
+    });
+}
+
 criterion_group!(
     benches,
+    bench_adf_stat,
+    bench_adf_pvalue,
     bench_average,
     bench_median,
     bench_std_dev,

@@ -1,4 +1,5 @@
 from ._oryon import (
+    Adf,
     Ema,
     Kama,
     Kurtosis,
@@ -13,6 +14,7 @@ from ._oryon import (
 )
 
 __all__ = [
+    "Adf",
     "Sma",
     "Ema",
     "Kama",

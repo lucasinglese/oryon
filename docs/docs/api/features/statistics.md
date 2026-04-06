@@ -5,6 +5,139 @@ rolling window. All have `forward_period = 0` and are safe for live streaming.
 
 ---
 
+## Adf
+
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+The Augmented Dickey-Fuller test measures whether a rolling window of prices
+behaves like a stationary (mean-reverting) process or a unit-root (random walk)
+process. Two outputs are produced per bar: the ADF test statistic and its
+approximate p-value.
+
+The regression model estimated by OLS on each window is:
+
+$$
+\Delta y_t = \alpha + \gamma \, y_{t-1} + \sum_{j=1}^{k} \delta_j \, \Delta y_{t-j} + \varepsilon_t
+\quad \text{(regression='c')}
+$$
+
+$$
+\Delta y_t = \alpha + \beta t + \gamma \, y_{t-1} + \sum_{j=1}^{k} \delta_j \, \Delta y_{t-j} + \varepsilon_t
+\quad \text{(regression='ct')}
+$$
+
+The test statistic is $\hat{\gamma} / \text{SE}(\hat{\gamma})$. Under H0 (unit root) it
+follows the Dickey-Fuller distribution, not Student's t. P-values are computed via
+linear interpolation over a 45-point table derived from MacKinnon (2010).
+
+**H0:** $\gamma = 0$ (unit root - non-stationary)
+**H1:** $\gamma < 0$ (no unit root - stationary)
+
+=== "Parameters"
+
+    | Name | Type | Constraint | Description |
+    |---|---|---|---|
+    | `inputs` | `list[str]` | len = 1 | Input column, e.g. `["close"]` |
+    | `window` | `int` | `> 3 + 2 * lags` | Rolling window length |
+    | `outputs` | `list[str]` | len = 2 | Output columns `[adf_stat_col, adf_pval_col]` |
+    | `lags` | `int \| None` | >= 0 | Lagged differences. `None` applies Schwert's rule |
+    | `regression` | `str` | `'c'` or `'ct'` | `'c'`: constant only. `'ct'`: constant + trend |
+
+    **Schwert's rule** (default when `lags=None`): $k = \lfloor 12 \cdot (n/100)^{0.25} \rfloor$.
+    Applied once at construction. For `window=100` this gives `k=12`.
+
+=== "Output"
+
+    | Column | When valid | Description |
+    |---|---|---|
+    | `outputs[0]` | `t >= window - 1`, no `NaN` in buffer, OLS non-singular | ADF test statistic |
+    | `outputs[1]` | Same as above | Approximate p-value (MacKinnon 2010, asymptotic) |
+
+=== "Behavior"
+
+    - **Warm-up.** The first `window - 1` bars return `[NaN, NaN]`.
+
+    - **`NaN` propagation.** A `NaN` input enters the buffer. Both outputs are `NaN`
+    until the `NaN` is evicted after `window` consecutive valid bars.
+
+    - **Singular OLS.** When the OLS system is degenerate (e.g. all values in the
+    buffer are identical), both outputs return `NaN`.
+
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    (CPCV, walk-forward) to avoid state leaking across splits.
+
+    - **P-value accuracy.** P-values use the asymptotic (large-sample) MacKinnon
+    distribution. For `window < 100` the asymptotic approximation becomes less
+    accurate - the true significance level may differ by a few percent from the
+    reported p-value. Prefer `window >= 100` for reliable inference.
+
+    - **Implementation.** Full OLS via Gaussian elimination on every `update()`,
+    `O(window)` per bar.
+
+    | Situation | Output |
+    |---|---|
+    | `t < window - 1` (buffer not full) | `[NaN, NaN]` |
+    | Buffer full, all values valid, OLS non-singular | `[stat, pvalue]` |
+    | Any `NaN` in the buffer | `[NaN, NaN]` |
+    | OLS singular (e.g. constant series) | `[NaN, NaN]` |
+    | After `reset()` | `[NaN, NaN]` until buffer refills |
+
+=== "Interpretation"
+
+    - **Stat below -3.5 (`'c'`)** or **-4.0 (`'ct'`)**: strong evidence of
+    stationarity. The series is likely mean-reverting in this window.
+
+    - **P-value below 0.05**: reject H0 (unit root) at the 5% level.
+
+    - **Rolling use.** A series that switches from high p-values to low p-values
+    across time is transitioning from a trending/random-walk regime to a
+    mean-reverting regime - a common signal in pairs trading and stat-arb.
+
+    - **Regression choice.** Use `'c'` when the series oscillates around a
+    non-zero level. Use `'ct'` when you expect a linear trend and want to test
+    stationarity around that trend.
+
+=== "Example"
+
+    ```python
+    from statsmodels.tsa.stattools import adfuller
+    from oryon.features import Adf
+
+    # Reference: adfuller(x, regression='c', maxlag=0, autolag=None)[0] = -5.656
+    x = [0.0, 0.5087, -0.1558, 0.2507, 0.8633, 0.3085, 0.5017, 0.4578,
+         -0.2826, 0.1437, 0.4694, -0.0066, 0.2960, 0.6133, -0.1088,
+         0.3521, 0.3786, 0.1477, 0.5707, 0.1324]
+
+    adf = Adf(inputs=["close"], window=20, outputs=["adf_stat", "adf_pval"],
+              lags=0, regression="c")
+
+    for v in x[:-1]:
+        adf.update([v])  # returns [NaN, NaN] during warm-up
+
+    stat, pval = adf.update([x[-1]])
+    print(f"stat={stat:.4f}, pval={pval:.2e}")
+    # stat=-5.6565, pval=1.04e-06  → strong evidence of stationarity
+    ```
+
+=== "Contributing"
+
+    - **Additional test series.** The current Rust test suite validates `adf_stat`
+    against statsmodels on a single 20-bar reference series. Adding 2-3 more series
+    (random walk, strong mean-reversion, high-volatility) would increase confidence
+    across the full range of the statistic.
+
+    - **Finite-sample p-values.** P-values currently use the asymptotic MacKinnon
+    distribution (`N=1` in `mackinnonp`). A finite-sample correction (separate lookup
+    tables for `N=30`, `50`, `100`, `250`) would improve accuracy for short windows.
+    This requires Monte Carlo simulation or MacKinnon (1994) coefficient tables not
+    available through statsmodels.
+
+=== "Source"
+
+    [:octicons-mark-github-16: `crates/oryon/src/features/adf.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/adf.rs)
+
+---
+
 ## Skewness
 
 <a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
