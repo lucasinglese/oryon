@@ -1435,7 +1435,7 @@
 rolling window. All have <code>forward_period = 0</code> and are safe for live streaming.</p>
 <hr />
 <h2 id="adf">Adf<a class="headerlink" href="#adf" title="Permanent link">&para;</a></h2>
-<p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
+<p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;3µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
 <p>The Augmented Dickey-Fuller test measures whether a rolling window of prices
 behaves like a stationary (mean-reverting) process or a unit-root (random walk)
 process. Two outputs are produced per bar: the ADF test statistic and its
@@ -1639,6 +1639,15 @@ distribution (<code>N=1</code> in <code>mackinnonp</code>). A finite-sample corr
 tables for <code>N=30</code>, <code>50</code>, <code>100</code>, <code>250</code>) would improve accuracy for short windows.
 This requires Monte Carlo simulation or MacKinnon (1994) coefficient tables not
 available through statsmodels.</p>
+</li>
+<li>
+<p><strong>Performance: incremental XtX update.</strong> Each <code>update()</code> currently rebuilds the
+full OLS system from scratch - <code>O(window * p^2)</code> per bar, where <code>p = 3 + lags</code> is
+the number of regressors. At <code>window=200</code> with <code>lags=0</code> this costs ~3µs, and grows
+further with larger windows or more lags. The bottleneck is avoidable: the <code>Adf</code>
+struct could maintain <code>XtX</code> and <code>Xty</code> as running state, updating them incrementally
+in <code>O(p^2)</code> per bar by adding the new row and subtracting the evicted row. This
+would reduce per-bar cost to sub-1µs regardless of window size.</p>
 </li>
 </ul>
 </div>
