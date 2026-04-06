@@ -823,6 +823,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#adf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#skewness" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1356,6 +1367,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#adf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#skewness" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1412,6 +1434,220 @@
 <p>Statistical features summarize the distribution of a price series over a
 rolling window. All have <code>forward_period = 0</code> and are safe for live streaming.</p>
 <hr />
+<h2 id="adf">Adf<a class="headerlink" href="#adf" title="Permanent link">&para;</a></h2>
+<p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
+<p>The Augmented Dickey-Fuller test measures whether a rolling window of prices
+behaves like a stationary (mean-reverting) process or a unit-root (random walk)
+process. Two outputs are produced per bar: the ADF test statistic and its
+approximate p-value.</p>
+<p>The regression model estimated by OLS on each window is:</p>
+<div class="arithmatex">\[
+\Delta y_t = \alpha + \gamma \, y_{t-1} + \sum_{j=1}^{k} \delta_j \, \Delta y_{t-j} + \varepsilon_t
+\quad \text{(regression='c')}
+\]</div>
+<div class="arithmatex">\[
+\Delta y_t = \alpha + \beta t + \gamma \, y_{t-1} + \sum_{j=1}^{k} \delta_j \, \Delta y_{t-j} + \varepsilon_t
+\quad \text{(regression='ct')}
+\]</div>
+<p>The test statistic is <span class="arithmatex">\(\hat{\gamma} / \text{SE}(\hat{\gamma})\)</span>. Under H0 (unit root) it
+follows the Dickey-Fuller distribution, not Student's t. P-values are computed via
+linear interpolation over a 45-point table derived from MacKinnon (2010).</p>
+<p><strong>H0:</strong> <span class="arithmatex">\(\gamma = 0\)</span> (unit root - non-stationary)
+<strong>H1:</strong> <span class="arithmatex">\(\gamma &lt; 0\)</span> (no unit root - stationary)</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Contributing</label><label for="__tabbed_1_7">Source</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>list[str]</code></td>
+<td>len = 1</td>
+<td>Input column, e.g. <code>["close"]</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>int</code></td>
+<td><code>&gt; 3 + 2 * lags</code></td>
+<td>Rolling window length</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>list[str]</code></td>
+<td>len = 2</td>
+<td>Output columns <code>[adf_stat_col, adf_pval_col]</code></td>
+</tr>
+<tr>
+<td><code>lags</code></td>
+<td><code>int \| None</code></td>
+<td>&gt;= 0</td>
+<td>Lagged differences. <code>None</code> applies Schwert's rule</td>
+</tr>
+<tr>
+<td><code>regression</code></td>
+<td><code>str</code></td>
+<td><code>'c'</code> or <code>'ct'</code></td>
+<td><code>'c'</code>: constant only. <code>'ct'</code>: constant + trend</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Schwert's rule</strong> (default when <code>lags=None</code>): <span class="arithmatex">\(k = \lfloor 12 \cdot (n/100)^{0.25} \rfloor\)</span>.
+Applied once at construction. For <code>window=100</code> this gives <code>k=12</code>.</p>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>When valid</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>outputs[0]</code></td>
+<td><code>t &gt;= window - 1</code>, no <code>NaN</code> in buffer, OLS non-singular</td>
+<td>ADF test statistic</td>
+</tr>
+<tr>
+<td><code>outputs[1]</code></td>
+<td>Same as above</td>
+<td>Approximate p-value (MacKinnon 2010, asymptotic)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>[NaN, NaN]</code>.</p>
+</li>
+<li>
+<p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input enters the buffer. Both outputs are <code>NaN</code>
+until the <code>NaN</code> is evicted after <code>window</code> consecutive valid bars.</p>
+</li>
+<li>
+<p><strong>Singular OLS.</strong> When the OLS system is degenerate (e.g. all values in the
+buffer are identical), both outputs return <code>NaN</code>.</p>
+</li>
+<li>
+<p><strong><code>reset()</code>.</strong> Clears the buffer entirely. Call it between backtest folds
+(CPCV, walk-forward) to avoid state leaking across splits.</p>
+</li>
+<li>
+<p><strong>P-value accuracy.</strong> P-values use the asymptotic (large-sample) MacKinnon
+distribution. For <code>window &lt; 100</code> the asymptotic approximation becomes less
+accurate - the true significance level may differ by a few percent from the
+reported p-value. Prefer <code>window &gt;= 100</code> for reliable inference.</p>
+</li>
+<li>
+<p><strong>Implementation.</strong> Full OLS via Gaussian elimination on every <code>update()</code>,
+<code>O(window)</code> per bar.</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t &lt; window - 1</code> (buffer not full)</td>
+<td><code>[NaN, NaN]</code></td>
+</tr>
+<tr>
+<td>Buffer full, all values valid, OLS non-singular</td>
+<td><code>[stat, pvalue]</code></td>
+</tr>
+<tr>
+<td>Any <code>NaN</code> in the buffer</td>
+<td><code>[NaN, NaN]</code></td>
+</tr>
+<tr>
+<td>OLS singular (e.g. constant series)</td>
+<td><code>[NaN, NaN]</code></td>
+</tr>
+<tr>
+<td>After <code>reset()</code></td>
+<td><code>[NaN, NaN]</code> until buffer refills</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Stat below -3.5 (<code>'c'</code>)</strong> or <strong>-4.0 (<code>'ct'</code>)</strong>: strong evidence of
+stationarity. The series is likely mean-reverting in this window.</p>
+</li>
+<li>
+<p><strong>P-value below 0.05</strong>: reject H0 (unit root) at the 5% level.</p>
+</li>
+<li>
+<p><strong>Rolling use.</strong> A series that switches from high p-values to low p-values
+across time is transitioning from a trending/random-walk regime to a
+mean-reverting regime - a common signal in pairs trading and stat-arb.</p>
+</li>
+<li>
+<p><strong>Regression choice.</strong> Use <code>'c'</code> when the series oscillates around a
+non-zero level. Use <code>'ct'</code> when you expect a linear trend and want to test
+stationarity around that trend.</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.stattools</span><span class="w"> </span><span class="kn">import</span> <span class="n">adfuller</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Adf</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Reference: adfuller(x, regression=&#39;c&#39;, maxlag=0, autolag=None)[0] = -5.656</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5087</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1558</span><span class="p">,</span> <span class="mf">0.2507</span><span class="p">,</span> <span class="mf">0.8633</span><span class="p">,</span> <span class="mf">0.3085</span><span class="p">,</span> <span class="mf">0.5017</span><span class="p">,</span> <span class="mf">0.4578</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     <span class="o">-</span><span class="mf">0.2826</span><span class="p">,</span> <span class="mf">0.1437</span><span class="p">,</span> <span class="mf">0.4694</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0066</span><span class="p">,</span> <span class="mf">0.2960</span><span class="p">,</span> <span class="mf">0.6133</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1088</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>     <span class="mf">0.3521</span><span class="p">,</span> <span class="mf">0.3786</span><span class="p">,</span> <span class="mf">0.1477</span><span class="p">,</span> <span class="mf">0.5707</span><span class="p">,</span> <span class="mf">0.1324</span><span class="p">]</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">adf</span> <span class="o">=</span> <span class="n">Adf</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;adf_stat&quot;</span><span class="p">,</span> <span class="s2">&quot;adf_pval&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>          <span class="n">lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">regression</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">adf</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">v</span><span class="p">])</span>  <span class="c1"># returns [NaN, NaN] during warm-up</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">stat</span><span class="p">,</span> <span class="n">pval</span> <span class="o">=</span> <span class="n">adf</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stat=</span><span class="si">{</span><span class="n">stat</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pval=</span><span class="si">{</span><span class="n">pval</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># stat=-5.6565, pval=1.04e-06  → strong evidence of stationarity</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Additional test series.</strong> The current Rust test suite validates <code>adf_stat</code>
+against statsmodels on a single 20-bar reference series. Adding 2-3 more series
+(random walk, strong mean-reversion, high-volatility) would increase confidence
+across the full range of the statistic.</p>
+</li>
+<li>
+<p><strong>Finite-sample p-values.</strong> P-values currently use the asymptotic MacKinnon
+distribution (<code>N=1</code> in <code>mackinnonp</code>). A finite-sample correction (separate lookup
+tables for <code>N=30</code>, <code>50</code>, <code>100</code>, <code>250</code>) would improve accuracy for short windows.
+This requires Monte Carlo simulation or MacKinnon (1994) coefficient tables not
+available through statsmodels.</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/adf.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/adf.rs</code></a></p>
+</div>
+</div>
+</div>
+<hr />
 <h2 id="skewness">Skewness<a class="headerlink" href="#skewness" title="Permanent link">&para;</a></h2>
 <p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
 <div class="arithmatex">\[
@@ -1420,7 +1656,7 @@ rolling window. All have <code>forward_period = 0</code> and are safe for live s
 <p>Fisher-Pearson corrected skewness over a rolling window, identical to <code>pandas .skew()</code>.
 Positive values indicate a long right tail (rare large gains), negative values a long left
 tail (rare large losses). Useful for detecting regime shifts and tail risk.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1541,22 +1777,22 @@ is growing relative to the right.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Skewness</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">sk</span> <span class="o">=</span> <span class="n">Skewness</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_skew_3&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">sk</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]})</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1">#    close_skew_3</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># 0           NaN</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># 1           NaN</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># 2          0.94</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># 3          0.00</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># 4          0.00</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Skewness</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">sk</span> <span class="o">=</span> <span class="n">Skewness</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_skew_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">sk</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]})</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1">#    close_skew_3</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># 0           NaN</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># 1           NaN</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># 2          0.94</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># 3          0.00</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># 4          0.00</span>
 </code></pre></div>
 <p><code>skew([1, 2, 4]) = 0.935</code> (right-skewed). <code>skew([2, 4, 6]) = 0.0</code> (symmetric -
 evenly spaced values always give zero skewness). Results match <code>pandas .skew()</code> exactly.</p>
@@ -1575,7 +1811,7 @@ evenly spaced values always give zero skewness). Results match <code>pandas .ske
 <p>Fisher excess kurtosis over a rolling window, identical to <code>pandas .kurt()</code>.
 Values above 0 indicate fat tails (leptokurtic). A normal distribution gives 0.
 Uniformly spaced returns give negative kurtosis (platykurtic).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:6"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label><label for="__tabbed_3_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1695,22 +1931,22 @@ observations within the window, the tail behavior is changing.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kurtosis</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ku</span> <span class="o">=</span> <span class="n">Kurtosis</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_kurt_4&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">ku</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]})</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1">#    close_kurt_4</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># 0           NaN</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># 1           NaN</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># 2           NaN</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># 3          0.76</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># 4          2.24</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kurtosis</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">ku</span> <span class="o">=</span> <span class="n">Kurtosis</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_kurt_4&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">ku</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]})</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">#    close_kurt_4</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># 0           NaN</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># 1           NaN</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># 2           NaN</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># 3          0.76</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># 4          2.24</span>
 </code></pre></div>
 <p><code>kurt([1, 2, 4, 8]) = 0.758</code> (fat tails from the jump to 8). Results match
 <code>pandas .kurt()</code> exactly.</p>
@@ -1729,7 +1965,7 @@ observations within the window, the tail behavior is changing.</p>
 <p>Rolling median over the last <code>window</code> bars. More robust to outliers than the SMA -
 a single spike does not shift the output, making it useful as a pre-filter before
 applying trend or signal detection indicators.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:7"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><input id="__tabbed_3_7" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Properties</label><label for="__tabbed_3_4">Behavior</label><label for="__tabbed_3_5">Interpretation</label><label for="__tabbed_3_6">Example</label><label for="__tabbed_3_7">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:7"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><input id="__tabbed_4_6" name="__tabbed_4" type="radio" /><input id="__tabbed_4_7" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Properties</label><label for="__tabbed_4_4">Behavior</label><label for="__tabbed_4_5">Interpretation</label><label for="__tabbed_4_6">Example</label><label for="__tabbed_4_7">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1859,14 +2095,14 @@ the raw series contains frequent outliers (bad ticks, gaps, illiquid bars).</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mma</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">mma</span> <span class="o">=</span> <span class="n">Mma</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_mma_3&quot;</span><span class="p">])</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># -&gt; [2.0]  median([1, 3, 2]) = 2.0</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">5.0</span><span class="p">])</span>  <span class="c1"># -&gt; [3.0]  median([3, 2, 5]) = 3.0</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mma</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">mma</span> <span class="o">=</span> <span class="n">Mma</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_mma_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># -&gt; [2.0]  median([1, 3, 2]) = 2.0</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">5.0</span><span class="p">])</span>  <span class="c1"># -&gt; [3.0]  median([3, 2, 5]) = 3.0</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
