@@ -1,6 +1,6 @@
 /* === Banner Styling === */
 .banner {
-    height: 39px;
+    min-height: 39px;
     position: sticky;
     top: 0;
     left: 0;
@@ -11,12 +11,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     font-size: 14px;
     font-weight: 600;
     font-family: "Arial", sans-serif;
     letter-spacing: 0.5px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    padding: 0.4rem 1rem;
+    box-sizing: border-box;
+}
+@media screen and (max-width: 76em) {
+    .banner { font-size: 11px; position: relative; }
 }
 [data-md-color-scheme="default"] .banner {
     background-color: rgba(180, 83, 9, 0.1);
@@ -74,6 +80,7 @@
   /* Couleurs principales */
   --md-default-bg-color: #151515;        /* fond général */
   --md-primary-fg-color: #1C1C1C;        /* fond du header */
+  --md-primary-fg-color--dark: #78350F;  /* drawer source widget */
   --md-accent-fg-color: #D97706;         /* accents (tabs actifs, hover, ...) */
   --md-typeset-color: #F0F0F0;           /* couleur du texte principal */
   --md-typeset-a-color: #D97706;         /* liens dans le contenu */
@@ -100,6 +107,7 @@
 /* === THÈME CLAIR === */
 [data-md-color-scheme="default"] {
   --md-primary-fg-color: #F5F5F5;
+  --md-primary-fg-color--dark: #92400E;  /* drawer source widget */
   --md-primary-bg-color: #FFFFFF;
   --md-accent-fg-color: #B45309;
   --md-typeset-a-color: #B45309;
@@ -107,6 +115,9 @@
 }
 [data-md-color-scheme="default"] .md-header,
 [data-md-color-scheme="default"] .md-tabs {
+  color: #1a1a1a;
+}
+[data-md-color-scheme="default"] .md-nav--primary > .md-nav__title[for="__drawer"] {
   color: #1a1a1a;
 }
 [data-md-color-scheme="default"] h1 {

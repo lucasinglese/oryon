@@ -6,7 +6,13 @@
   <style>
     /* Hide default content area */
     .md-content { display: none; }
-    .md-sidebar { display: none; }
+    .md-sidebar--secondary { display: none; }
+    @media screen and (min-width: 76.25em) {
+      .md-sidebar--primary { display: none; }
+    }
+
+    /* Prevent horizontal overflow on the home page */
+    .md-container { overflow-x: hidden; }
 
     /* Transparent header + tabs blending into hero */
     .md-header {
@@ -168,7 +174,9 @@
     .nx-features {
       padding: 4rem 1rem;
       max-width: 1000px;
+      width: 100%;
       margin: 0 auto;
+      box-sizing: border-box;
     }
     .nx-features__header {
       text-align: center;
@@ -240,7 +248,10 @@
     .nx-showcase {
       padding: 4rem 1rem 3rem;
       max-width: 1000px;
+      width: 100%;
       margin: 0 auto;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .nx-showcase__header {
       text-align: center;
@@ -397,7 +408,9 @@
       padding: 3rem 1rem 4rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
       max-width: 600px;
+      width: 100%;
       margin: 3rem auto 0;
+      box-sizing: border-box;
     }
     .nx-cta h2 {
       font-size: 1.6rem;
@@ -442,6 +455,8 @@
       .nx-hero__title { font-size: 2.4rem; }
       .nx-hero__subtitle { font-size: 1.05rem; }
       .nx-features__grid { grid-template-columns: 1fr; }
+      .nx-stats { flex-wrap: wrap; gap: 1rem; }
+      .nx-stats > div { border-right: none; padding: 0 1rem; }
     }
     @media screen and (max-width: 36em) {
       .nx-hero__title { font-size: 1.8rem; }
@@ -558,18 +573,29 @@
        ============================== */
     .nx-showcase__stack {
       max-width: 680px;
+      width: 100%;
       margin: 0 auto;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .nx-showcase__stack .highlight {
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin: 0 0 1.5rem;
+      overflow: hidden;
     }
     .nx-showcase__stack .highlight pre {
       font-size: 0.58rem !important;
-      border-radius: 10px !important;
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: 0 !important;
+      border: none !important;
       padding: 1.4rem !important;
-      margin: 0 0 1.5rem !important;
+      margin: 0 !important;
       overflow-x: auto !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
     }
-    [data-md-color-scheme="default"] .nx-showcase__stack .highlight pre {
-      border-color: rgba(0, 0, 0, 0.08) !important;
+    [data-md-color-scheme="default"] .nx-showcase__stack .highlight {
+      border-color: rgba(0, 0, 0, 0.08);
     }
     .nx-showcase__desc {
       font-size: 0.95rem;
