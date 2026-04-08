@@ -1,67 +1,14 @@
-use crate::error::OryonError;
-use crate::traits::{Output, StreamingTransform};
-use smallvec::smallvec;
-
-/// Negative natural logarithm: `-ln(x)`.
-///
-/// Returns `None` if the input is `None` or `<= 0`.
-#[derive(Debug)]
-pub struct NegLog {
-    inputs: Vec<String>,
-    outputs: Vec<String>,
-}
-
-impl NegLog {
-    /// Create a new `NegLog`.
-    ///
-    /// - `inputs` - name of the input column (e.g. `["pvalue"]`). Must contain exactly 1 entry.
-    /// - `outputs` - name of the output column (e.g. `["neg_log_pvalue"]`).
-    pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> Result<Self, OryonError> {
-        if inputs.len() != 1 {
-            return Err(OryonError::InvalidInput {
-                msg: "inputs must contain exactly 1 column".into(),
-            });
-        }
-        if outputs.is_empty() {
-            return Err(OryonError::InvalidInput {
-                msg: "outputs must not be empty".into(),
-            });
-        }
-        Ok(NegLog { inputs, outputs })
-    }
-}
-
-impl StreamingTransform for NegLog {
-    fn input_names(&self) -> Vec<String> {
-        self.inputs.clone()
-    }
-
-    fn output_names(&self) -> Vec<String> {
-        self.outputs.clone()
-    }
-
-    fn fresh(&self) -> Box<dyn StreamingTransform> {
-        Box::new(
-            NegLog::new(self.inputs.clone(), self.outputs.clone())
-                .expect("fresh: config was already validated at construction"),
-        )
-    }
-
-    fn reset(&mut self) {}
-
-    fn update(&mut self, state: &[Option<f64>]) -> Output {
-        let result = match state[0] {
-            Some(x) if x > 0.0 => Some(-x.ln()),
-            _ => None,
-        };
-        smallvec![result]
-    }
-}
+unary_operator!(
+    NegLog,
+    "Negative natural logarithm: `-ln(x)`.\n\nReturns `None` if the input is `None` or `<= 0`.",
+    |x: f64| if x > 0.0 { Some(-x.ln()) } else { None },
+);
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::streaming_transform_contract_tests;
+    use crate::traits::StreamingTransform;
     use smallvec::smallvec;
 
     streaming_transform_contract_tests!(
@@ -76,7 +23,7 @@ mod tests {
         NegLog::new(vec!["x".into()], vec!["neg_log_x".into()]).unwrap()
     }
 
-    fn out(v: Option<f64>) -> Output {
+    fn out(v: Option<f64>) -> crate::traits::Output {
         smallvec![v]
     }
 
@@ -115,18 +62,22 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_params() {
+    fn test_error_raises_when_inputs_wrong_length() {
         assert!(matches!(
             NegLog::new(vec![], vec!["out".into()]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("1 column")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("1 column")
         ));
         assert!(matches!(
             NegLog::new(vec!["a".into(), "b".into()], vec!["out".into()]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("1 column")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("1 column")
         ));
+    }
+
+    #[test]
+    fn test_error_raises_when_outputs_empty() {
         assert!(matches!(
             NegLog::new(vec!["x".into()], vec![]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("outputs")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("outputs")
         ));
     }
 }

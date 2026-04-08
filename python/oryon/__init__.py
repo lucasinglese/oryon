@@ -25,7 +25,7 @@ from .features import (
     Skewness,
     Sma,
 )
-from .operators import NegLog, Subtract
+from .operators import Add, Divide, Log, Logit, Multiply, NegLog, Reciprocal, Subtract
 from .scalers import FixedZScore, RollingZScore, fit_standard_scaler
 from .targets import FutureCTCVolatility, FutureLinearSlope, FutureReturn
 
@@ -44,8 +44,14 @@ __all__ = [
     "ParkinsonVolatility",
     "RogersSatchellVolatility",
     # operators
+    "Add",
     "Subtract",
+    "Multiply",
+    "Divide",
+    "Reciprocal",
     "NegLog",
+    "Log",
+    "Logit",
     # scalers
     "RollingZScore",
     "FixedZScore",

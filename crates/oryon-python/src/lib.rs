@@ -8,7 +8,7 @@ use features::{
     Adf, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
     RogersSatchellVolatility, ShannonEntropy, SimpleReturn, Skewness, Sma,
 };
-use operators::{NegLog, Subtract};
+use operators::{Add, Divide, Log, Logit, Multiply, NegLog, Reciprocal, Subtract};
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
 use oryon::targets::FutureLinearSlope as RustFutureLinearSlope;
 use oryon::targets::FutureReturn as RustFutureReturn;
@@ -104,10 +104,28 @@ pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Stream
         return Ok(f.inner.fresh());
     }
     // operators
+    if let Ok(f) = obj.extract::<PyRef<Add>>() {
+        return Ok(f.inner.fresh());
+    }
     if let Ok(f) = obj.extract::<PyRef<Subtract>>() {
         return Ok(f.inner.fresh());
     }
+    if let Ok(f) = obj.extract::<PyRef<Multiply>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<Divide>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<Reciprocal>>() {
+        return Ok(f.inner.fresh());
+    }
     if let Ok(f) = obj.extract::<PyRef<NegLog>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<Log>>() {
+        return Ok(f.inner.fresh());
+    }
+    if let Ok(f) = obj.extract::<PyRef<Logit>>() {
         return Ok(f.inner.fresh());
     }
     // scalers
@@ -187,8 +205,14 @@ fn _oryon(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RogersSatchellVolatility>()?;
     m.add_class::<ShannonEntropy>()?;
     // operators
+    m.add_class::<Add>()?;
     m.add_class::<Subtract>()?;
+    m.add_class::<Multiply>()?;
+    m.add_class::<Divide>()?;
+    m.add_class::<Reciprocal>()?;
     m.add_class::<NegLog>()?;
+    m.add_class::<Log>()?;
+    m.add_class::<Logit>()?;
     // scalers
     m.add_class::<RollingZScore>()?;
     m.add_class::<FixedZScore>()?;

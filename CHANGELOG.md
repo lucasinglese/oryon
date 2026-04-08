@@ -11,6 +11,25 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.10] - coming soon
+
+### Added
+
+**Operators** - 6 new stateless streaming transforms
+
+- `Add` - computes `A + B`. Returns `None` if either input is `None`.
+- `Multiply` - computes `A * B`. Returns `None` if either input is `None`.
+- `Divide` - computes `A / B`. Returns `None` if either input is `None` or `B == 0`.
+- `Reciprocal` - computes `1 / x`. Returns `None` if `x == 0` or `None`.
+- `Log` - computes `ln(x)`. Returns `None` if `x <= 0` or `None`.
+- `Logit` - computes `ln(x / (1 - x))`. Returns `None` if `x` is outside `(0, 1)` or `None`.
+
+### Changed
+
+- Operators are now generated via internal `binary_operator!` and `unary_operator!` macros, eliminating boilerplate while keeping one file per operator and explicit tests per edge case. No API change.
+
+---
+
 ## [0.2.9] - 2026-04-08
 
 ### Added

@@ -1,67 +1,14 @@
-use crate::error::OryonError;
-use crate::traits::{Output, StreamingTransform};
-use smallvec::smallvec;
-
-/// Element-wise subtraction: `A - B`.
-///
-/// Returns `None` if either input is `None`.
-#[derive(Debug)]
-pub struct Subtract {
-    inputs: Vec<String>,
-    outputs: Vec<String>,
-}
-
-impl Subtract {
-    /// Create a new `Subtract`.
-    ///
-    /// - `inputs` - names of the two input columns `[A, B]`. Must contain exactly 2 entries.
-    /// - `outputs` - name of the output column (e.g. `["spread"]`).
-    pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> Result<Self, OryonError> {
-        if inputs.len() != 2 {
-            return Err(OryonError::InvalidInput {
-                msg: "inputs must contain exactly 2 columns".into(),
-            });
-        }
-        if outputs.is_empty() {
-            return Err(OryonError::InvalidInput {
-                msg: "outputs must not be empty".into(),
-            });
-        }
-        Ok(Subtract { inputs, outputs })
-    }
-}
-
-impl StreamingTransform for Subtract {
-    fn input_names(&self) -> Vec<String> {
-        self.inputs.clone()
-    }
-
-    fn output_names(&self) -> Vec<String> {
-        self.outputs.clone()
-    }
-
-    fn fresh(&self) -> Box<dyn StreamingTransform> {
-        Box::new(
-            Subtract::new(self.inputs.clone(), self.outputs.clone())
-                .expect("fresh: config was already validated at construction"),
-        )
-    }
-
-    fn reset(&mut self) {}
-
-    fn update(&mut self, state: &[Option<f64>]) -> Output {
-        let result = match (state[0], state[1]) {
-            (Some(a), Some(b)) => Some(a - b),
-            _ => None,
-        };
-        smallvec![result]
-    }
-}
+binary_operator!(
+    Subtract,
+    "Element-wise subtraction: `A - B`.\n\nReturns `None` if either input is `None`.",
+    |a: f64, b: f64| Some(a - b),
+);
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::streaming_transform_contract_tests;
+    use crate::traits::StreamingTransform;
     use smallvec::smallvec;
 
     streaming_transform_contract_tests!(
@@ -76,7 +23,7 @@ mod tests {
         Subtract::new(vec!["a".into(), "b".into()], vec!["a_minus_b".into()]).unwrap()
     }
 
-    fn out(v: Option<f64>) -> Output {
+    fn out(v: Option<f64>) -> crate::traits::Output {
         smallvec![v]
     }
 
@@ -107,18 +54,22 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_params() {
+    fn test_error_raises_when_inputs_wrong_length() {
         assert!(matches!(
             Subtract::new(vec!["a".into()], vec!["out".into()]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("2 columns")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("2 columns")
         ));
         assert!(matches!(
             Subtract::new(vec!["a".into(), "b".into(), "c".into()], vec!["out".into()]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("2 columns")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("2 columns")
         ));
+    }
+
+    #[test]
+    fn test_error_raises_when_outputs_empty() {
         assert!(matches!(
             Subtract::new(vec!["a".into(), "b".into()], vec![]).unwrap_err(),
-            OryonError::InvalidInput { ref msg } if msg.contains("outputs")
+            crate::error::OryonError::InvalidInput { ref msg } if msg.contains("outputs")
         ));
     }
 }
