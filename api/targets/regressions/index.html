@@ -1397,7 +1397,7 @@ y_t = \frac{P_{t+h} - P_t}{P_t}
 \]</div>
 <p>Simple return from bar <code>t</code> to bar <code>t + horizon</code>. Identical formula to
 <code>SimpleReturn</code> but looks forward instead of backward.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Properties</label><label for="__tabbed_1_4">Behavior</label><label for="__tabbed_1_5">Interpretation</label><label for="__tabbed_1_6">Example</label><label for="__tabbed_1_7">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Properties</label><label for="__tabbed_1_4">Behavior</label><label for="__tabbed_1_5">Interpretation</label><label for="__tabbed_1_6">Example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1503,28 +1503,35 @@ horizons.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.targets</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureReturn</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">TargetPipeline</span><span class="p">,</span> <span class="n">run_targets_pipeline</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">t</span> <span class="o">=</span> <span class="n">FutureReturn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_fr_2&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">tp</span> <span class="o">=</span> <span class="n">TargetPipeline</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">108.0</span><span class="p">],</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">})</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_targets_pipeline</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1">#    close_fr_2</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># 0      0.0500</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># 1      0.0098</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># 2      0.0286</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># 3         NaN</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># 4         NaN</span>
-</code></pre></div>
-<p>Bar 0: <code>(105 - 100) / 100 = 0.05</code>. Bar 1: <code>(103 - 102) / 102 ≈ 0.0098</code>.
-Bars 3 and 4 are <code>NaN</code> because the future window extends beyond the series.</p>
+<p>```python
+import pandas as pd
+from oryon.targets import FutureReturn
+from oryon import TargetPipeline</p>
 </div>
+</div>
+</div>
+<p>from oryon.adapters import run_targets_pipeline_pandas</p>
+<div class="highlight"><pre><span></span><code>t = FutureReturn(inputs=[&quot;close&quot;], horizon=2, outputs=[&quot;close_fr_2&quot;])
+tp = TargetPipeline(targets=[t], input_columns=[&quot;close&quot;])
+
+df = pd.DataFrame({
+    &quot;close&quot;: [100.0, 102.0, 105.0, 103.0, 108.0],
+})
+out = run_targets_pipeline_pandas(tp, df)
+print(out)
+#    close_fr_2
+# 0      0.0500
+# 1      0.0098
+# 2      0.0286
+# 3         NaN
+# 4         NaN
+```
+
+Bar 0: `(105 - 100) / 100 = 0.05`. Bar 1: `(103 - 102) / 102 ≈ 0.0098`.
+Bars 3 and 4 are `NaN` because the future window extends beyond the series.
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Source</label></div>
+<div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/future_return.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/targets/future_return.rs</code></a></p>
 </div>
@@ -1548,7 +1555,7 @@ typically a time index or cumulative volume, <code>y</code> is the price series.
 <p class="admonition-title">Choosing x</p>
 <p>Use a simple integer index <code>[0, 1, 2, ...]</code> as <code>x</code> to get slope in price-per-bar units. If you pass timestamps, the slope becomes price-per-nanosecond and is much harder to read.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:7"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><input id="__tabbed_2_7" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Properties</label><label for="__tabbed_2_4">Behavior</label><label for="__tabbed_2_5">Interpretation</label><label for="__tabbed_2_6">Example</label><label for="__tabbed_2_7">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:6"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Properties</label><label for="__tabbed_3_4">Behavior</label><label for="__tabbed_3_5">Interpretation</label><label for="__tabbed_3_6">Example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1710,35 +1717,42 @@ regime labeling.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.targets</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureLinearSlope</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">TargetPipeline</span><span class="p">,</span> <span class="n">run_targets_pipeline</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">t</span> <span class="o">=</span> <span class="n">FutureLinearSlope</span><span class="p">(</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">],</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">horizon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_slope_3&quot;</span><span class="p">,</span> <span class="s2">&quot;close_r2_3&quot;</span><span class="p">],</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">tp</span> <span class="o">=</span> <span class="n">TargetPipeline</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="s2">&quot;time_idx&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="s2">&quot;close&quot;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">],</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">})</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_targets_pipeline</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c1">#    close_slope_3  close_r2_3</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c1"># 0           1.50      0.9643</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c1"># 1           0.50      0.2500</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1"># 2           1.00      0.4286</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1"># 3            NaN         NaN</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="c1"># 4            NaN         NaN</span>
-</code></pre></div>
-<p>Bar 0: regresses <code>y=[100, 101, 103]</code> on <code>x=[0, 1, 2]</code>. Slope = 1.5, R² = 27/28 ≈ 0.9643.
-Bar 1: <code>y=[101, 103, 102]</code> on <code>x=[1, 2, 3]</code>. Slope = 0.5, R² = 0.25.
-Bars 3 and 4 are <code>NaN</code> (<code>horizon - 1 = 2</code> trailing <code>NaN</code> values).</p>
+<p>```python
+import numpy as np
+import pandas as pd
+from oryon.targets import FutureLinearSlope
+from oryon import TargetPipeline</p>
 </div>
+</div>
+</div>
+<p>from oryon.adapters import run_targets_pipeline_pandas</p>
+<div class="highlight"><pre><span></span><code>t = FutureLinearSlope(
+    inputs=[&quot;time_idx&quot;, &quot;close&quot;],
+    horizon=3,
+    outputs=[&quot;close_slope_3&quot;, &quot;close_r2_3&quot;],
+)
+tp = TargetPipeline(targets=[t], input_columns=[&quot;time_idx&quot;, &quot;close&quot;])
+
+df = pd.DataFrame({
+    &quot;time_idx&quot;: [0.0, 1.0, 2.0, 3.0, 4.0],
+    &quot;close&quot;:    [100.0, 101.0, 103.0, 102.0, 105.0],
+})
+out = run_targets_pipeline_pandas(tp, df)
+print(out)
+#    close_slope_3  close_r2_3
+# 0           1.50      0.9643
+# 1           0.50      0.2500
+# 2           1.00      0.4286
+# 3            NaN         NaN
+# 4            NaN         NaN
+```
+
+Bar 0: regresses `y=[100, 101, 103]` on `x=[0, 1, 2]`. Slope = 1.5, R² = 27/28 ≈ 0.9643.
+Bar 1: `y=[101, 103, 102]` on `x=[1, 2, 3]`. Slope = 0.5, R² = 0.25.
+Bars 3 and 4 are `NaN` (`horizon - 1 = 2` trailing `NaN` values).
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Source</label></div>
+<div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/targets/future_linear_slope.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/targets/future_linear_slope.rs</code></a></p>
 </div>

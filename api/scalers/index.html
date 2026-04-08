@@ -1422,7 +1422,7 @@ z_t = \frac{x_t - \bar{x}_w}{\sigma_w}
 <p>Streaming z-score computed over a sliding window. Mean and standard deviation are
 recalculated every bar from the buffer. Returns <code>NaN</code> during warm-up, if any value
 in the window is <code>NaN</code>, or if the standard deviation is zero (all window values are equal).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1538,97 +1538,44 @@ non-stationary.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.scalers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RollingZScore</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">rz</span> <span class="o">=</span> <span class="n">RollingZScore</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x_z&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">rz</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]})</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1">#      x_z</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># 0    NaN</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># 1    NaN</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># 2   1.00   # (3 - 2) / 1.0 = 1.0</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># 3   1.00   # (4 - 3) / 1.0 = 1.0</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># 4   1.00   # (5 - 4) / 1.0 = 1.0</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># 5   0.58   # (5 - 4.67) / 0.577 ≈ 0.58</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># 6    NaN   # std = 0: [5, 5, 5] are all equal</span>
-</code></pre></div>
-<p>Step-by-step with <code>window = 3</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Bar</th>
-<th>Input</th>
-<th>Buffer</th>
-<th>mean</th>
-<th>std</th>
-<th>Output</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>1.0</td>
-<td><code>[1]</code></td>
-<td>-</td>
-<td>-</td>
-<td><code>NaN</code></td>
-</tr>
-<tr>
-<td>1</td>
-<td>2.0</td>
-<td><code>[1, 2]</code></td>
-<td>-</td>
-<td>-</td>
-<td><code>NaN</code></td>
-</tr>
-<tr>
-<td>2</td>
-<td>3.0</td>
-<td><code>[1, 2, 3]</code></td>
-<td>2.0</td>
-<td>1.0</td>
-<td><strong>1.00</strong></td>
-</tr>
-<tr>
-<td>3</td>
-<td>4.0</td>
-<td><code>[2, 3, 4]</code></td>
-<td>3.0</td>
-<td>1.0</td>
-<td><strong>1.00</strong></td>
-</tr>
-<tr>
-<td>4</td>
-<td>5.0</td>
-<td><code>[3, 4, 5]</code></td>
-<td>4.0</td>
-<td>1.0</td>
-<td><strong>1.00</strong></td>
-</tr>
-<tr>
-<td>5</td>
-<td>5.0</td>
-<td><code>[4, 5, 5]</code></td>
-<td>4.67</td>
-<td>0.577</td>
-<td><strong>0.58</strong></td>
-</tr>
-<tr>
-<td>6</td>
-<td>5.0</td>
-<td><code>[5, 5, 5]</code></td>
-<td>5.0</td>
-<td>0.0</td>
-<td><code>NaN</code></td>
-</tr>
-</tbody>
-</table>
+<p>```python
+import pandas as pd
+from oryon.scalers import RollingZScore
+from oryon import FeaturePipeline</p>
 </div>
+</div>
+</div>
+<p>from oryon.adapters import run_features_pipeline_pandas</p>
+<div class="highlight"><pre><span></span><code>rz = RollingZScore([&quot;x&quot;], window=3, outputs=[&quot;x_z&quot;])
+fp = FeaturePipeline(features=[rz], input_columns=[&quot;x&quot;])
+
+df = pd.DataFrame({&quot;x&quot;: [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0]})
+out = run_features_pipeline_pandas(fp, df)
+print(out)
+#      x_z
+# 0    NaN
+# 1    NaN
+# 2   1.00   # (3 - 2) / 1.0 = 1.0
+# 3   1.00   # (4 - 3) / 1.0 = 1.0
+# 4   1.00   # (5 - 4) / 1.0 = 1.0
+# 5   0.58   # (5 - 4.67) / 0.577 ≈ 0.58
+# 6    NaN   # std = 0: [5, 5, 5] are all equal
+```
+
+Step-by-step with `window = 3`:
+
+| Bar | Input | Buffer | mean | std | Output |
+|-----|-------|--------|------|-----|--------|
+| 0 | 1.0 | `[1]` | - | - | `NaN` |
+| 1 | 2.0 | `[1, 2]` | - | - | `NaN` |
+| 2 | 3.0 | `[1, 2, 3]` | 2.0 | 1.0 | **1.00** |
+| 3 | 4.0 | `[2, 3, 4]` | 3.0 | 1.0 | **1.00** |
+| 4 | 5.0 | `[3, 4, 5]` | 4.0 | 1.0 | **1.00** |
+| 5 | 5.0 | `[4, 5, 5]` | 4.67 | 0.577 | **0.58** |
+| 6 | 5.0 | `[5, 5, 5]` | 5.0 | 0.0 | `NaN` |
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Source</label></div>
+<div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/scalers/rolling_zscore.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/scalers/rolling_zscore.rs</code></a></p>
 </div>
@@ -1645,7 +1592,7 @@ are fixed at construction time and never change. No warm-up, no buffer. Returns 
 only if the input is <code>NaN</code>.</p>
 <p>Fit the parameters with <a href="../fitting/"><code>fit_standard_scaler</code></a> on a training dataset, then
 construct <code>FixedZScore</code> once and apply it at inference time.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Example</label><label for="__tabbed_2_5">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:4"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1739,27 +1686,33 @@ future distribution information and overstates out-of-sample performance.</p>
 </table>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.scalers</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_standard_scaler</span><span class="p">,</span> <span class="n">FixedZScore</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span><span class="p">,</span> <span class="n">run_features_pipeline</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># Fit on training data</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">train</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">fit_standard_scaler</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># mean = 3.0, std ≈ 1.5811</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">fz</span> <span class="o">=</span> <span class="n">FixedZScore</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;x_z&quot;</span><span class="p">],</span> <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">fz</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]})</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">#       x_z</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># 0  -1.265   # (1 - 3) / 1.5811</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="c1"># 1   0.000   # (3 - 3) / 1.5811</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c1"># 2   1.265   # (5 - 3) / 1.5811</span>
-</code></pre></div>
+<p>```python
+import pandas as pd
+from oryon.scalers import fit_standard_scaler, FixedZScore
+from oryon import FeaturePipeline</p>
 </div>
+</div>
+</div>
+<p>from oryon.adapters import run_features_pipeline_pandas</p>
+<div class="highlight"><pre><span></span><code># Fit on training data
+train = [1.0, 2.0, 3.0, 4.0, 5.0]
+mean, std = fit_standard_scaler(train)
+# mean = 3.0, std ≈ 1.5811
+
+fz = FixedZScore([&quot;x&quot;], [&quot;x_z&quot;], mean=mean, std=std)
+fp = FeaturePipeline(features=[fz], input_columns=[&quot;x&quot;])
+
+df = pd.DataFrame({&quot;x&quot;: [1.0, 3.0, 5.0]})
+out = run_features_pipeline_pandas(fp, df)
+print(out)
+#       x_z
+# 0  -1.265   # (1 - 3) / 1.5811
+# 1   0.000   # (3 - 3) / 1.5811
+# 2   1.265   # (5 - 3) / 1.5811
+```
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Source</label></div>
+<div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/scalers/fixed_zscore.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/scalers/fixed_zscore.rs</code></a></p>
 </div>
