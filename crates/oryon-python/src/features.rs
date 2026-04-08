@@ -12,10 +12,9 @@ use oryon::features::Skewness as RustSkewness;
 use oryon::features::Sma as RustSma;
 use oryon::ops::AdfRegression;
 use oryon::StreamingTransform;
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
-use crate::{to_python, to_rust};
+use crate::{to_python, to_rust, InvalidConfigError};
 
 // --- Adf ---------------------------------------------------------------------
 
@@ -23,7 +22,7 @@ fn parse_regression(regression: &str) -> PyResult<AdfRegression> {
     match regression {
         "c" => Ok(AdfRegression::Constant),
         "ct" => Ok(AdfRegression::ConstantTrend),
-        other => Err(PyValueError::new_err(format!(
+        other => Err(InvalidConfigError::new_err(format!(
             "regression must be 'c' or 'ct', got '{other}'"
         ))),
     }
@@ -66,8 +65,7 @@ impl Adf {
         regression: &str,
     ) -> PyResult<Self> {
         let reg = parse_regression(regression)?;
-        let inner = RustAdf::new(inputs, window, outputs, lags, reg)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustAdf::new(inputs, window, outputs, lags, reg).map_err(crate::oryon_err)?;
         Ok(Adf {
             inner,
             window,
@@ -130,8 +128,7 @@ impl Mma {
     ///     outputs: Name of the output column (e.g. ``["close_mma_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustMma::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustMma::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(Mma { inner })
     }
 
@@ -188,8 +185,7 @@ impl Sma {
     ///     outputs: Name of the output column (e.g. ``["close_sma_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustSma::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustSma::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(Sma { inner })
     }
 
@@ -246,8 +242,7 @@ impl Ema {
     ///     outputs: Name of the output column (e.g. ``["close_ema_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustEma::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustEma::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(Ema { inner })
     }
 
@@ -313,8 +308,7 @@ impl Kama {
         fast: usize,
         slow: usize,
     ) -> PyResult<Self> {
-        let inner = RustKama::new(inputs, window, outputs, fast, slow)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustKama::new(inputs, window, outputs, fast, slow).map_err(crate::oryon_err)?;
         Ok(Kama { inner })
     }
 
@@ -371,8 +365,7 @@ impl SimpleReturn {
     ///     outputs: Name of the output column (e.g. ``["close_simple_return_5"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustSimpleReturn::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustSimpleReturn::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(SimpleReturn { inner })
     }
 
@@ -429,8 +422,7 @@ impl LogReturn {
     ///     outputs: Name of the output column (e.g. ``["close_log_return_5"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustLogReturn::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustLogReturn::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(LogReturn { inner })
     }
 
@@ -487,8 +479,7 @@ impl Skewness {
     ///     outputs: Name of the output column (e.g. ``["close_skewness_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustSkewness::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustSkewness::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(Skewness { inner })
     }
 
@@ -545,8 +536,7 @@ impl Kurtosis {
     ///     outputs: Name of the output column (e.g. ``["close_kurtosis_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustKurtosis::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustKurtosis::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(Kurtosis { inner })
     }
 
@@ -603,8 +593,7 @@ impl LinearSlope {
     ///     outputs: Names of the two output columns ``[slope_name, r2_name]``.
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustLinearSlope::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustLinearSlope::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(LinearSlope { inner })
     }
 
@@ -661,8 +650,8 @@ impl ParkinsonVolatility {
     ///     outputs: Name of the output column (e.g. ``["parkinson_vol_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustParkinsonVolatility::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner =
+            RustParkinsonVolatility::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(ParkinsonVolatility { inner })
     }
 
@@ -719,8 +708,8 @@ impl RogersSatchellVolatility {
     ///     outputs: Name of the output column (e.g. ``["rs_vol_20"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustRogersSatchellVolatility::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner =
+            RustRogersSatchellVolatility::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(RogersSatchellVolatility { inner })
     }
 

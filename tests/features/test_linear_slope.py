@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import LinearSlope
 
 
@@ -47,15 +48,15 @@ def test_warm_up_period():
 
 
 def test_invalid_window_lt_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         LinearSlope(inputs=["t", "close"], window=1, outputs=["slope", "r2"])
 
 
 def test_invalid_outputs_not_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         LinearSlope(inputs=["t", "close"], window=5, outputs=["slope"])
 
 
 def test_invalid_inputs_lt_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         LinearSlope(inputs=["close"], window=5, outputs=["slope", "r2"])

@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import Kurtosis
 
 
@@ -39,5 +40,5 @@ def test_warm_up_period():
 
 
 def test_invalid_window_lt_4():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Kurtosis(inputs=["close"], window=3, outputs=["out"])

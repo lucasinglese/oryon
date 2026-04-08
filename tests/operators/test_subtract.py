@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import Subtract
 
 
@@ -44,10 +45,10 @@ def test_reset_is_noop():
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Subtract(inputs=[], outputs=["spread"])
 
 
 def test_invalid_outputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Subtract(inputs=["a", "b"], outputs=[])

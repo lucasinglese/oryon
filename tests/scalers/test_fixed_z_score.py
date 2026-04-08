@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import FixedZScore
 from oryon.scalers import fit_standard_scaler
 
@@ -46,12 +47,12 @@ def test_output_names():
 
 
 def test_invalid_std_zero():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FixedZScore(inputs=["x"], outputs=["x_z"], mean=0.0, std=0.0)
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FixedZScore(inputs=[], outputs=["x_z"], mean=0.0, std=1.0)
 
 

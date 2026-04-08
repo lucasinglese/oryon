@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import TargetPipeline
 from oryon.targets import FutureLinearSlope
 
@@ -57,15 +58,15 @@ def test_perfect_linear_trend():
 
 
 def test_invalid_horizon_lt_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureLinearSlope(inputs=["t", "close"], horizon=1, outputs=["slope", "r2"])
 
 
 def test_invalid_inputs_lt_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureLinearSlope(inputs=["close"], horizon=5, outputs=["slope", "r2"])
 
 
 def test_invalid_outputs_not_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureLinearSlope(inputs=["t", "close"], horizon=5, outputs=["slope"])

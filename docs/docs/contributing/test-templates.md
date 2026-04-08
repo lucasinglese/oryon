@@ -409,6 +409,7 @@ One file per feature/scaler/operator/target in `tests/features/`, `tests/scalers
     ```python
     import math
     import pytest
+    import oryon
     from oryon import YourFeature  # or YourScaler
 
     def test_warm_up():
@@ -448,11 +449,11 @@ One file per feature/scaler/operator/target in `tests/features/`, `tests/scalers
         assert f.output_names() == ["out"]
 
     def test_invalid_window():
-        with pytest.raises(ValueError):
+        with pytest.raises(oryon.InvalidInputError):
             YourFeature(inputs=["close"], window=0, outputs=["out"])
 
     def test_invalid_inputs():
-        with pytest.raises(ValueError):
+        with pytest.raises(oryon.InvalidInputError):
             YourFeature(inputs=[], window=3, outputs=["out"])
     ```
 
@@ -461,6 +462,7 @@ One file per feature/scaler/operator/target in `tests/features/`, `tests/scalers
     ```python
     import math
     import pytest
+    import oryon
     from oryon import YourOperator
 
     def test_valid_value():
@@ -494,11 +496,11 @@ One file per feature/scaler/operator/target in `tests/features/`, `tests/scalers
         assert abs(op.update([5.0, 2.0])[0] - /* expected */) < 1e-10
 
     def test_invalid_inputs():
-        with pytest.raises(ValueError):
+        with pytest.raises(oryon.InvalidInputError):
             YourOperator(inputs=[], outputs=["result"])
 
     def test_invalid_outputs():
-        with pytest.raises(ValueError):
+        with pytest.raises(oryon.InvalidInputError):
             YourOperator(inputs=["a", "b"], outputs=[])
     ```
 

@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import NegLog
 
 
@@ -49,10 +50,10 @@ def test_reset_is_noop():
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         NegLog(inputs=[], outputs=["out"])
 
 
 def test_invalid_outputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         NegLog(inputs=["pvalue"], outputs=[])

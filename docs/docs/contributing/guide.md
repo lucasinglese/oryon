@@ -123,7 +123,7 @@ impl YourFeature {
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
         let inner = RustYourFeature::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+            .map_err(crate::oryon_err)?;
         Ok(YourFeature { inner })
     }
 
@@ -181,7 +181,7 @@ Mandatory tests:
 - `test_nan_input_propagates` - `float("nan")` input returns `NaN`
 - `test_reset` - output is `NaN` again after `reset()`
 - `test_input_names` / `test_output_names` / `test_warm_up_period` - binding contract
-- `test_invalid_window` / `test_invalid_inputs` - `ValueError` on bad params
+- `test_invalid_window` / `test_invalid_inputs` - `InvalidInputError` on bad params
 
 ### 9. Write documentation
 

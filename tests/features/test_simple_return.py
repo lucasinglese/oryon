@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import SimpleReturn
 
 
@@ -37,5 +38,5 @@ def test_warm_up_period():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         SimpleReturn(inputs=["close"], window=0, outputs=["out"])

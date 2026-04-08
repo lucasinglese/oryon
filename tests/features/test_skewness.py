@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import Skewness
 
 
@@ -38,5 +39,5 @@ def test_warm_up_period():
 
 
 def test_invalid_window_lt_3():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Skewness(inputs=["close"], window=2, outputs=["out"])

@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import RollingZScore
 
 
@@ -50,10 +51,10 @@ def test_output_names():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         RollingZScore(inputs=["x"], window=0, outputs=["x_z"])
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         RollingZScore(inputs=[], window=3, outputs=["x_z"])

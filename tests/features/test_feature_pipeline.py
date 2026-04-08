@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import FeaturePipeline, Sma
 
 
@@ -64,10 +65,10 @@ def test_len():
 
 def test_missing_input_column():
     sma = Sma(inputs=["close"], window=3, outputs=["close_sma_3"])
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.MissingInputColumnError):
         FeaturePipeline(features=[sma], input_columns=["volume"])
 
 
 def test_unsupported_feature_type():
-    with pytest.raises((ValueError, TypeError)):
+    with pytest.raises(oryon.InvalidConfigError):
         FeaturePipeline(features=["not_a_feature"], input_columns=["close"])

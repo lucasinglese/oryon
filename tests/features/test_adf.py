@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import Adf
 
 # Reference series — 20 bars, verified against statsmodels.
@@ -99,26 +100,26 @@ def test_schwert_rule_default():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         make_adf(window=0)
 
 
 def test_invalid_window_too_small_for_lags():
     # lags=5 → need window > 13; window=13 should fail
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Adf(inputs=["close"], window=13, outputs=["s", "p"], lags=5)
 
 
 def test_invalid_regression():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidConfigError):
         Adf(inputs=["close"], window=20, outputs=["s", "p"], regression="nc")
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Adf(inputs=[], window=20, outputs=["s", "p"])
 
 
 def test_invalid_outputs_count():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Adf(inputs=["close"], window=20, outputs=["only_one"])

@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import RogersSatchellVolatility
 
 
@@ -47,14 +48,14 @@ def test_warm_up_period():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         RogersSatchellVolatility(
             inputs=["high", "low", "open", "close"], window=0, outputs=["out"]
         )
 
 
 def test_invalid_inputs_lt_4():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         RogersSatchellVolatility(
             inputs=["high", "low", "open"], window=5, outputs=["out"]
         )

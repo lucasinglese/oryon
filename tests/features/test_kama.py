@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import Kama
 
 
@@ -50,10 +51,10 @@ def test_custom_fast_slow():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Kama(inputs=["close"], window=0, outputs=["out"])
 
 
 def test_invalid_slow_lte_fast():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Kama(inputs=["close"], window=10, outputs=["out"], fast=5, slow=5)

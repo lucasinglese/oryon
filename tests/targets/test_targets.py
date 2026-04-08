@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import FutureCTCVolatility, FutureReturn, TargetPipeline
 
 PRICES = [100.0, 102.0, 105.0, 103.0, 108.0, 107.0, 110.0]
@@ -17,11 +18,11 @@ def test_future_return_names():
 
 
 def test_future_return_invalid():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureReturn(inputs=[], horizon=2, outputs=["out"])
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureReturn(inputs=["close"], horizon=0, outputs=["out"])
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureReturn(inputs=["close"], horizon=2, outputs=[])
 
 
@@ -36,9 +37,9 @@ def test_future_ctc_vol_auto_name():
 
 
 def test_future_ctc_vol_invalid():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureCTCVolatility(input="", horizon=5)
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         FutureCTCVolatility(input="close", horizon=0)
 
 
@@ -89,12 +90,12 @@ def test_target_pipeline_multiple_targets():
 
 def test_target_pipeline_missing_column():
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.MissingInputColumnError):
         TargetPipeline(targets=[t], input_columns=["volume"])
 
 
 def test_target_pipeline_duplicate_output():
     t1 = FutureReturn(inputs=["close"], horizon=2, outputs=["same"])
     t2 = FutureReturn(inputs=["close"], horizon=3, outputs=["same"])
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.DuplicateOutputKeyError):
         TargetPipeline(targets=[t1, t2], input_columns=["close"])

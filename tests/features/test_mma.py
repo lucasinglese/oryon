@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import Mma
 
 
@@ -59,10 +60,10 @@ def test_warm_up_period():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Mma(inputs=["close"], window=0, outputs=["out"])
 
 
 def test_invalid_inputs():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Mma(inputs=[], window=3, outputs=["out"])

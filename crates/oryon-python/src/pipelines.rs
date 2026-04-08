@@ -1,6 +1,5 @@
 use oryon::pipeline::FeaturePipeline as RustFeaturePipeline;
 use oryon::pipeline::TargetPipeline as RustTargetPipeline;
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::{extract_feature, extract_target, to_python, to_rust};
@@ -29,8 +28,8 @@ impl FeaturePipeline {
             .iter()
             .map(extract_feature)
             .collect::<PyResult<Vec<_>>>()?;
-        let inner = RustFeaturePipeline::new(rust_features, input_columns)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner =
+            RustFeaturePipeline::new(rust_features, input_columns).map_err(crate::oryon_err)?;
         Ok(FeaturePipeline { inner })
     }
 
@@ -45,7 +44,7 @@ impl FeaturePipeline {
         self.inner
             .update(&to_rust(&values))
             .map(|v| to_python(&v))
-            .map_err(|e| PyValueError::new_err(e.to_string()))
+            .map_err(crate::oryon_err)
     }
 
     /// Process a full dataset bar by bar (research mode).
@@ -60,7 +59,7 @@ impl FeaturePipeline {
         self.inner
             .run_research(&rust_data)
             .map(|rows| rows.iter().map(|row| to_python(row)).collect())
-            .map_err(|e| PyValueError::new_err(e.to_string()))
+            .map_err(crate::oryon_err)
     }
 
     /// Reset all features (e.g. between CPCV splits).
@@ -113,8 +112,8 @@ impl TargetPipeline {
             .iter()
             .map(extract_target)
             .collect::<PyResult<Vec<_>>>()?;
-        let inner = RustTargetPipeline::new(rust_targets, input_columns)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner =
+            RustTargetPipeline::new(rust_targets, input_columns).map_err(crate::oryon_err)?;
         Ok(TargetPipeline { inner })
     }
 
@@ -132,7 +131,7 @@ impl TargetPipeline {
         self.inner
             .run_research(&refs)
             .map(|cols| cols.iter().map(|col| to_python(col)).collect())
-            .map_err(|e| PyValueError::new_err(e.to_string()))
+            .map_err(crate::oryon_err)
     }
 
     /// Output column names, in order.

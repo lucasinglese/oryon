@@ -1,7 +1,6 @@
 use oryon::operators::NegLog as RustNegLog;
 use oryon::operators::Subtract as RustSubtract;
 use oryon::StreamingTransform;
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::{to_python, to_rust};
@@ -23,8 +22,7 @@ impl Subtract {
     ///     outputs: Name of the output column (e.g. ``["spread"]``).
     #[new]
     pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> PyResult<Self> {
-        let inner =
-            RustSubtract::new(inputs, outputs).map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustSubtract::new(inputs, outputs).map_err(crate::oryon_err)?;
         Ok(Subtract { inner })
     }
 
@@ -79,8 +77,7 @@ impl NegLog {
     ///     outputs: Name of the output column (e.g. ``["neg_log_pvalue"]``).
     #[new]
     pub fn new(inputs: Vec<String>, outputs: Vec<String>) -> PyResult<Self> {
-        let inner =
-            RustNegLog::new(inputs, outputs).map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustNegLog::new(inputs, outputs).map_err(crate::oryon_err)?;
         Ok(NegLog { inner })
     }
 

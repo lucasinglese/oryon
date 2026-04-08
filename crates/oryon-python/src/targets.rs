@@ -2,7 +2,6 @@ use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
 use oryon::targets::FutureLinearSlope as RustFutureLinearSlope;
 use oryon::targets::FutureReturn as RustFutureReturn;
 use oryon::Target;
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 // --- FutureReturn ------------------------------------------------------------
@@ -26,7 +25,7 @@ impl FutureReturn {
     #[new]
     pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> PyResult<Self> {
         RustFutureReturn::new(inputs.clone(), horizon, outputs.clone())
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+            .map_err(crate::oryon_err)?;
         Ok(FutureReturn {
             inputs,
             horizon,
@@ -78,8 +77,7 @@ impl FutureCTCVolatility {
     /// The output column name is auto-generated as ``"{input}_future_ctc_vol_{horizon}"``.
     #[new]
     pub fn new(input: String, horizon: usize) -> PyResult<Self> {
-        let rust = RustFutureCTCVolatility::new(&input, horizon)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let rust = RustFutureCTCVolatility::new(&input, horizon).map_err(crate::oryon_err)?;
         let output = rust.output_names()[0].clone();
         Ok(FutureCTCVolatility {
             input,
@@ -132,7 +130,7 @@ impl FutureLinearSlope {
     #[new]
     pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> PyResult<Self> {
         RustFutureLinearSlope::new(inputs.clone(), horizon, outputs.clone())
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+            .map_err(crate::oryon_err)?;
         Ok(FutureLinearSlope {
             inputs,
             horizon,

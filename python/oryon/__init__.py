@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ._oryon import FeaturePipeline, TargetPipeline
+from ._oryon import (
+    CyclicDependencyError,
+    DuplicateOutputKeyError,
+    FeaturePipeline,
+    InvalidConfigError,
+    InvalidInputError,
+    MissingInputColumnError,
+    OryonError,
+    TargetPipeline,
+)
 from .datasets import load_sample_bars
 from .features import (
     Adf,
@@ -93,6 +102,13 @@ __all__ = [
     # pipelines
     "FeaturePipeline",
     "TargetPipeline",
+    # exceptions
+    "OryonError",
+    "InvalidConfigError",
+    "InvalidInputError",
+    "MissingInputColumnError",
+    "DuplicateOutputKeyError",
+    "CyclicDependencyError",
     # helpers
     "run_features_pipeline",
     "run_targets_pipeline",

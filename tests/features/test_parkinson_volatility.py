@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon.features import ParkinsonVolatility
 
 
@@ -37,10 +38,10 @@ def test_warm_up_period():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         ParkinsonVolatility(inputs=["high", "low"], window=0, outputs=["out"])
 
 
 def test_invalid_inputs_lt_2():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         ParkinsonVolatility(inputs=["high"], window=5, outputs=["out"])

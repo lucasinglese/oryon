@@ -2,7 +2,6 @@ use oryon::fitting::{fit_standard_scaler as rust_fit, StandardScalerParams};
 use oryon::scalers::FixedZScore as RustFixedZScore;
 use oryon::scalers::RollingZScore as RustRollingZScore;
 use oryon::StreamingTransform;
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::{to_python, to_rust};
@@ -19,7 +18,7 @@ use crate::{to_python, to_rust};
 #[pyfunction]
 pub(crate) fn fit_standard_scaler(data: Vec<f64>) -> PyResult<(f64, f64)> {
     let rust_data = to_rust(&data);
-    let params = rust_fit(&rust_data).map_err(|e| PyValueError::new_err(e.to_string()))?;
+    let params = rust_fit(&rust_data).map_err(crate::oryon_err)?;
     Ok((params.mean, params.std))
 }
 
@@ -41,8 +40,7 @@ impl RollingZScore {
     ///     outputs: Name of the output column (e.g. ``["close_sma_20_z"]``).
     #[new]
     pub fn new(inputs: Vec<String>, window: usize, outputs: Vec<String>) -> PyResult<Self> {
-        let inner = RustRollingZScore::new(inputs, window, outputs)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustRollingZScore::new(inputs, window, outputs).map_err(crate::oryon_err)?;
         Ok(RollingZScore { inner })
     }
 
@@ -101,8 +99,7 @@ impl FixedZScore {
     #[new]
     pub fn new(inputs: Vec<String>, outputs: Vec<String>, mean: f64, std: f64) -> PyResult<Self> {
         let params = StandardScalerParams { mean, std };
-        let inner = RustFixedZScore::new(inputs, outputs, params)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let inner = RustFixedZScore::new(inputs, outputs, params).map_err(crate::oryon_err)?;
         Ok(FixedZScore { inner })
     }
 

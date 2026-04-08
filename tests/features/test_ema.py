@@ -1,6 +1,7 @@
 import math
 
 import pytest
+import oryon
 from oryon import Ema
 
 
@@ -52,5 +53,5 @@ def test_warm_up_period():
 
 
 def test_invalid_window():
-    with pytest.raises(ValueError):
+    with pytest.raises(oryon.InvalidInputError):
         Ema(inputs=["close"], window=0, outputs=["out"])
