@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.9</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -1442,7 +1442,7 @@ and are safe for live streaming (<code>forward_period = 0</code>).</p>
 <p>The arithmetic mean of the last <span class="arithmatex">\(N\)</span> bars, with equal weight on every observation.
 The simplest trend smoother: it reduces noise, but it lags by construction. The
 larger the window, the smoother and the slower.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label><label for="__tabbed_1_7">Contribute</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1566,48 +1566,90 @@ structural and by design.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import Sma
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>sma = Sma([&quot;close&quot;], window=3, outputs=[&quot;close_sma_3&quot;])
-fp  = FeaturePipeline(features=[sma], input_columns=[&quot;close&quot;])
-
-df = pd.DataFrame({&quot;close&quot;: [100.0, 101.0, 102.0, 103.0, None, 104.0, 105.0, 106.0]})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_sma_3
-# 0          NaN
-# 1          NaN
-# 2       101.00
-# 3       102.00
-# 4          NaN
-# 5          NaN
-# 6          NaN
-# 7       105.00
-```
-
-Step-by-step with `window = 3`:
-
-| Bar | Input | Buffer | Output |
-|-----|-------|--------|--------|
-| 0 | 100.0 | `[100]` | `NaN` |
-| 1 | 101.0 | `[100, 101]` | `NaN` |
-| 2 | 102.0 | `[100, 101, 102]` | **101.0** |
-| 3 | 103.0 | `[101, 102, 103]` | **102.0** |
-| 4 | `NaN` | `[102, 103, NaN]` | `NaN` |
-| 5 | 104.0 | `[103, NaN, 104]` | `NaN` |
-| 6 | 105.0 | `[NaN, 104, 105]` | `NaN` |
-| 7 | 106.0 | `[104, 105, 106]` | **105.0** |
-
-Bars 4-6 are `NaN` because the `NaN` at bar 4 remains in the buffer until bar 7 evicts it.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sma</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">sma</span> <span class="o">=</span> <span class="n">Sma</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">fp</span>  <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">sma</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">]})</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1">#    close_sma_3</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># 0          NaN</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># 1          NaN</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># 2       101.00</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># 3       102.00</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># 4          NaN</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># 5          NaN</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># 6          NaN</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1"># 7       105.00</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Source</label><label for="__tabbed_2_2">Contribute</label></div>
-<div class="tabbed-content">
+<p>Step-by-step with <code>window = 3</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Bar</th>
+<th>Input</th>
+<th>Buffer</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>100.0</td>
+<td><code>[100]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td>101.0</td>
+<td><code>[100, 101]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>102.0</td>
+<td><code>[100, 101, 102]</code></td>
+<td><strong>101.0</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>103.0</td>
+<td><code>[101, 102, 103]</code></td>
+<td><strong>102.0</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>NaN</code></td>
+<td><code>[102, 103, NaN]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>104.0</td>
+<td><code>[103, NaN, 104]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>105.0</td>
+<td><code>[NaN, 104, 105]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>106.0</td>
+<td><code>[104, 105, 106]</code></td>
+<td><strong>105.0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Bars 4-6 are <code>NaN</code> because the <code>NaN</code> at bar 4 remains in the buffer until bar 7 evicts it.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/sma.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/sma.rs</code></a></p>
 </div>
@@ -1628,7 +1670,7 @@ This brings the per-update cost from <code>O(N)</code> to <code>O(1)</code> with
 \]</div>
 <p>Weights recent observations more heavily than older ones using an exponential decay factor.
 It reacts faster to price changes than the SMA and maintains only a single state value, making it <code>O(1)</code> per update after seeding.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:5"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1764,50 +1806,101 @@ memory after seeding. The cheapest smoother to run in a live pipeline.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import Ema
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>ema = Ema([&quot;close&quot;], window=3, outputs=[&quot;close_ema_3&quot;])
-fp  = FeaturePipeline(features=[ema], input_columns=[&quot;close&quot;])
-
-df = pd.DataFrame({&quot;close&quot;: [100.0, 101.0, 102.0, 103.0, None, 104.0, 105.0, 106.0]})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_ema_3
-# 0          NaN
-# 1          NaN
-# 2       101.00
-# 3       102.00
-# 4          NaN
-# 5          NaN
-# 6          NaN
-# 7       105.00
-```
-
-Step-by-step with `window = 3`, `alpha = 0.5`:
-
-| Bar | Input | Phase | State | Output |
-|-----|-------|-------|-------|--------|
-| 0 | 100.0 | Seeding | buffer=`[100]` | `NaN` |
-| 1 | 101.0 | Seeding | buffer=`[100, 101]` | `NaN` |
-| 2 | 102.0 | Seeding | seed = SMA(`[100, 101, 102]`) = 101.0 | **101.0** |
-| 3 | 103.0 | Recursive | 0.5×103 + 0.5×101 = 102.0 | **102.0** |
-| 4 | `NaN` | Reset | state cleared | `NaN` |
-| 5 | 104.0 | Seeding | buffer=`[104]` | `NaN` |
-| 6 | 105.0 | Seeding | buffer=`[104, 105]` | `NaN` |
-| 7 | 106.0 | Seeding | seed = SMA(`[104, 105, 106]`) = 105.0 | **105.0** |
-
-At bar 4, `NaN` arrives in the recursive phase and triggers a full state reset.
-The EMA reseeds from scratch. If the `NaN` had arrived during the seeding phase
-instead, it would have slid through the buffer naturally without resetting.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ema</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">ema</span> <span class="o">=</span> <span class="n">Ema</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_ema_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">fp</span>  <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">ema</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">]})</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1">#    close_ema_3</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># 0          NaN</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># 1          NaN</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># 2       101.00</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># 3       102.00</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># 4          NaN</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="c1"># 5          NaN</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c1"># 6          NaN</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c1"># 7       105.00</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Source</label></div>
-<div class="tabbed-content">
+<p>Step-by-step with <code>window = 3</code>, <code>alpha = 0.5</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Bar</th>
+<th>Input</th>
+<th>Phase</th>
+<th>State</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>100.0</td>
+<td>Seeding</td>
+<td>buffer=<code>[100]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td>101.0</td>
+<td>Seeding</td>
+<td>buffer=<code>[100, 101]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>102.0</td>
+<td>Seeding</td>
+<td>seed = SMA(<code>[100, 101, 102]</code>) = 101.0</td>
+<td><strong>101.0</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>103.0</td>
+<td>Recursive</td>
+<td>0.5×103 + 0.5×101 = 102.0</td>
+<td><strong>102.0</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>NaN</code></td>
+<td>Reset</td>
+<td>state cleared</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>104.0</td>
+<td>Seeding</td>
+<td>buffer=<code>[104]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>105.0</td>
+<td>Seeding</td>
+<td>buffer=<code>[104, 105]</code></td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>106.0</td>
+<td>Seeding</td>
+<td>seed = SMA(<code>[104, 105, 106]</code>) = 105.0</td>
+<td><strong>105.0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>At bar 4, <code>NaN</code> arrives in the recursive phase and triggers a full state reset.
+The EMA reseeds from scratch. If the <code>NaN</code> had arrived during the seeding phase
+instead, it would have slid through the buffer naturally without resetting.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/ema.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/ema.rs</code></a></p>
 </div>
@@ -1832,7 +1925,7 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.</p>
 <p class="admonition-title">Default parameters</p>
 <p><code>fast=2, slow=30</code> match Kaufman's original 1998 paper and are well market-tested. Only change them if you have a specific calibration reason.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:5"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><input id="__tabbed_5_4" name="__tabbed_5" type="radio" /><input id="__tabbed_5_5" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Parameters</label><label for="__tabbed_5_2">Output</label><label for="__tabbed_5_3">Behavior</label><label for="__tabbed_5_4">Interpretation</label><label for="__tabbed_5_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:6"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label><label for="__tabbed_3_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1964,36 +2057,30 @@ Systems and Methods</em> (6th ed., 2020).</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import Kama
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>kama = Kama([&quot;close&quot;], window=3, outputs=[&quot;close_kama_3&quot;], fast=2, slow=5)
-fp   = FeaturePipeline(features=[kama], input_columns=[&quot;close&quot;])
-
-df = pd.DataFrame({&quot;close&quot;: [100.0, 101.0, 103.0, 102.0, 105.0, 107.0, 106.0]})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_kama_3
-# 0           NaN
-# 1           NaN
-# 2           NaN
-# 3        102.75
-# 4        103.44
-# 5        104.54
-# 6        104.99
-```
-
-With `window=3`, `fast=2`, `slow=5` (α_f=2/3, α_s=1/3). Bars 0-2 are `NaN`
-because `window + 1 = 4` bars are needed. At bar 3: ER=0.5, SC=0.25,
-seed=103.0 → KAMA = 103.0 + 0.25×(102-103) = **102.75**.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kama</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">kama</span> <span class="o">=</span> <span class="n">Kama</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_kama_3&quot;</span><span class="p">],</span> <span class="n">fast</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">slow</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">fp</span>   <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">kama</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">]})</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1">#    close_kama_3</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># 0           NaN</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># 1           NaN</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># 2           NaN</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># 3        102.75</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="c1"># 4        103.44</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="c1"># 5        104.54</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="c1"># 6        104.99</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:1"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Source</label></div>
-<div class="tabbed-content">
+<p>With <code>window=3</code>, <code>fast=2</code>, <code>slow=5</code> (α_f=2/3, α_s=1/3). Bars 0-2 are <code>NaN</code>
+because <code>window + 1 = 4</code> bars are needed. At bar 3: ER=0.5, SC=0.25,
+seed=103.0 → KAMA = 103.0 + 0.25×(102-103) = <strong>102.75</strong>.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/kama.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/kama.rs</code></a></p>
 </div>
@@ -2014,7 +2101,7 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
 <p class="admonition-title">Choosing x</p>
 <p>Pass a simple integer index <code>[0, 1, 2, ...]</code> as <code>x</code> to get slope in price-per-bar units. If you pass timestamps, the slope becomes price-per-nanosecond and is much harder to read.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:5"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><input id="__tabbed_7_4" name="__tabbed_7" type="radio" /><input id="__tabbed_7_5" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Parameters</label><label for="__tabbed_7_2">Output</label><label for="__tabbed_7_3">Behavior</label><label for="__tabbed_7_4">Interpretation</label><label for="__tabbed_7_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:7"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><input id="__tabbed_4_6" name="__tabbed_4" type="radio" /><input id="__tabbed_4_7" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Behavior</label><label for="__tabbed_4_4">Interpretation</label><label for="__tabbed_4_5">Example</label><label for="__tabbed_4_6">Source</label><label for="__tabbed_4_7">Contribute</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -2149,39 +2236,33 @@ volume-vs-price rarely exceeds 0.2.</li>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import LinearSlope
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>ls = LinearSlope(
-    [&quot;time_idx&quot;, &quot;close&quot;], window=3,
-    outputs=[&quot;close_slope_3&quot;, &quot;close_r2_3&quot;],
-)
-fp = FeaturePipeline(features=[ls], input_columns=[&quot;time_idx&quot;, &quot;close&quot;])
-
-df = pd.DataFrame({
-    &quot;time_idx&quot;: [0.0, 1.0, 2.0, 3.0, 4.0],
-    &quot;close&quot;:    [100.0, 103.0, 106.0, 109.0, 112.0],
-})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_slope_3  close_r2_3
-# 0            NaN         NaN
-# 1            NaN         NaN
-# 2            3.0         1.0
-# 3            3.0         1.0
-# 4            3.0         1.0
-```
-
-Price increases by exactly 3.0 per bar, so slope=3.0 and R²=1.0 (perfect linear fit)
-at every valid bar.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearSlope</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">ls</span> <span class="o">=</span> <span class="n">LinearSlope</span><span class="p">(</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="p">[</span><span class="s2">&quot;time_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_slope_3&quot;</span><span class="p">,</span> <span class="s2">&quot;close_r2_3&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">ls</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="s2">&quot;time_idx&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="s2">&quot;close&quot;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">,</span> <span class="mf">109.0</span><span class="p">,</span> <span class="mf">112.0</span><span class="p">],</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="p">})</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="c1">#    close_slope_3  close_r2_3</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="c1"># 0            NaN         NaN</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="c1"># 1            NaN         NaN</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c1"># 2            3.0         1.0</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="c1"># 3            3.0         1.0</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="c1"># 4            3.0         1.0</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Source</label><label for="__tabbed_8_2">Contribute</label></div>
-<div class="tabbed-content">
+<p>Price increases by exactly 3.0 per bar, so slope=3.0 and R²=1.0 (perfect linear fit)
+at every valid bar.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/linear_slope.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/linear_slope.rs</code></a></p>
 </div>
@@ -2322,7 +2403,7 @@ online algorithm.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.9"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>

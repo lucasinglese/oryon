@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.9</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -1402,7 +1402,7 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
 <p class="admonition-title">Trending markets</p>
 <p>In strongly trending markets, Rogers-Satchell is more accurate: it accounts for directional drift where Parkinson overestimates.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Parameters</label><label for="__tabbed_1_2">Output</label><label for="__tabbed_1_3">Behavior</label><label for="__tabbed_1_4">Interpretation</label><label for="__tabbed_1_5">Example</label><label for="__tabbed_1_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1523,33 +1523,28 @@ the Variance of the Rate of Return," <em>Journal of Business</em>, 53(1), 61-65.
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import ParkinsonVolatility
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>pv = ParkinsonVolatility([&quot;high&quot;, &quot;low&quot;], window=3, outputs=[&quot;pv_3&quot;])
-fp = FeaturePipeline(features=[pv], input_columns=[&quot;high&quot;, &quot;low&quot;])
-
-df = pd.DataFrame({
-    &quot;high&quot;: [102.0, 104.0, 103.0, 106.0, 108.0],
-    &quot;low&quot;:  [ 99.0, 101.0, 100.0, 103.0, 105.0],
-})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#         pv_3
-# 0        NaN
-# 1        NaN
-# 2     0.0178
-# 3     0.0175
-# 4     0.0173
-```
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParkinsonVolatility</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">pv</span> <span class="o">=</span> <span class="n">ParkinsonVolatility</span><span class="p">([</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pv_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">pv</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">102.0</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">,</span> <span class="mf">108.0</span><span class="p">],</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="s2">&quot;low&quot;</span><span class="p">:</span>  <span class="p">[</span> <span class="mf">99.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">],</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">})</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1">#         pv_3</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># 0        NaN</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># 1        NaN</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># 2     0.0178</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># 3     0.0175</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1"># 4     0.0173</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Source</label></div>
-<div class="tabbed-content">
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/parkinson_volatility.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/parkinson_volatility.rs</code></a></p>
 </div>
@@ -1569,7 +1564,7 @@ must be positive for a valid output.</p>
 <p class="admonition-title">Range-bound markets</p>
 <p>In mean-reverting or range-bound markets, Parkinson is a simpler alternative: it uses only high and low, has no negative-term edge case, and is slightly cheaper to compute.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:5"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1691,40 +1686,36 @@ From High, Low, Opening and Closing Prices," <em>Annals of Applied Probability</
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import RogersSatchellVolatility
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>rs = RogersSatchellVolatility(
-    [&quot;high&quot;, &quot;low&quot;, &quot;open&quot;, &quot;close&quot;], window=3, outputs=[&quot;rs_vol_3&quot;]
-)
-fp = FeaturePipeline(features=[rs], input_columns=[&quot;high&quot;, &quot;low&quot;, &quot;open&quot;, &quot;close&quot;])
-
-df = pd.DataFrame({
-    &quot;high&quot;:  [108.0, 108.0, 108.0, 110.0],
-    &quot;low&quot;:   [104.0, 104.0, 104.0, 106.0],
-    &quot;open&quot;:  [105.0, 105.0, 105.0, 107.0],
-    &quot;close&quot;: [107.0, 107.0, 107.0, 109.0],
-})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#     rs_vol_3
-# 0        NaN
-# 1        NaN
-# 2     0.0231
-# 3     0.0231
-```
-
-!!! warning &quot;Input order&quot;
-    Inputs must be `[high, low, open, close]` in that exact order. Passing
-    `[open, high, low, close]` will produce incorrect results silently.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">RogersSatchellVolatility</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">rs</span> <span class="o">=</span> <span class="n">RogersSatchellVolatility</span><span class="p">(</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rs_vol_3&quot;</span><span class="p">]</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">rs</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="s2">&quot;high&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">108.0</span><span class="p">,</span> <span class="mf">108.0</span><span class="p">,</span> <span class="mf">108.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">],</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="s2">&quot;low&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="mf">104.0</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">],</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="s2">&quot;open&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mf">105.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">],</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">107.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">,</span> <span class="mf">109.0</span><span class="p">],</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">})</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c1">#     rs_vol_3</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c1"># 0        NaN</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c1"># 1        NaN</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1"># 2     0.0231</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1"># 3     0.0231</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Source</label></div>
-<div class="tabbed-content">
+<div class="admonition warning">
+<p class="admonition-title">Input order</p>
+<p>Inputs must be <code>[high, low, open, close]</code> in that exact order. Passing
+<code>[open, high, low, close]</code> will produce incorrect results silently.</p>
+</div>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/rogers_satchell_volatility.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/rogers_satchell_volatility.rs</code></a></p>
 </div>
@@ -1857,7 +1848,7 @@ print(out)
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.9"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>

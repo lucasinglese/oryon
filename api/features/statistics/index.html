@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.8</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.9</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -866,6 +866,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#shannonentropy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ShannonEntropy
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1410,6 +1421,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#shannonentropy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ShannonEntropy
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1665,7 +1687,7 @@ would reduce per-bar cost to sub-1µs regardless of window size.</p>
 <p>Fisher-Pearson corrected skewness over a rolling window, identical to <code>pandas .skew()</code>.
 Positive values indicate a long right tail (rare large gains), negative values a long left
 tail (rare large losses). Useful for detecting regime shifts and tail risk.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Parameters</label><label for="__tabbed_2_2">Output</label><label for="__tabbed_2_3">Behavior</label><label for="__tabbed_2_4">Interpretation</label><label for="__tabbed_2_5">Example</label><label for="__tabbed_2_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1786,33 +1808,27 @@ is growing relative to the right.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import Skewness
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>sk = Skewness([&quot;close&quot;], window=3, outputs=[&quot;close_skew_3&quot;])
-fp = FeaturePipeline(features=[sk], input_columns=[&quot;close&quot;])
-
-df = pd.DataFrame({&quot;close&quot;: [1.0, 2.0, 4.0, 6.0, 8.0]})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_skew_3
-# 0           NaN
-# 1           NaN
-# 2          0.94
-# 3          0.00
-# 4          0.00
-```
-
-`skew([1, 2, 4]) = 0.935` (right-skewed). `skew([2, 4, 6]) = 0.0` (symmetric -
-evenly spaced values always give zero skewness). Results match `pandas .skew()` exactly.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Skewness</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">sk</span> <span class="o">=</span> <span class="n">Skewness</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_skew_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">sk</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]})</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1">#    close_skew_3</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># 0           NaN</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># 1           NaN</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># 2          0.94</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># 3          0.00</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># 4          0.00</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Source</label></div>
-<div class="tabbed-content">
+<p><code>skew([1, 2, 4]) = 0.935</code> (right-skewed). <code>skew([2, 4, 6]) = 0.0</code> (symmetric -
+evenly spaced values always give zero skewness). Results match <code>pandas .skew()</code> exactly.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/skewness.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/skewness.rs</code></a></p>
 </div>
@@ -1827,7 +1843,7 @@ evenly spaced values always give zero skewness). Results match `pandas .skew()` 
 <p>Fisher excess kurtosis over a rolling window, identical to <code>pandas .kurt()</code>.
 Values above 0 indicate fat tails (leptokurtic). A normal distribution gives 0.
 Uniformly spaced returns give negative kurtosis (platykurtic).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:5"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Behavior</label><label for="__tabbed_4_4">Interpretation</label><label for="__tabbed_4_5">Example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:6"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><input id="__tabbed_3_6" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Parameters</label><label for="__tabbed_3_2">Output</label><label for="__tabbed_3_3">Behavior</label><label for="__tabbed_3_4">Interpretation</label><label for="__tabbed_3_5">Example</label><label for="__tabbed_3_6">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -1947,33 +1963,27 @@ observations within the window, the tail behavior is changing.</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<p>```python
-import pandas as pd
-from oryon.features import Kurtosis
-from oryon import FeaturePipeline</p>
-</div>
-</div>
-</div>
-<p>from oryon.adapters import run_features_pipeline_pandas</p>
-<div class="highlight"><pre><span></span><code>ku = Kurtosis([&quot;close&quot;], window=4, outputs=[&quot;close_kurt_4&quot;])
-fp = FeaturePipeline(features=[ku], input_columns=[&quot;close&quot;])
-
-df = pd.DataFrame({&quot;close&quot;: [1.0, 2.0, 4.0, 8.0, 6.0]})
-out = run_features_pipeline_pandas(fp, df)
-print(out)
-#    close_kurt_4
-# 0           NaN
-# 1           NaN
-# 2           NaN
-# 3          0.76
-# 4          2.24
-```
-
-`kurt([1, 2, 4, 8]) = 0.758` (fat tails from the jump to 8). Results match
-`pandas .kurt()` exactly.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kurtosis</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">ku</span> <span class="o">=</span> <span class="n">Kurtosis</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_kurt_4&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">ku</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]})</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1">#    close_kurt_4</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># 0           NaN</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># 1           NaN</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># 2           NaN</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># 3          0.76</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="c1"># 4          2.24</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Source</label></div>
-<div class="tabbed-content">
+<p><code>kurt([1, 2, 4, 8]) = 0.758</code> (fat tails from the jump to 8). Results match
+<code>pandas .kurt()</code> exactly.</p>
+</div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/kurtosis.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/kurtosis.rs</code></a></p>
 </div>
@@ -1988,7 +1998,7 @@ print(out)
 <p>Rolling median over the last <code>window</code> bars. More robust to outliers than the SMA -
 a single spike does not shift the output, making it useful as a pre-filter before
 applying trend or signal detection indicators.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:7"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><input id="__tabbed_6_4" name="__tabbed_6" type="radio" /><input id="__tabbed_6_5" name="__tabbed_6" type="radio" /><input id="__tabbed_6_6" name="__tabbed_6" type="radio" /><input id="__tabbed_6_7" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Parameters</label><label for="__tabbed_6_2">Output</label><label for="__tabbed_6_3">Properties</label><label for="__tabbed_6_4">Behavior</label><label for="__tabbed_6_5">Interpretation</label><label for="__tabbed_6_6">Example</label><label for="__tabbed_6_7">Source</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:7"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><input id="__tabbed_4_5" name="__tabbed_4" type="radio" /><input id="__tabbed_4_6" name="__tabbed_4" type="radio" /><input id="__tabbed_4_7" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Parameters</label><label for="__tabbed_4_2">Output</label><label for="__tabbed_4_3">Properties</label><label for="__tabbed_4_4">Behavior</label><label for="__tabbed_4_5">Interpretation</label><label for="__tabbed_4_6">Example</label><label for="__tabbed_4_7">Source</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <table>
@@ -2118,18 +2128,237 @@ the raw series contains frequent outliers (bad ticks, gaps, illiquid bars).</p>
 </ul>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mma</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">mma</span> <span class="o">=</span> <span class="n">Mma</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_mma_3&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># -&gt; [2.0]  median([1, 3, 2]) = 2.0</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">5.0</span><span class="p">])</span>  <span class="c1"># -&gt; [3.0]  median([3, 2, 5]) = 3.0</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mma</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">mma</span> <span class="o">=</span> <span class="n">Mma</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_mma_3&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN]</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># -&gt; [2.0]  median([1, 3, 2]) = 2.0</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">mma</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">5.0</span><span class="p">])</span>  <span class="c1"># -&gt; [3.0]  median([3, 2, 5]) = 3.0</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/mma.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/mma.rs</code></a></p>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="shannonentropy">ShannonEntropy<a class="headerlink" href="#shannonentropy" title="Permanent link">&para;</a></h2>
+<p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
+<div class="arithmatex">\[
+H_t = -\sum_{i=1}^{k} p_i \ln p_i
+\]</div>
+<div class="arithmatex">\[
+H^*_t = \frac{H_t}{\ln k} \in [0,\,1] \quad \text{(when \texttt{normalize=True})}
+\]</div>
+<p>Rolling Shannon entropy over the last <code>window</code> bars. Values are discretized into
+<code>k</code> equal-width bins; <span class="arithmatex">\(p_i\)</span> is the fraction of observations in bin <span class="arithmatex">\(i\)</span>.
+High entropy means the distribution is spread across bins (disordered market).
+Low entropy means mass is concentrated in a few bins (directional or calm regime).
+When all values in the window are identical, range is zero and entropy is <code>0.0</code> (not <code>NaN</code>).</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:7"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><input id="__tabbed_5_4" name="__tabbed_5" type="radio" /><input id="__tabbed_5_5" name="__tabbed_5" type="radio" /><input id="__tabbed_5_6" name="__tabbed_5" type="radio" /><input id="__tabbed_5_7" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Parameters</label><label for="__tabbed_5_2">Output</label><label for="__tabbed_5_3">Behavior</label><label for="__tabbed_5_4">Interpretation</label><label for="__tabbed_5_5">Example</label><label for="__tabbed_5_6">Contributing</label><label for="__tabbed_5_7">Source</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>list[str]</code></td>
+<td>len = 1</td>
+<td>Input column, e.g. <code>["returns"]</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>int</code></td>
+<td>&gt;= 2</td>
+<td>Rolling window length</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>list[str]</code></td>
+<td>len = 1</td>
+<td>Output column, e.g. <code>["returns_entropy_20"]</code></td>
+</tr>
+<tr>
+<td><code>bins</code></td>
+<td><code>int \| None</code></td>
+<td>&gt;= 2 or <code>None</code></td>
+<td>Number of bins. <code>None</code> applies Sturges' rule. Default: <code>None</code></td>
+</tr>
+<tr>
+<td><code>normalize</code></td>
+<td><code>bool</code></td>
+<td>-</td>
+<td>If <code>True</code>, output is <code>H / ln(bins)</code> in [0, 1]. Default: <code>True</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sturges' rule</strong> (default when <code>bins=None</code>): <span class="arithmatex">\(k = \lceil 1 + \log_2(\text{window}) \rceil\)</span>.
+Computed once at construction. For <code>window=20</code> this gives <code>k=5</code>, for <code>window=200</code>, <code>k=9</code>.</p>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>When valid</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>outputs[0]</code></td>
+<td><code>t &gt;= window - 1</code>, no <code>NaN</code> in buffer</td>
+<td>Shannon entropy in nats (<code>normalize=False</code>) or [0, 1] (<code>normalize=True</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code>. A full buffer of <code>window</code>
+values is required before the first output.</p>
+</li>
+<li>
+<p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input enters the buffer. Output stays <code>NaN</code> until
+the <code>NaN</code> is evicted after <code>window</code> consecutive valid bars.</p>
+</li>
+<li>
+<p><strong>Identical values.</strong> When all <code>window</code> values are equal, range is zero and all
+mass falls in the first bin - entropy is <code>0.0</code>, not <code>NaN</code>. This represents
+maximum certainty (minimum disorder).</p>
+</li>
+<li>
+<p><strong><code>reset()</code>.</strong> Clears the buffer entirely. Call it between backtest folds
+(CPCV, walk-forward) to avoid state leaking across splits.</p>
+</li>
+<li>
+<p><strong>Implementation.</strong> Rebuilds bin counts over the full buffer on every <code>update()</code>
+(<code>O(window)</code> per bar). Bins use equal-width partitioning of <code>[min, max]</code>.</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t &lt; window - 1</code> (buffer not full)</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>Buffer full, all values valid</td>
+<td>Entropy value</td>
+</tr>
+<tr>
+<td>Any <code>NaN</code> in the buffer</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>All values identical (range = 0)</td>
+<td><code>0.0</code></td>
+</tr>
+<tr>
+<td>After <code>reset()</code></td>
+<td><code>NaN</code> until buffer refills</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>High entropy (near 1.0).</strong> Returns are spread across the value range -
+no dominant direction, diffuse distribution. Associated with choppy or
+transitional regimes.</p>
+</li>
+<li>
+<p><strong>Low entropy (near 0.0).</strong> Returns are concentrated in a narrow region -
+the distribution is peaked. Associated with trending or calm regimes where
+most observations cluster together.</p>
+</li>
+<li>
+<p><strong>Bin choice.</strong> <code>bins=2</code> captures a simple high/low split and is the most
+stable. More bins (Sturges or explicit) resolve finer structure but add noise
+for small windows. As a rule: <code>bins &lt;= window / 5</code> avoids empty bins on
+most real distributions.</p>
+</li>
+<li>
+<p><strong>Normalize.</strong> Use <code>normalize=True</code> (default) when comparing across assets
+or across different <code>bins</code> configs. Use <code>normalize=False</code> when you want the
+raw value in nats for downstream math (e.g. KL divergence).</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShannonEntropy</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">se</span> <span class="o">=</span> <span class="n">ShannonEntropy</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;entropy_4&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                    <span class="n">bins</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># [nan]  - warm-up</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># [nan]</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>  <span class="c1"># [nan]</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>  <span class="c1"># [1.0]  - window=[1,1,4,4]: 2 low, 2 high -&gt; max entropy</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>  <span class="c1"># [0.811] - window=[1,4,4,4]: 1 low, 3 high -&gt; entropy drops</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="n">se</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">4.0</span><span class="p">])</span>  <span class="c1"># [0.0]  - window=[4,4,4,4]: range=0 -&gt; minimum entropy</span>
+</code></pre></div>
+<p>Entropy falls from <code>1.0</code> (uniform split) to <code>0.811</code> (skewed 1/4 vs 3/4) to <code>0.0</code>
+(constant series). The <code>0.811</code> value equals <span class="arithmatex">\(H^*([0.25, 0.75]) = 0.5623 / \ln 2\)</span>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShannonEntropy</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeaturePipeline</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_features_pipeline_pandas</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">se</span> <span class="o">=</span> <span class="n">ShannonEntropy</span><span class="p">([</span><span class="s2">&quot;returns&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;returns_entropy_4&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>                    <span class="n">bins</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="n">se</span><span class="p">],</span> <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;returns&quot;</span><span class="p">])</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;returns&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]})</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">out</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="c1">#    returns_entropy_4</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># 0                NaN</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="c1"># 1                NaN</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="c1"># 2                NaN</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1"># 3              1.000   # counts=[2,2] -&gt; uniform split -&gt; max entropy</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="c1"># 4              1.000   # counts=[2,2]</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="c1"># 5              0.811   # counts=[1,3] -&gt; skewed split -&gt; entropy drops</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="c1"># 6              0.811   # counts=[1,3]</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Incremental range tracking.</strong> Each <code>update()</code> scans the full buffer to find
+<code>min</code> and <code>max</code> (<code>O(window)</code> extra). A sliding-window min/max structure (e.g.
+monotone deque) would reduce this to <code>O(1)</code> amortized, cutting the constant factor
+roughly in half for large windows.</p>
+</li>
+<li>
+<p><strong>Additional bin methods.</strong> Freedman-Diaconis (<code>h = 2 * IQR * n^{-1/3}</code>) and
+equal-frequency (quantile) bins are natural extensions. Equal-frequency bins
+in particular avoid empty bins and produce more stable entropy estimates on
+fat-tailed financial series. The <code>BinMethod</code> enum in Rust is already structured
+to accommodate new variants without changing existing behavior.</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/shannon_entropy.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/shannon_entropy.rs</code></a></p>
 </div>
 </div>
 </div>
@@ -2260,7 +2489,7 @@ the raw series contains frequent outliers (bad ticks, gaps, illiquid bars).</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.8"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.9"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
