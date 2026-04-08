@@ -213,7 +213,7 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.
     import pandas as pd
     from oryon.features import Skewness
     from oryon import FeaturePipeline
-from oryon.adapters import run_features_pipeline_pandas
+    from oryon.adapters import run_features_pipeline_pandas
 
     sk = Skewness(["close"], window=3, outputs=["close_skew_3"])
     fp = FeaturePipeline(features=[sk], input_columns=["close"])
@@ -304,7 +304,7 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
     import pandas as pd
     from oryon.features import Kurtosis
     from oryon import FeaturePipeline
-from oryon.adapters import run_features_pipeline_pandas
+    from oryon.adapters import run_features_pipeline_pandas
 
     ku = Kurtosis(["close"], window=4, outputs=["close_kurt_4"])
     fp = FeaturePipeline(features=[ku], input_columns=["close"])
@@ -406,3 +406,146 @@ applying trend or signal detection indicators.
 === "Source"
 
     [:octicons-mark-github-16: `crates/oryon/src/features/mma.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/mma.rs)
+
+---
+
+## ShannonEntropy
+
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;1µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+$$
+H_t = -\sum_{i=1}^{k} p_i \ln p_i
+$$
+
+$$
+H^*_t = \frac{H_t}{\ln k} \in [0,\,1] \quad \text{(when \texttt{normalize=True})}
+$$
+
+Rolling Shannon entropy over the last `window` bars. Values are discretized into
+`k` equal-width bins; $p_i$ is the fraction of observations in bin $i$.
+High entropy means the distribution is spread across bins (disordered market).
+Low entropy means mass is concentrated in a few bins (directional or calm regime).
+When all values in the window are identical, range is zero and entropy is `0.0` (not `NaN`).
+
+=== "Parameters"
+
+    | Name | Type | Constraint | Description |
+    |---|---|---|---|
+    | `inputs` | `list[str]` | len = 1 | Input column, e.g. `["returns"]` |
+    | `window` | `int` | >= 2 | Rolling window length |
+    | `outputs` | `list[str]` | len = 1 | Output column, e.g. `["returns_entropy_20"]` |
+    | `bins` | `int \| None` | >= 2 or `None` | Number of bins. `None` applies Sturges' rule. Default: `None` |
+    | `normalize` | `bool` | - | If `True`, output is `H / ln(bins)` in [0, 1]. Default: `True` |
+
+    **Sturges' rule** (default when `bins=None`): $k = \lceil 1 + \log_2(\text{window}) \rceil$.
+    Computed once at construction. For `window=20` this gives `k=5`, for `window=200`, `k=9`.
+
+=== "Output"
+
+    | Column | When valid | Description |
+    |---|---|---|
+    | `outputs[0]` | `t >= window - 1`, no `NaN` in buffer | Shannon entropy in nats (`normalize=False`) or [0, 1] (`normalize=True`) |
+
+=== "Behavior"
+
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
+    values is required before the first output.
+
+    - **`NaN` propagation.** A `NaN` input enters the buffer. Output stays `NaN` until
+    the `NaN` is evicted after `window` consecutive valid bars.
+
+    - **Identical values.** When all `window` values are equal, range is zero and all
+    mass falls in the first bin - entropy is `0.0`, not `NaN`. This represents
+    maximum certainty (minimum disorder).
+
+    - **`reset()`.** Clears the buffer entirely. Call it between backtest folds
+    (CPCV, walk-forward) to avoid state leaking across splits.
+
+    - **Implementation.** Rebuilds bin counts over the full buffer on every `update()`
+    (`O(window)` per bar). Bins use equal-width partitioning of `[min, max]`.
+
+    | Situation | Output |
+    |---|---|
+    | `t < window - 1` (buffer not full) | `NaN` |
+    | Buffer full, all values valid | Entropy value |
+    | Any `NaN` in the buffer | `NaN` |
+    | All values identical (range = 0) | `0.0` |
+    | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **High entropy (near 1.0).** Returns are spread across the value range -
+    no dominant direction, diffuse distribution. Associated with choppy or
+    transitional regimes.
+
+    - **Low entropy (near 0.0).** Returns are concentrated in a narrow region -
+    the distribution is peaked. Associated with trending or calm regimes where
+    most observations cluster together.
+
+    - **Bin choice.** `bins=2` captures a simple high/low split and is the most
+    stable. More bins (Sturges or explicit) resolve finer structure but add noise
+    for small windows. As a rule: `bins <= window / 5` avoids empty bins on
+    most real distributions.
+
+    - **Normalize.** Use `normalize=True` (default) when comparing across assets
+    or across different `bins` configs. Use `normalize=False` when you want the
+    raw value in nats for downstream math (e.g. KL divergence).
+
+=== "Example"
+
+    ```python
+    from oryon.features import ShannonEntropy
+
+    se = ShannonEntropy(inputs=["x"], window=4, outputs=["entropy_4"],
+                        bins=2, normalize=True)
+
+    se.update([1.0])  # [nan]  - warm-up
+    se.update([1.0])  # [nan]
+    se.update([4.0])  # [nan]
+    se.update([4.0])  # [1.0]  - window=[1,1,4,4]: 2 low, 2 high -> max entropy
+    se.update([4.0])  # [0.811] - window=[1,4,4,4]: 1 low, 3 high -> entropy drops
+    se.update([4.0])  # [0.0]  - window=[4,4,4,4]: range=0 -> minimum entropy
+    ```
+
+    Entropy falls from `1.0` (uniform split) to `0.811` (skewed 1/4 vs 3/4) to `0.0`
+    (constant series). The `0.811` value equals $H^*([0.25, 0.75]) = 0.5623 / \ln 2$.
+
+    ```python
+    import pandas as pd
+    from oryon.features import ShannonEntropy
+    from oryon import FeaturePipeline
+    from oryon.adapters import run_features_pipeline_pandas
+
+    se = ShannonEntropy(["returns"], window=4, outputs=["returns_entropy_4"],
+                        bins=2, normalize=True)
+    fp = FeaturePipeline(features=[se], input_columns=["returns"])
+
+    df = pd.DataFrame({"returns": [0.01, -0.02, 0.03, -0.01, 0.02, 0.03, 0.01]})
+    out = run_features_pipeline_pandas(fp, df)
+    print(out)
+    #    returns_entropy_4
+    # 0                NaN
+    # 1                NaN
+    # 2                NaN
+    # 3              1.000   # counts=[2,2] -> uniform split -> max entropy
+    # 4              1.000   # counts=[2,2]
+    # 5              0.811   # counts=[1,3] -> skewed split -> entropy drops
+    # 6              0.811   # counts=[1,3]
+    ```
+
+=== "Contributing"
+
+    - **Incremental range tracking.** Each `update()` scans the full buffer to find
+    `min` and `max` (`O(window)` extra). A sliding-window min/max structure (e.g.
+    monotone deque) would reduce this to `O(1)` amortized, cutting the constant factor
+    roughly in half for large windows.
+
+    - **Additional bin methods.** Freedman-Diaconis (`h = 2 * IQR * n^{-1/3}`) and
+    equal-frequency (quantile) bins are natural extensions. Equal-frequency bins
+    in particular avoid empty bins and produce more stable entropy estimates on
+    fat-tailed financial series. The `BinMethod` enum in Rust is already structured
+    to accommodate new variants without changing existing behavior.
+
+=== "Source"
+
+    [:octicons-mark-github-16: `crates/oryon/src/features/shannon_entropy.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/shannon_entropy.rs)

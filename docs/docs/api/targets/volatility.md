@@ -65,7 +65,7 @@ name is auto-generated as `{input}_future_ctc_vol_{horizon}`.
     import pandas as pd
     from oryon.targets import FutureCTCVolatility
     from oryon import TargetPipeline
-from oryon.adapters import run_targets_pipeline_pandas
+    from oryon.adapters import run_targets_pipeline_pandas
 
     t = FutureCTCVolatility(input="close", horizon=3)
     print(t.output_names())  # ['close_future_ctc_vol_3']

@@ -66,7 +66,7 @@ Simple return from bar `t` to bar `t + horizon`. Identical formula to
     import pandas as pd
     from oryon.targets import FutureReturn
     from oryon import TargetPipeline
-from oryon.adapters import run_targets_pipeline_pandas
+    from oryon.adapters import run_targets_pipeline_pandas
 
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
     tp = TargetPipeline(targets=[t], input_columns=["close"])
@@ -186,7 +186,7 @@ typically a time index or cumulative volume, `y` is the price series.
     import pandas as pd
     from oryon.targets import FutureLinearSlope
     from oryon import TargetPipeline
-from oryon.adapters import run_targets_pipeline_pandas
+    from oryon.adapters import run_targets_pipeline_pandas
 
     t = FutureLinearSlope(
         inputs=["time_idx", "close"],

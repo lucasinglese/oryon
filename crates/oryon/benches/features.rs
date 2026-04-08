@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::features::{
-    Adf, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
-    RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
+    Adf, BinMethod, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
+    RogersSatchellVolatility, ShannonEntropy, SimpleReturn, Skewness, Sma,
 };
 use oryon::ops::AdfRegression;
 use oryon::traits::StreamingTransform;
@@ -287,6 +287,56 @@ fn bench_adf(c: &mut Criterion) {
     group.finish();
 }
 
+fn bench_shannon_entropy(c: &mut Criterion) {
+    // Cycling data keeps the buffer varied so the full binning + entropy path is exercised.
+    // Without this, a constant input produces range=0 on every bar (shortcut path, not representative).
+    let data: Vec<f64> = (0..1000).map(|i| ((i % 10) as f64) * 0.5 + 1.0).collect();
+
+    let mut group = c.benchmark_group("shannon_entropy_update");
+
+    let mut se_w20 = ShannonEntropy::new(
+        vec!["x".into()],
+        20,
+        vec!["x_entropy_20".into()],
+        BinMethod::FixedCount(5),
+        true,
+    )
+    .unwrap();
+    for &v in &data[..20] {
+        se_w20.update(&[Some(v)]);
+    }
+    let mut idx_w20 = 20usize;
+    group.bench_function("w20", |b| {
+        b.iter(|| {
+            let v = data[idx_w20 % data.len()];
+            idx_w20 = idx_w20.wrapping_add(1);
+            se_w20.update(black_box(&[Some(v)]))
+        })
+    });
+
+    let mut se_w200 = ShannonEntropy::new(
+        vec!["x".into()],
+        200,
+        vec!["x_entropy_200".into()],
+        BinMethod::FixedCount(5),
+        true,
+    )
+    .unwrap();
+    for &v in data.iter().cycle().take(200) {
+        se_w200.update(&[Some(v)]);
+    }
+    let mut idx_w200 = 200usize;
+    group.bench_function("w200", |b| {
+        b.iter(|| {
+            let v = data[idx_w200 % data.len()];
+            idx_w200 = idx_w200.wrapping_add(1);
+            se_w200.update(black_box(&[Some(v)]))
+        })
+    });
+
+    group.finish();
+}
+
 criterion_group!(
     benches,
     bench_adf,
@@ -298,6 +348,7 @@ criterion_group!(
     bench_mma,
     bench_parkinson_volatility,
     bench_rogers_satchell_volatility,
+    bench_shannon_entropy,
     bench_simple_return,
     bench_skewness,
     bench_sma

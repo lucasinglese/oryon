@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.2.9] - coming soon
+## [0.2.9] - 2026-04-08
 
 ### Added
 
@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 - `Adf` - rolling Augmented Dickey-Fuller test. Produces ADF statistic and approximate p-value (MacKinnon 2010) over a sliding window. Supports constant and constant+trend regressions, configurable lag count via Schwert's rule.
 - `Mma` - Median Moving Average over a rolling window.
+- `ShannonEntropy` - rolling Shannon entropy over a fixed window. Discretizes values into equal-width bins, supports Sturges' rule or fixed bin count, optional normalization to [0, 1].
 
 **Python exceptions** - typed error hierarchy replacing the flat `ValueError`
 

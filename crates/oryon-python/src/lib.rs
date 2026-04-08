@@ -6,7 +6,7 @@ mod targets;
 
 use features::{
     Adf, Ema, Kama, Kurtosis, LinearSlope, LogReturn, Mma, ParkinsonVolatility,
-    RogersSatchellVolatility, SimpleReturn, Skewness, Sma,
+    RogersSatchellVolatility, ShannonEntropy, SimpleReturn, Skewness, Sma,
 };
 use operators::{NegLog, Subtract};
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
@@ -100,6 +100,9 @@ pub(crate) fn extract_feature(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Stream
     if let Ok(f) = obj.extract::<PyRef<RogersSatchellVolatility>>() {
         return Ok(f.inner.fresh());
     }
+    if let Ok(f) = obj.extract::<PyRef<ShannonEntropy>>() {
+        return Ok(f.inner.fresh());
+    }
     // operators
     if let Ok(f) = obj.extract::<PyRef<Subtract>>() {
         return Ok(f.inner.fresh());
@@ -182,6 +185,7 @@ fn _oryon(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<LinearSlope>()?;
     m.add_class::<ParkinsonVolatility>()?;
     m.add_class::<RogersSatchellVolatility>()?;
+    m.add_class::<ShannonEntropy>()?;
     // operators
     m.add_class::<Subtract>()?;
     m.add_class::<NegLog>()?;

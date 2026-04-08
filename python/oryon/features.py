@@ -8,6 +8,7 @@ from ._oryon import (
     Mma,
     ParkinsonVolatility,
     RogersSatchellVolatility,
+    ShannonEntropy,
     SimpleReturn,
     Skewness,
     Sma,
@@ -26,4 +27,5 @@ __all__ = [
     "LinearSlope",
     "ParkinsonVolatility",
     "RogersSatchellVolatility",
+    "ShannonEntropy",
 ]

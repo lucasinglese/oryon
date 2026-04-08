@@ -104,7 +104,7 @@ Rust core, Apple M-series. Python adds a constant ~150 ns per call on top.
 | `Skewness`, `Kurtosis`, `LinearSlope` | < 40 ns | < 510 ns |
 | `Kama` | 164 ns | 870 ns |
 
-Every feature under **1 µs** at w=200.
+The goal is every feature under **1 µs** at w=200.
 
 **Targets: per `run_research()` call over 1 000 bars**
 

@@ -1,4 +1,5 @@
 use oryon::features::Adf as RustAdf;
+use oryon::features::BinMethod as RustBinMethod;
 use oryon::features::Ema as RustEma;
 use oryon::features::Kama as RustKama;
 use oryon::features::Kurtosis as RustKurtosis;
@@ -7,6 +8,7 @@ use oryon::features::LogReturn as RustLogReturn;
 use oryon::features::Mma as RustMma;
 use oryon::features::ParkinsonVolatility as RustParkinsonVolatility;
 use oryon::features::RogersSatchellVolatility as RustRogersSatchellVolatility;
+use oryon::features::ShannonEntropy as RustShannonEntropy;
 use oryon::features::SimpleReturn as RustSimpleReturn;
 use oryon::features::Skewness as RustSkewness;
 use oryon::features::Sma as RustSma;
@@ -686,6 +688,93 @@ impl ParkinsonVolatility {
             self.inner.input_names(),
             self.inner.warm_up_period() + 1,
             self.inner.output_names(),
+        )
+    }
+}
+
+// --- ShannonEntropy ----------------------------------------------------------
+
+/// Rolling Shannon entropy over a fixed window.
+///
+/// Discretizes the last ``window`` values into equal-width bins and computes
+/// ``H = -sum(p_i * ln(p_i))`` in nats. When ``normalize`` is ``True``,
+/// outputs ``H / ln(n_bins)`` in [0, 1].
+/// Returns ``NaN`` during warm-up or while any ``NaN`` is in the window.
+#[pyclass(module = "oryon")]
+pub(crate) struct ShannonEntropy {
+    pub(crate) inner: RustShannonEntropy,
+    window: usize,
+    bins: Option<usize>,
+    normalize: bool,
+}
+
+#[pymethods]
+impl ShannonEntropy {
+    /// Create a new ``ShannonEntropy``.
+    ///
+    /// Args:
+    ///     inputs: Name of the input column (e.g. ``["returns"]``).
+    ///     window: Number of bars in the rolling window. Must be >= 2.
+    ///     outputs: Name of the output column (e.g. ``["returns_entropy_20"]``).
+    ///     bins: Number of equal-width bins. Must be >= 2. ``None`` applies
+    ///         Sturges' rule ``k = ceil(1 + log2(window))``. Default: ``None``.
+    ///     normalize: If ``True``, output is ``H / ln(bins)`` in [0, 1]. Default: ``True``.
+    #[new]
+    #[pyo3(signature = (inputs, window, outputs, bins=None, normalize=true))]
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+        bins: Option<usize>,
+        normalize: bool,
+    ) -> PyResult<Self> {
+        let method = match bins {
+            None => RustBinMethod::Sturges,
+            Some(n) => RustBinMethod::FixedCount(n),
+        };
+        let inner = RustShannonEntropy::new(inputs, window, outputs, method, normalize)
+            .map_err(crate::oryon_err)?;
+        Ok(ShannonEntropy {
+            inner,
+            window,
+            bins,
+            normalize,
+        })
+    }
+
+    /// Process one bar. Returns ``[NaN]`` during warm-up or while any ``NaN`` is in the window.
+    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
+        to_python(&self.inner.update(&to_rust(&values)))
+    }
+
+    /// Reset internal state (e.g. between CPCV splits).
+    fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Input column names.
+    fn input_names(&self) -> Vec<String> {
+        self.inner.input_names()
+    }
+
+    /// Output column names.
+    fn output_names(&self) -> Vec<String> {
+        self.inner.output_names()
+    }
+
+    /// Number of bars before the first valid output.
+    fn warm_up_period(&self) -> usize {
+        self.inner.warm_up_period()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "ShannonEntropy(inputs={:?}, window={}, outputs={:?}, bins={}, normalize={})",
+            self.inner.input_names(),
+            self.window,
+            self.inner.output_names(),
+            self.bins.map_or("None".to_string(), |n| n.to_string()),
+            self.normalize,
         )
     }
 }

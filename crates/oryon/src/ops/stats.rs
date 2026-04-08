@@ -70,6 +70,18 @@ pub fn kurtosis(data: &[Option<f64>]) -> Option<f64> {
     Some(term1 * sum - correction)
 }
 
+/// Shannon entropy (in nats) from a probability distribution.
+///
+/// Uses the convention `0 * ln(0) = 0`, bins with zero probability are skipped.
+/// An empty slice returns `0.0`.
+pub fn shannon_entropy(probs: &[f64]) -> f64 {
+    probs
+        .iter()
+        .filter(|&&p| p > 0.0)
+        .map(|&p| -p * p.ln())
+        .sum()
+}
+
 /// Median
 /// Returns `None` if empty or any value is `None`.
 pub fn median(data: &[Option<f64>]) -> Option<f64> {
@@ -270,5 +282,43 @@ mod tests {
     #[test]
     fn test_median_empty() {
         assert_eq!(median(&[]), None);
+    }
+
+    // --- shannon_entropy ---
+
+    #[test]
+    fn test_shannon_entropy_uniform() {
+        // scipy: entropy([0.5, 0.5]) = ln(2) = 0.6931471805599453
+        assert!((shannon_entropy(&[0.5, 0.5]) - std::f64::consts::LN_2).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_shannon_entropy_certain() {
+        // All mass in one bin: H = 0
+        assert!((shannon_entropy(&[1.0]) - 0.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_shannon_entropy_skewed() {
+        // scipy: entropy([0.75, 0.25]) = 0.5623351446188083
+        assert!((shannon_entropy(&[0.75, 0.25]) - 0.5623351446188083).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_shannon_entropy_three_equal_bins() {
+        // scipy: entropy([1/3, 1/3, 1/3]) = ln(3) = 1.0986122886681098
+        let h = shannon_entropy(&[1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0]);
+        assert!((h - 3.0_f64.ln()).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_shannon_entropy_zero_prob_bin() {
+        // 0 * ln(0) = 0 by convention
+        assert!((shannon_entropy(&[0.0, 1.0]) - 0.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_shannon_entropy_empty() {
+        assert!((shannon_entropy(&[]) - 0.0).abs() < 1e-10);
     }
 }

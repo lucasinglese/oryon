@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 # ---------------------------------------------------------------------------
 # Features
@@ -442,6 +442,63 @@ class RogersSatchellVolatility:
 
     def input_names(self) -> List[str]:
         """Input column names (high, low, open, close)."""
+        ...
+
+    def output_names(self) -> List[str]:
+        """Output column names."""
+        ...
+
+    def warm_up_period(self) -> int:
+        """Number of bars before the first valid output (``window - 1``)."""
+        ...
+
+    def __repr__(self) -> str: ...
+
+
+class ShannonEntropy:
+    """Rolling Shannon entropy over a fixed window.
+
+    Discretizes the last ``window`` values into equal-width bins and computes
+    ``H = -sum(p_i * ln(p_i))`` in nats. When ``normalize`` is ``True``,
+    outputs ``H / ln(n_bins)`` in [0, 1].
+    When all values in the window are identical, entropy is ``0.0`` (not ``NaN``).
+    Returns ``NaN`` during warm-up (first ``window - 1`` bars) and while any
+    ``NaN`` value remains in the rolling window.
+    """
+
+    def __init__(
+        self,
+        inputs: List[str],
+        window: int,
+        outputs: List[str],
+        bins: Optional[int] = None,
+        normalize: bool = True,
+    ) -> None:
+        """Create a new ShannonEntropy.
+
+        Args:
+            inputs: Name of the input column (e.g. ``["returns"]``).
+            window: Number of bars in the rolling window. Must be >= 2.
+            outputs: Name of the output column (e.g. ``["returns_entropy_20"]``).
+            bins: Number of equal-width bins. Must be >= 2. ``None`` applies
+                Sturges' rule ``k = ceil(1 + log2(window))``. Default: ``None``.
+            normalize: If ``True``, output is ``H / ln(bins)`` in [0, 1]. Default: ``True``.
+
+        Raises:
+            ValueError: If ``window`` < 2, ``bins`` < 2, or ``inputs``/``outputs`` are empty.
+        """
+        ...
+
+    def update(self, values: List[float]) -> List[float]:
+        """Process one bar and return ``[entropy]``. Returns ``[NaN]`` during warm-up."""
+        ...
+
+    def reset(self) -> None:
+        """Reset internal state (e.g. between CPCV splits)."""
+        ...
+
+    def input_names(self) -> List[str]:
+        """Input column names."""
         ...
 
     def output_names(self) -> List[str]:
