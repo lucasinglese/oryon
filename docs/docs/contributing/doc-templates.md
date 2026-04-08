@@ -124,13 +124,14 @@ You can paste the Rust source and the template below into an LLM to generate the
         ```python
         import pandas as pd
         from oryon.targets import YourTarget
-        from oryon import TargetPipeline, run_targets_pipeline
+        from oryon import TargetPipeline
+from oryon.adapters import run_targets_pipeline_pandas
 
         t = YourTarget(inputs=["close"], horizon=3, outputs=["close_your_target_3"])
 
         tp = TargetPipeline(targets=[t], input_columns=["close"])
         df = pd.DataFrame({"close": [100.0, 101.0, 103.0, 102.0, 105.0, 107.0]})
-        out = run_targets_pipeline(tp, df)
+        out = run_targets_pipeline_pandas(tp, df)
         print(out)
         ```
 

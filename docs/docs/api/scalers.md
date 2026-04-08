@@ -73,13 +73,14 @@ in the window is `NaN`, or if the standard deviation is zero (all window values 
     ```python
     import pandas as pd
     from oryon.scalers import RollingZScore
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     rz = RollingZScore(["x"], window=3, outputs=["x_z"])
     fp = FeaturePipeline(features=[rz], input_columns=["x"])
 
     df = pd.DataFrame({"x": [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #      x_z
     # 0    NaN
@@ -160,7 +161,8 @@ construct `FixedZScore` once and apply it at inference time.
     ```python
     import pandas as pd
     from oryon.scalers import fit_standard_scaler, FixedZScore
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     # Fit on training data
     train = [1.0, 2.0, 3.0, 4.0, 5.0]
@@ -171,7 +173,7 @@ construct `FixedZScore` once and apply it at inference time.
     fp = FeaturePipeline(features=[fz], input_columns=["x"])
 
     df = pd.DataFrame({"x": [1.0, 3.0, 5.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #       x_z
     # 0  -1.265   # (1 - 3) / 1.5811

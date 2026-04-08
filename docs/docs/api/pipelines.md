@@ -148,7 +148,7 @@ stateless: no DAG is needed and there is no `update()` method.
 !!! warning "Column-oriented input"
     `run_research()` expects **one list per column**, not one list per bar.
     This is the opposite of `FeaturePipeline.run_research()`. The pandas helper
-    `run_targets_pipeline()` handles this automatically.
+    `run_targets_pipeline_pandas()` handles this automatically.
 
 === "Constructor"
 
@@ -228,13 +228,14 @@ Two functions wrap the pipelines for pandas DataFrames. They handle data
 extraction, orientation, and index alignment automatically.
 
 ```python
-from oryon import run_features_pipeline, run_targets_pipeline
+from oryon.adapters import run_targets_pipeline_pandas
+from oryon.adapters import run_features_pipeline_pandas
 ```
 
 | Function | Pipeline | Input orientation | Returns |
 |---|---|---|---|
-| `run_features_pipeline(pipeline, df)` | `FeaturePipeline` | Rows extracted from `df` | DataFrame aligned to `df.index` |
-| `run_targets_pipeline(pipeline, df)` | `TargetPipeline` | Columns extracted from `df` | DataFrame aligned to `df.index` |
+| `run_features_pipeline_pandas(pipeline, df)` | `FeaturePipeline` | Rows extracted from `df` | DataFrame aligned to `df.index` |
+| `run_targets_pipeline_pandas(pipeline, df)` | `TargetPipeline` | Columns extracted from `df` | DataFrame aligned to `df.index` |
 
 Both functions read the columns listed in `pipeline.input_names()` from `df`
 and return a new DataFrame with `pipeline.output_names()` as columns, preserving
@@ -244,10 +245,8 @@ the original index (integer, datetime, or otherwise).
 
     ```python
     import pandas as pd
-    from oryon import (
-        FeaturePipeline, TargetPipeline,
-        run_features_pipeline, run_targets_pipeline,
-    )
+    from oryon import FeaturePipeline, TargetPipeline
+    from oryon.adapters import run_features_pipeline_pandas, run_targets_pipeline_pandas
     from oryon.features import Sma, LogReturn
     from oryon.targets import FutureReturn
 
@@ -268,8 +267,8 @@ the original index (integer, datetime, or otherwise).
         input_columns=["close"],
     )
 
-    features_df = run_features_pipeline(fp, df)
-    targets_df  = run_targets_pipeline(tp, df)
+    features_df = run_features_pipeline_pandas(fp, df)
+    targets_df  = run_targets_pipeline_pandas(tp, df)
     result = pd.concat([df, features_df, targets_df], axis=1)
     print(result)
     #              close  close_sma_3  log_ret  close_fr_2

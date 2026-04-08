@@ -65,7 +65,8 @@ Simple return from bar `t` to bar `t + horizon`. Identical formula to
     ```python
     import pandas as pd
     from oryon.targets import FutureReturn
-    from oryon import TargetPipeline, run_targets_pipeline
+    from oryon import TargetPipeline
+from oryon.adapters import run_targets_pipeline_pandas
 
     t = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
     tp = TargetPipeline(targets=[t], input_columns=["close"])
@@ -73,7 +74,7 @@ Simple return from bar `t` to bar `t + horizon`. Identical formula to
     df = pd.DataFrame({
         "close": [100.0, 102.0, 105.0, 103.0, 108.0],
     })
-    out = run_targets_pipeline(tp, df)
+    out = run_targets_pipeline_pandas(tp, df)
     print(out)
     #    close_fr_2
     # 0      0.0500
@@ -184,7 +185,8 @@ typically a time index or cumulative volume, `y` is the price series.
     import numpy as np
     import pandas as pd
     from oryon.targets import FutureLinearSlope
-    from oryon import TargetPipeline, run_targets_pipeline
+    from oryon import TargetPipeline
+from oryon.adapters import run_targets_pipeline_pandas
 
     t = FutureLinearSlope(
         inputs=["time_idx", "close"],
@@ -197,7 +199,7 @@ typically a time index or cumulative volume, `y` is the price series.
         "time_idx": [0.0, 1.0, 2.0, 3.0, 4.0],
         "close":    [100.0, 101.0, 103.0, 102.0, 105.0],
     })
-    out = run_targets_pipeline(tp, df)
+    out = run_targets_pipeline_pandas(tp, df)
     print(out)
     #    close_slope_3  close_r2_3
     # 0           1.50      0.9643

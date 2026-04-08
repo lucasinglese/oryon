@@ -72,13 +72,14 @@ reference price is zero or negative.
     ```python
     import pandas as pd
     from oryon.features import SimpleReturn
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     sr = SimpleReturn(["close"], window=1, outputs=["close_ret"])
     fp = FeaturePipeline(features=[sr], input_columns=["close"])
 
     df = pd.DataFrame({"close": [100.0, 102.0, 105.0, 103.0, 108.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_ret
     # 0        NaN
@@ -166,13 +167,14 @@ Returns `None` if either price is zero or negative.
     ```python
     import pandas as pd
     from oryon.features import LogReturn
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     lr = LogReturn(["close"], window=1, outputs=["close_log_ret"])
     fp = FeaturePipeline(features=[lr], input_columns=["close"])
 
     df = pd.DataFrame({"close": [100.0, 102.0, 105.0, 103.0, 108.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_log_ret
     # 0            NaN

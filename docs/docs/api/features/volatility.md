@@ -76,7 +76,8 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
     ```python
     import pandas as pd
     from oryon.features import ParkinsonVolatility
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     pv = ParkinsonVolatility(["high", "low"], window=3, outputs=["pv_3"])
     fp = FeaturePipeline(features=[pv], input_columns=["high", "low"])
@@ -85,7 +86,7 @@ information. Assumes Brownian motion without drift. Less accurate in trending ma
         "high": [102.0, 104.0, 103.0, 106.0, 108.0],
         "low":  [ 99.0, 101.0, 100.0, 103.0, 105.0],
     })
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #         pv_3
     # 0        NaN
@@ -171,7 +172,8 @@ must be positive for a valid output.
     ```python
     import pandas as pd
     from oryon.features import RogersSatchellVolatility
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     rs = RogersSatchellVolatility(
         ["high", "low", "open", "close"], window=3, outputs=["rs_vol_3"]
@@ -184,7 +186,7 @@ must be positive for a valid output.
         "open":  [105.0, 105.0, 105.0, 107.0],
         "close": [107.0, 107.0, 107.0, 109.0],
     })
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #     rs_vol_3
     # 0        NaN

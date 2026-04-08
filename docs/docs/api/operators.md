@@ -47,13 +47,14 @@ Computes `A - B` from two input columns. Returns `NaN` if either input is `NaN`.
     ```python
     import pandas as pd
     from oryon.operators import Subtract
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     sub = Subtract(["a", "b"], outputs=["spread"])
     fp = FeaturePipeline(features=[sub], input_columns=["a", "b"])
 
     df = pd.DataFrame({"a": [10.0, 5.0, 1.0], "b": [3.0, 5.0, 4.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    spread
     # 0     7.0
@@ -144,13 +145,14 @@ making them linearly separable for ML models.
     ```python
     import pandas as pd
     from oryon.operators import NegLog
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     nl = NegLog(["pvalue"], outputs=["neg_log_pvalue"])
     fp = FeaturePipeline(features=[nl], input_columns=["pvalue"])
 
     df = pd.DataFrame({"pvalue": [1.0, 0.5, 0.05, 0.0, None]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    neg_log_pvalue
     # 0           0.000   # -ln(1.0) = 0

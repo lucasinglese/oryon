@@ -11,6 +11,37 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.9] - coming soon
+
+### Added
+
+**Features**
+
+- `Adf` - rolling Augmented Dickey-Fuller test. Produces ADF statistic and approximate p-value (MacKinnon 2010) over a sliding window. Supports constant and constant+trend regressions, configurable lag count via Schwert's rule.
+- `Mma` - Median Moving Average over a rolling window.
+
+**Python exceptions** - typed error hierarchy replacing the flat `ValueError`
+
+- `OryonError` - base exception for all Oryon errors
+- `InvalidConfigError` - invalid constructor parameter (e.g. bad regression type)
+- `InvalidInputError` - invalid value passed at construction or runtime (e.g. `window=0`)
+- `MissingInputColumnError` - required input column not found in the pipeline
+- `DuplicateOutputKeyError` - two features produce the same output key
+- `CyclicDependencyError` - cyclic dependency detected in the feature DAG
+
+**Adapters** - DataFrame helpers moved to `oryon.adapters`
+
+- `run_features_pipeline_pandas(pipeline, df)` - runs a `FeaturePipeline` on a pandas DataFrame, preserves index
+- `run_targets_pipeline_pandas(pipeline, df)` - runs a `TargetPipeline` on a pandas DataFrame, preserves index
+- `run_features_pipeline_polars(pipeline, df)` - runs a `FeaturePipeline` on a polars DataFrame
+- `run_targets_pipeline_polars(pipeline, df)` - runs a `TargetPipeline` on a polars DataFrame
+
+### Changed
+
+- `run_features_pipeline` and `run_targets_pipeline` (previously at top-level) are removed. Use `oryon.adapters` instead.
+
+---
+
 ## [0.2.8] - 2026-04-05
 
 ### Added
@@ -72,8 +103,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 - `FeaturePipeline` - DAG-resolved orchestration of features, streaming and research modes
 - `TargetPipeline` - batch orchestration of targets, research only
-- `run_features_pipeline(pipeline, df)` - pandas helper, preserves index
-- `run_targets_pipeline(pipeline, df)` - pandas helper, preserves index
+- `run_features_pipeline_pandas(pipeline, df)` - pandas helper, preserves index
+- `run_targets_pipeline_pandas(pipeline, df)` - pandas helper, preserves index
 
 **Infrastructure**
 

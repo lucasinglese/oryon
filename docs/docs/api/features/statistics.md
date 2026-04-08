@@ -212,13 +212,14 @@ tail (rare large losses). Useful for detecting regime shifts and tail risk.
     ```python
     import pandas as pd
     from oryon.features import Skewness
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     sk = Skewness(["close"], window=3, outputs=["close_skew_3"])
     fp = FeaturePipeline(features=[sk], input_columns=["close"])
 
     df = pd.DataFrame({"close": [1.0, 2.0, 4.0, 6.0, 8.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_skew_3
     # 0           NaN
@@ -302,13 +303,14 @@ Uniformly spaced returns give negative kurtosis (platykurtic).
     ```python
     import pandas as pd
     from oryon.features import Kurtosis
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     ku = Kurtosis(["close"], window=4, outputs=["close_kurt_4"])
     fp = FeaturePipeline(features=[ku], input_columns=["close"])
 
     df = pd.DataFrame({"close": [1.0, 2.0, 4.0, 8.0, 6.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_kurt_4
     # 0           NaN

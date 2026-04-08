@@ -66,12 +66,13 @@ The same feature pipeline (`fp`) defined above builds your training dataset. See
 
 ```python
 import pandas as pd
-from oryon import run_features_pipeline, run_targets_pipeline, TargetPipeline
+from oryon import TargetPipeline
+from oryon.adapters import run_features_pipeline_pandas, run_targets_pipeline_pandas
 from oryon.targets import FutureReturn
 
 # fp is the pipeline from the live trading example above
-X = run_features_pipeline(fp, df)
-y = run_targets_pipeline(
+X = run_features_pipeline_pandas(fp, df)
+y = run_targets_pipeline_pandas(
     TargetPipeline(
         targets=[FutureReturn(inputs=["close"], horizon=5, outputs=["ret_5"])],
         input_columns=["close"],

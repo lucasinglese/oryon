@@ -35,8 +35,8 @@ contexts.
 
 ```python
 import pandas as pd
-from oryon import FeaturePipeline, TargetPipeline
-from oryon import run_features_pipeline, run_targets_pipeline, load_sample_bars
+from oryon import FeaturePipeline, TargetPipeline, load_sample_bars
+from oryon.adapters import run_features_pipeline_pandas, run_targets_pipeline_pandas
 from oryon.features import Ema, LogReturn, ParkinsonVolatility
 from oryon.targets import FutureReturn
 
@@ -55,8 +55,8 @@ tp = TargetPipeline(
     input_columns=["close"],
 )
 
-X = run_features_pipeline(fp, df)
-y = run_targets_pipeline(tp, df)
+X = run_features_pipeline_pandas(fp, df)
+y = run_targets_pipeline_pandas(tp, df)
 dataset = pd.concat([X, y], axis=1).dropna()
 ```
 

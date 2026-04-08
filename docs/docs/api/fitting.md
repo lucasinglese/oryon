@@ -47,7 +47,8 @@ or if all valid values are equal (std would be zero).
     ```python
     import pandas as pd
     from oryon.scalers import fit_standard_scaler, FixedZScore
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     df_train = pd.DataFrame({"returns": [0.01, -0.02, 0.03, -0.01, 0.02]})
     df_live  = pd.DataFrame({"returns": [0.015, -0.005, 0.025]})
@@ -59,7 +60,7 @@ or if all valid values are equal (std would be zero).
     fz = FixedZScore(["returns"], ["returns_z"], mean=mean, std=std)
     fp = FeaturePipeline(features=[fz], input_columns=["returns"])
 
-    out = run_features_pipeline(fp, df_live)
+    out = run_features_pipeline_pandas(fp, df_live)
     print(out)
     ```
 

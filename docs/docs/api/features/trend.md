@@ -74,13 +74,14 @@ larger the window, the smoother and the slower.
     ```python
     import pandas as pd
     from oryon.features import Sma
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     sma = Sma(["close"], window=3, outputs=["close_sma_3"])
     fp  = FeaturePipeline(features=[sma], input_columns=["close"])
 
     df = pd.DataFrame({"close": [100.0, 101.0, 102.0, 103.0, None, 104.0, 105.0, 106.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_sma_3
     # 0          NaN
@@ -194,13 +195,14 @@ It reacts faster to price changes than the SMA and maintains only a single state
     ```python
     import pandas as pd
     from oryon.features import Ema
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     ema = Ema(["close"], window=3, outputs=["close_ema_3"])
     fp  = FeaturePipeline(features=[ema], input_columns=["close"])
 
     df = pd.DataFrame({"close": [100.0, 101.0, 102.0, 103.0, None, 104.0, 105.0, 106.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_ema_3
     # 0          NaN
@@ -317,13 +319,14 @@ markets ER approaches 0 and KAMA barely moves, suppressing noise.
     ```python
     import pandas as pd
     from oryon.features import Kama
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     kama = Kama(["close"], window=3, outputs=["close_kama_3"], fast=2, slow=5)
     fp   = FeaturePipeline(features=[kama], input_columns=["close"])
 
     df = pd.DataFrame({"close": [100.0, 101.0, 103.0, 102.0, 105.0, 107.0, 106.0]})
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_kama_3
     # 0           NaN
@@ -420,7 +423,8 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
     ```python
     import pandas as pd
     from oryon.features import LinearSlope
-    from oryon import FeaturePipeline, run_features_pipeline
+    from oryon import FeaturePipeline
+from oryon.adapters import run_features_pipeline_pandas
 
     ls = LinearSlope(
         ["time_idx", "close"], window=3,
@@ -432,7 +436,7 @@ R² at each bar. Useful for quantifying trend direction, strength, and linearity
         "time_idx": [0.0, 1.0, 2.0, 3.0, 4.0],
         "close":    [100.0, 103.0, 106.0, 109.0, 112.0],
     })
-    out = run_features_pipeline(fp, df)
+    out = run_features_pipeline_pandas(fp, df)
     print(out)
     #    close_slope_3  close_r2_3
     # 0            NaN         NaN

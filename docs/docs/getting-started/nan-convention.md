@@ -62,8 +62,8 @@ bar 4      103.0         NaN     ← target horizon
 Isolate the model-ready zone with a single `dropna()`:
 
 ```python
-X = run_features_pipeline(fp, df)
-y = run_targets_pipeline(tp, df)
+X = run_features_pipeline_pandas(fp, df)
+y = run_targets_pipeline_pandas(tp, df)
 dataset = pd.concat([X, y], axis=1).dropna()
 ```
 
