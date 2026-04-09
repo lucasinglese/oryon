@@ -21,7 +21,7 @@ No separate research implementation.
 
 - Trend: Sma, Ema, Kama
 - Returns: SimpleReturn, LogReturn
-- Statistics: Adf, Skewness, Kurtosis, LinearSlope, Mma, ShannonEntropy
+- Statistics: Adf, Skewness, Kurtosis, LinearSlope, Mma, ShannonEntropy, Correlation
 - Volatility: ParkinsonVolatility, RogersSatchellVolatility
 
 ## Scalers (v0.2)
@@ -31,8 +31,14 @@ No separate research implementation.
 
 ## Operators (v0.2)
 
+- Add: A + B. Returns None if either input is None.
 - Subtract: A - B. Returns None if either input is None.
+- Multiply: A * B. Returns None if either input is None.
+- Divide: A / B. Returns None if either input is None or B is 0.
+- Reciprocal: 1/x. Returns None if x is None or 0.
+- Log: ln(x). Returns None if x <= 0 or None.
 - NegLog: -ln(x). Returns None if x <= 0 or None.
+- Logit: ln(x/(1-x)). Returns None if x outside (0, 1) or None.
 
 ## Fitting (v0.2)
 

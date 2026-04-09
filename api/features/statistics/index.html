@@ -102,7 +102,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.9</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.10</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -877,6 +877,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#correlation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correlation
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1426,6 +1437,17 @@
     <span class="md-ellipsis">
       
         ShannonEntropy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#correlation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correlation
       
     </span>
   </a>
@@ -2362,6 +2384,257 @@ to accommodate new variants without changing existing behavior.</p>
 </div>
 </div>
 </div>
+<hr />
+<h2 id="correlation">Correlation<a class="headerlink" href="#correlation" title="Permanent link">&para;</a></h2>
+<p><a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;2µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a></p>
+<p>Rolling pairwise correlation between two series over a sliding window. Three methods
+are supported, differing in what relationship they measure and their computational cost.</p>
+<p><strong>Pearson</strong> - product-moment correlation, measures linear co-movement:</p>
+<div class="arithmatex">\[
+r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \cdot \sum_{i=1}^{n}(y_i - \bar{y})^2}}
+\]</div>
+<p><strong>Spearman</strong> - Pearson correlation applied to the ranks of each series (average rank for ties):</p>
+<div class="arithmatex">\[
+\rho = r\!\left(\text{rank}(x),\, \text{rank}(y)\right)
+\]</div>
+<p><strong>Kendall tau-b</strong> - fraction of concordant minus discordant pairs, adjusted for ties:</p>
+<div class="arithmatex">\[
+\tau_b = \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+\]</div>
+<p>where <span class="arithmatex">\(n_0 = n(n-1)/2\)</span>, <span class="arithmatex">\(n_1\)</span> = pairs tied in <span class="arithmatex">\(x\)</span>, <span class="arithmatex">\(n_2\)</span> = pairs tied in <span class="arithmatex">\(y\)</span>,
+<span class="arithmatex">\(C\)</span> = concordant pairs (same ordering in both series), <span class="arithmatex">\(D\)</span> = discordant pairs.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:7"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><input id="__tabbed_6_4" name="__tabbed_6" type="radio" /><input id="__tabbed_6_5" name="__tabbed_6" type="radio" /><input id="__tabbed_6_6" name="__tabbed_6" type="radio" /><input id="__tabbed_6_7" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Parameters</label><label for="__tabbed_6_2">Output</label><label for="__tabbed_6_3">Behavior</label><label for="__tabbed_6_4">Interpretation</label><label for="__tabbed_6_5">Example</label><label for="__tabbed_6_6">Contributing</label><label for="__tabbed_6_7">Source</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>list[str]</code></td>
+<td>len &gt;= 2</td>
+<td>Two input columns <code>[x, y]</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>int</code></td>
+<td>&gt;= 2</td>
+<td>Rolling window length</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>list[str]</code></td>
+<td>len = 1</td>
+<td>Output column, e.g. <code>["xy_corr_20"]</code></td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td><code>str</code></td>
+<td><code>'pearson'</code>, <code>'spearman'</code>, <code>'kendall'</code></td>
+<td>Correlation method. Default: <code>'pearson'</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>When valid</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>outputs[0]</code></td>
+<td><code>t &gt;= window - 1</code>, no <code>NaN</code> in buffer, neither series constant</td>
+<td>Correlation coefficient in [-1, 1]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Warm-up.</strong> The first <code>window - 1</code> bars return <code>NaN</code>. A full buffer of <code>window</code>
+values is required for the first output.</p>
+</li>
+<li>
+<p><strong><code>NaN</code> propagation.</strong> A <code>NaN</code> input enters the buffer. Output stays <code>NaN</code> until
+the <code>NaN</code> is evicted after <code>window</code> consecutive valid bars.</p>
+</li>
+<li>
+<p><strong>Constant series.</strong> If either series has zero variance over the window, the
+correlation is mathematically undefined and the output is <code>NaN</code>.</p>
+</li>
+<li>
+<p><strong><code>reset()</code>.</strong> Clears both buffers entirely. Call between backtest folds
+(CPCV, walk-forward) to avoid state leaking across splits.</p>
+</li>
+<li>
+<p><strong>Performance.</strong> Measured at <code>w200</code> on Apple M-series:</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Complexity</th>
+<th>w20</th>
+<th>w200</th>
+<th>Live-safe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'pearson'</code></td>
+<td>O(n)</td>
+<td>38 ns</td>
+<td>373 ns</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>'spearman'</code></td>
+<td>O(n log n)</td>
+<td>273 ns</td>
+<td>1 648 ns</td>
+<td>Yes (small-to-mid windows)</td>
+</tr>
+<tr>
+<td><code>'kendall'</code></td>
+<td>O(n^2)</td>
+<td>247 ns</td>
+<td>17 372 ns</td>
+<td>Small windows only (&lt;=30)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t &lt; window - 1</code> (buffer not full)</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>Buffer full, all values valid, neither series constant</td>
+<td>Correlation value in [-1, 1]</td>
+</tr>
+<tr>
+<td>Any <code>NaN</code> in the buffer</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>Either series constant over the window</td>
+<td><code>NaN</code></td>
+</tr>
+<tr>
+<td>After <code>reset()</code></td>
+<td><code>NaN</code> until buffer refills</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Pearson.</strong> Measures linear co-movement. Use for pairs trading (do two price
+series move together linearly?), factor exposure (is a return series linearly
+related to a risk factor?). Sensitive to outliers.</p>
+</li>
+<li>
+<p><strong>Spearman.</strong> Measures monotonic co-movement regardless of linearity. Ranks the
+values before correlating, so a consistently higher value in one series paired with
+a consistently higher value in the other scores +1, even if the relationship is
+exponential rather than linear. More robust to outliers than Pearson.</p>
+</li>
+<li>
+<p><strong>Kendall.</strong> Measures concordance: what fraction of pairs agree on ordering?
+Conceptually simpler than Spearman, has better statistical properties at small
+samples and is more robust to outliers, but is significantly slower. Prefer
+Spearman for large windows.</p>
+</li>
+<li>
+<p><strong>Choosing a method.</strong> For most quant use cases, Pearson is sufficient and fastest.
+Use Spearman when the relationship may be non-linear or the series are fat-tailed.
+Use Kendall for small windows when you need concordance-based statistics (e.g.
+comparing strategy rankings).</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correlation</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Pearson: close prices vs volume — do they move together linearly?</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">corr</span> <span class="o">=</span> <span class="n">Correlation</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cv_corr_20&quot;</span><span class="p">])</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">corr</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">1_200_000.0</span><span class="p">])</span>  <span class="c1"># -&gt; [NaN] (warm-up)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># ... feed 20 bars ...</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1"># Spearman: rank correlation between two return series</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">corr_sp</span> <span class="o">=</span> <span class="n">Correlation</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ret_a&quot;</span><span class="p">,</span> <span class="s2">&quot;ret_b&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>                      <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ret_corr_60&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;spearman&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># Kendall: concordance for small windows only</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="n">corr_k</span> <span class="o">=</span> <span class="n">Correlation</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>                     <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;xy_tau_20&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;kendall&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Manual verification (window=3, <code>method='pearson'</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">corr</span> <span class="o">=</span> <span class="n">Correlation</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;corr&quot;</span><span class="p">])</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">corr</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>   <span class="c1"># [NaN]</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">corr</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>   <span class="c1"># [NaN]</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># x=[1,2,3], y=[1,3,2]: Sxy=1, Sxx=2, Syy=2 -&gt; r = 1/sqrt(4) = 0.5</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-10</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><strong>Pearson - incremental O(1) is possible.</strong>
+The current implementation recomputes over the full buffer on every bar (<code>O(n)</code>).
+An incremental version would maintain five running sums for the sliding window:
+<span class="arithmatex">\(S_x\)</span>, <span class="arithmatex">\(S_y\)</span>, <span class="arithmatex">\(S_{xx}\)</span>, <span class="arithmatex">\(S_{yy}\)</span>, <span class="arithmatex">\(S_{xy}\)</span>. When bar <span class="arithmatex">\(t\)</span> enters and bar <span class="arithmatex">\(t-n\)</span>
+is evicted, each sum is updated in O(1):</p>
+<div class="arithmatex">\[r = \frac{n \cdot S_{xy} - S_x S_y}{\sqrt{(n \cdot S_{xx} - S_x^2)(n \cdot S_{yy} - S_y^2)}}\]</div>
+<p>This would reduce Pearson from 373 ns to sub-10 ns at <code>w200</code> - roughly on par with
+EMA. The main caveat is numerical stability: when <span class="arithmatex">\(n \cdot S_{xx} \approx S_x^2\)</span>
+(near-constant series), catastrophic cancellation can occur. A Welford-style
+compensated accumulator mitigates this but adds implementation complexity. The
+two-pass approach currently used is unconditionally stable, which is why it was
+chosen first.</p>
+<p><strong>Spearman - no sub-O(n) approach known for a sliding window.</strong>
+Every time one bar enters and one leaves, all ranks in the window can shift.
+There is no way to avoid touching all <code>n</code> ranks on each update. With an
+order-statistic tree (e.g. a Fenwick tree on compressed rank indices), individual
+rank lookups become O(log n) each, reducing the ranking step to O(n log n) with
+better cache behavior - but the asymptotic complexity stays O(n log n). The
+downstream Pearson step on ranks is still O(n). Bottom line: Spearman at <code>w200</code>
+is bounded below by O(n) and is unlikely to drop below a few hundred nanoseconds.</p>
+<p><strong>Kendall - incremental O(n) is possible (vs current O(n^2)).</strong>
+When the window slides by one bar, only O(n) pairs change: the n-1 pairs
+involving the evicted element are removed, and n-1 new pairs involving the
+incoming element are added. A sliding-window implementation would maintain
+running concordance and tie counts, updating them in O(n) rather than
+recomputing all <span class="arithmatex">\(n(n-1)/2\)</span> pairs from scratch. This should significantly
+reduce the per-bar cost at large windows, with the goal of approaching the
+1-2 µs range at <code>w200</code>.</p>
+</div>
+<div class="tabbed-block">
+<p><a href="https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/correlation.rs"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8"/></svg></span> <code>crates/oryon/src/features/correlation.rs</code></a></p>
+</div>
+</div>
+</div>
 
 
 
@@ -2489,7 +2762,7 @@ to accommodate new variants without changing existing behavior.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.9"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.10"}</script>
     
     
       <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
