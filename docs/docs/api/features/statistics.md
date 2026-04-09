@@ -549,3 +549,168 @@ When all values in the window are identical, range is zero and entropy is `0.0` 
 === "Source"
 
     [:octicons-mark-github-16: `crates/oryon/src/features/shannon_entropy.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/shannon_entropy.rs)
+
+---
+
+## Correlation
+
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;2µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+Rolling pairwise correlation between two series over a sliding window. Three methods
+are supported, differing in what relationship they measure and their computational cost.
+
+**Pearson** - product-moment correlation, measures linear co-movement:
+
+$$
+r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \cdot \sum_{i=1}^{n}(y_i - \bar{y})^2}}
+$$
+
+**Spearman** - Pearson correlation applied to the ranks of each series (average rank for ties):
+
+$$
+\rho = r\!\left(\text{rank}(x),\, \text{rank}(y)\right)
+$$
+
+**Kendall tau-b** - fraction of concordant minus discordant pairs, adjusted for ties:
+
+$$
+\tau_b = \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+$$
+
+where $n_0 = n(n-1)/2$, $n_1$ = pairs tied in $x$, $n_2$ = pairs tied in $y$,
+$C$ = concordant pairs (same ordering in both series), $D$ = discordant pairs.
+
+=== "Parameters"
+
+    | Name | Type | Constraint | Description |
+    |---|---|---|---|
+    | `inputs` | `list[str]` | len >= 2 | Two input columns `[x, y]` |
+    | `window` | `int` | >= 2 | Rolling window length |
+    | `outputs` | `list[str]` | len = 1 | Output column, e.g. `["xy_corr_20"]` |
+    | `method` | `str` | `'pearson'`, `'spearman'`, `'kendall'` | Correlation method. Default: `'pearson'` |
+
+=== "Output"
+
+    | Column | When valid | Description |
+    |---|---|---|
+    | `outputs[0]` | `t >= window - 1`, no `NaN` in buffer, neither series constant | Correlation coefficient in [-1, 1] |
+
+=== "Behavior"
+
+    - **Warm-up.** The first `window - 1` bars return `NaN`. A full buffer of `window`
+    values is required for the first output.
+
+    - **`NaN` propagation.** A `NaN` input enters the buffer. Output stays `NaN` until
+    the `NaN` is evicted after `window` consecutive valid bars.
+
+    - **Constant series.** If either series has zero variance over the window, the
+    correlation is mathematically undefined and the output is `NaN`.
+
+    - **`reset()`.** Clears both buffers entirely. Call between backtest folds
+    (CPCV, walk-forward) to avoid state leaking across splits.
+
+    - **Performance.** Measured at `w200` on Apple M-series:
+
+    | Method | Complexity | w20 | w200 | Live-safe |
+    |---|---|---|---|---|
+    | `'pearson'` | O(n) | 38 ns | 373 ns | Yes |
+    | `'spearman'` | O(n log n) | 273 ns | 1 648 ns | Yes (small-to-mid windows) |
+    | `'kendall'` | O(n^2) | 247 ns | 17 372 ns | Small windows only (<=30) |
+
+    | Situation | Output |
+    |---|---|
+    | `t < window - 1` (buffer not full) | `NaN` |
+    | Buffer full, all values valid, neither series constant | Correlation value in [-1, 1] |
+    | Any `NaN` in the buffer | `NaN` |
+    | Either series constant over the window | `NaN` |
+    | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Pearson.** Measures linear co-movement. Use for pairs trading (do two price
+    series move together linearly?), factor exposure (is a return series linearly
+    related to a risk factor?). Sensitive to outliers.
+
+    - **Spearman.** Measures monotonic co-movement regardless of linearity. Ranks the
+    values before correlating, so a consistently higher value in one series paired with
+    a consistently higher value in the other scores +1, even if the relationship is
+    exponential rather than linear. More robust to outliers than Pearson.
+
+    - **Kendall.** Measures concordance: what fraction of pairs agree on ordering?
+    Conceptually simpler than Spearman, has better statistical properties at small
+    samples and is more robust to outliers, but is significantly slower. Prefer
+    Spearman for large windows.
+
+    - **Choosing a method.** For most quant use cases, Pearson is sufficient and fastest.
+    Use Spearman when the relationship may be non-linear or the series are fat-tailed.
+    Use Kendall for small windows when you need concordance-based statistics (e.g.
+    comparing strategy rankings).
+
+=== "Example"
+
+    ```python
+    from oryon.features import Correlation
+
+    # Pearson: close prices vs volume — do they move together linearly?
+    corr = Correlation(inputs=["close", "volume"], window=20, outputs=["cv_corr_20"])
+    corr.update([100.0, 1_200_000.0])  # -> [NaN] (warm-up)
+    # ... feed 20 bars ...
+
+    # Spearman: rank correlation between two return series
+    corr_sp = Correlation(inputs=["ret_a", "ret_b"], window=60,
+                          outputs=["ret_corr_60"], method="spearman")
+
+    # Kendall: concordance for small windows only
+    corr_k = Correlation(inputs=["x", "y"], window=20,
+                         outputs=["xy_tau_20"], method="kendall")
+    ```
+
+    Manual verification (window=3, `method='pearson'`):
+
+    ```python
+    corr = Correlation(inputs=["x", "y"], window=3, outputs=["corr"])
+    corr.update([1.0, 1.0])   # [NaN]
+    corr.update([2.0, 3.0])   # [NaN]
+    result = corr.update([3.0, 2.0])
+    # x=[1,2,3], y=[1,3,2]: Sxy=1, Sxx=2, Syy=2 -> r = 1/sqrt(4) = 0.5
+    assert abs(result[0] - 0.5) < 1e-10
+    ```
+
+=== "Contributing"
+
+    **Pearson - incremental O(1) is possible.**
+    The current implementation recomputes over the full buffer on every bar (`O(n)`).
+    An incremental version would maintain five running sums for the sliding window:
+    $S_x$, $S_y$, $S_{xx}$, $S_{yy}$, $S_{xy}$. When bar $t$ enters and bar $t-n$
+    is evicted, each sum is updated in O(1):
+
+    $$r = \frac{n \cdot S_{xy} - S_x S_y}{\sqrt{(n \cdot S_{xx} - S_x^2)(n \cdot S_{yy} - S_y^2)}}$$
+
+    This would reduce Pearson from 373 ns to sub-10 ns at `w200` - roughly on par with
+    EMA. The main caveat is numerical stability: when $n \cdot S_{xx} \approx S_x^2$
+    (near-constant series), catastrophic cancellation can occur. A Welford-style
+    compensated accumulator mitigates this but adds implementation complexity. The
+    two-pass approach currently used is unconditionally stable, which is why it was
+    chosen first.
+
+    **Spearman - no sub-O(n) approach known for a sliding window.**
+    Every time one bar enters and one leaves, all ranks in the window can shift.
+    There is no way to avoid touching all `n` ranks on each update. With an
+    order-statistic tree (e.g. a Fenwick tree on compressed rank indices), individual
+    rank lookups become O(log n) each, reducing the ranking step to O(n log n) with
+    better cache behavior - but the asymptotic complexity stays O(n log n). The
+    downstream Pearson step on ranks is still O(n). Bottom line: Spearman at `w200`
+    is bounded below by O(n) and is unlikely to drop below a few hundred nanoseconds.
+
+    **Kendall - incremental O(n) is possible (vs current O(n^2)).**
+    When the window slides by one bar, only O(n) pairs change: the n-1 pairs
+    involving the evicted element are removed, and n-1 new pairs involving the
+    incoming element are added. A sliding-window implementation would maintain
+    running concordance and tie counts, updating them in O(n) rather than
+    recomputing all $n(n-1)/2$ pairs from scratch. This should significantly
+    reduce the per-bar cost at large windows, with the goal of approaching the
+    1-2 µs range at `w200`.
+
+=== "Source"
+
+    [:octicons-mark-github-16: `crates/oryon/src/features/correlation.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/correlation.rs)

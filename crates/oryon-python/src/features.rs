@@ -1,5 +1,7 @@
 use oryon::features::Adf as RustAdf;
 use oryon::features::BinMethod as RustBinMethod;
+use oryon::features::Correlation as RustCorrelation;
+use oryon::features::CorrelationMethod as RustCorrelationMethod;
 use oryon::features::Ema as RustEma;
 use oryon::features::Kama as RustKama;
 use oryon::features::Kurtosis as RustKurtosis;
@@ -17,6 +19,17 @@ use oryon::StreamingTransform;
 use pyo3::prelude::*;
 
 use crate::{to_python, to_rust, InvalidConfigError};
+
+fn parse_correlation_method(method: &str) -> PyResult<RustCorrelationMethod> {
+    match method {
+        "pearson" => Ok(RustCorrelationMethod::Pearson),
+        "spearman" => Ok(RustCorrelationMethod::Spearman),
+        "kendall" => Ok(RustCorrelationMethod::Kendall),
+        other => Err(InvalidConfigError::new_err(format!(
+            "method must be 'pearson', 'spearman', or 'kendall', got '{other}'"
+        ))),
+    }
+}
 
 // --- Adf ---------------------------------------------------------------------
 
@@ -775,6 +788,88 @@ impl ShannonEntropy {
             self.inner.output_names(),
             self.bins.map_or("None".to_string(), |n| n.to_string()),
             self.normalize,
+        )
+    }
+}
+
+// --- Correlation -------------------------------------------------------------
+
+/// Rolling pairwise correlation between two input series.
+///
+/// Supports three methods:
+///
+/// - ``'pearson'``: linear correlation, O(n) per bar. Suitable for live trading.
+/// - ``'spearman'``: rank correlation, O(n log n) per bar. Suitable for live trading.
+/// - ``'kendall'``: Kendall tau-b rank correlation, O(n^2) per bar. Prefer
+///   small windows (window <= 30) for live trading.
+///
+/// Returns ``NaN`` during warm-up or when either series is constant over the window.
+#[pyclass(module = "oryon")]
+pub(crate) struct Correlation {
+    pub(crate) inner: RustCorrelation,
+    window: usize,
+    method: String,
+}
+
+#[pymethods]
+impl Correlation {
+    /// Create a new ``Correlation``.
+    ///
+    /// Args:
+    ///     inputs: Names of the two input columns ``[x, y]``.
+    ///     window: Number of bars in the rolling window. Must be >= 2.
+    ///     outputs: Name of the single output column (e.g. ``["xy_corr_20"]``).
+    ///     method: ``'pearson'``, ``'spearman'``, or ``'kendall'``. Default: ``'pearson'``.
+    #[new]
+    #[pyo3(signature = (inputs, window, outputs, method = "pearson"))]
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+        method: &str,
+    ) -> PyResult<Self> {
+        let m = parse_correlation_method(method)?;
+        let inner = RustCorrelation::new(inputs, window, outputs, m).map_err(crate::oryon_err)?;
+        Ok(Correlation {
+            inner,
+            window,
+            method: method.to_string(),
+        })
+    }
+
+    /// Process one bar. Returns ``[NaN]`` during warm-up, on ``NaN`` input,
+    /// or when either series is constant over the window.
+    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
+        to_python(&self.inner.update(&to_rust(&values)))
+    }
+
+    /// Reset internal state (e.g. between CPCV splits).
+    fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Input column names.
+    fn input_names(&self) -> Vec<String> {
+        self.inner.input_names()
+    }
+
+    /// Output column names.
+    fn output_names(&self) -> Vec<String> {
+        self.inner.output_names()
+    }
+
+    /// Number of bars before the first valid output.
+    fn warm_up_period(&self) -> usize {
+        self.inner.warm_up_period()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "Correlation(inputs={:?}, window={}, outputs={:?}, method={:?})",
+            self.inner.input_names(),
+            self.window,
+            self.inner.output_names(),
+            self.method,
         )
     }
 }

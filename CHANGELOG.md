@@ -11,9 +11,17 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.2.10] - coming soon
+## [0.2.10] - 2026-04-08
 
 ### Added
+
+**Features**
+
+- `Correlation` - rolling pairwise correlation between two series over a sliding window. Supports three methods via the `method` parameter:
+  - `'pearson'` - product-moment linear correlation. O(n) per bar. Live trading safe.
+  - `'spearman'` - rank correlation, captures monotonic relationships. O(n log n) per bar. Live trading safe.
+  - `'kendall'` - Kendall tau-b rank correlation, robust to outliers. O(n^2) per bar. Prefer small windows (`window <= 30`) for live trading.
+  - Returns `None` when either series is constant over the window.
 
 **Operators** - 6 new stateless streaming transforms
 
