@@ -239,12 +239,36 @@ mod tests {
     }
 
     #[test]
+    fn test_update_none_in_y() {
+        let mut c = corr_pearson_3();
+        c.update(&[Some(1.0), Some(2.0)]);
+        c.update(&[Some(2.0), Some(4.0)]);
+        assert!(c.update(&[Some(3.0), Some(6.0)])[0].is_some());
+        // None in y → output None.
+        assert_eq!(c.update(&[Some(4.0), None]), out(None));
+        // None still in window for the next 2 bars.
+        assert_eq!(c.update(&[Some(5.0), Some(10.0)]), out(None));
+        assert_eq!(c.update(&[Some(6.0), Some(12.0)]), out(None));
+        // None has been evicted — valid again.
+        assert!(c.update(&[Some(7.0), Some(14.0)])[0].is_some());
+    }
+
+    #[test]
     fn test_update_constant_series_returns_none() {
         // y constant → sigma_y = 0 → None.
         let mut c = corr_pearson_3();
         c.update(&[Some(1.0), Some(5.0)]);
         c.update(&[Some(2.0), Some(5.0)]);
         assert_eq!(c.update(&[Some(3.0), Some(5.0)]), out(None));
+    }
+
+    #[test]
+    fn test_update_constant_x_returns_none() {
+        // x constant → sigma_x = 0 → None.
+        let mut c = corr_pearson_3();
+        c.update(&[Some(5.0), Some(1.0)]);
+        c.update(&[Some(5.0), Some(2.0)]);
+        assert_eq!(c.update(&[Some(5.0), Some(3.0)]), out(None));
     }
 
     #[test]

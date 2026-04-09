@@ -33,19 +33,29 @@ run them on your own hardware.
 | `Ema` | 4 ns | 4 ns |
 | `SimpleReturn` | 4 ns | 4 ns |
 | `LogReturn` | 7 ns | 7 ns |
-| `Sma` | 13 ns | 144 ns |
-| `ParkinsonVolatility` | 16 ns | 161 ns |
-| `RogersSatchellVolatility` | 25 ns | 172 ns |
-| `Kurtosis` | 35 ns | 504 ns |
-| `Skewness` | 35 ns | 492 ns |
-| `LinearSlope` | 37 ns | 369 ns |
-| `Kama` | 164 ns | 870 ns |
-
-**Every feature stays under 1 µs at w=200.**
+| `Sma` | 14 ns | 151 ns |
+| `ParkinsonVolatility` | 17 ns | 164 ns |
+| `RogersSatchellVolatility` | 26 ns | 178 ns |
+| `AutoCorrelation` (pearson) | 36 ns | 382 ns |
+| `Correlation` (pearson) | 39 ns | 384 ns |
+| `Skewness` | 36 ns | 507 ns |
+| `Kurtosis` | 36 ns | 510 ns |
+| `LinearSlope` | 38 ns | 383 ns |
+| `Mma` | 156 ns | 576 ns |
+| `Kama` | 158 ns | 641 ns |
+| `ShannonEntropy` | 262 ns | 951 ns |
+| `AutoCorrelation` (spearman) | 279 ns | 1 700 ns |
+| `Correlation` (spearman) | 279 ns | 1 687 ns |
+| `Adf` | 457 ns | 2 306 ns |
+| `AutoCorrelation` (kendall) | 245 ns | 18 039 ns |
+| `Correlation` (kendall) | 248 ns | 17 779 ns |
 
 `Ema`, `SimpleReturn`, and `LogReturn` are `O(1)` per update regardless of window
-size. `Sma`, `Skewness`, `Kurtosis`, `LinearSlope`, and `Kama` recompute over the
-full buffer on each update (`O(N)`) and scale with window size.
+size. Most features (`Sma`, `Skewness`, `Kurtosis`, `LinearSlope`, `Mma`, `Kama`,
+`ShannonEntropy`, `ParkinsonVolatility`, `RogersSatchellVolatility`) stay under
+1 µs at w=200. Exceptions: `Correlation` and `AutoCorrelation` with `spearman`
+(~1.7 µs, O(n log n)) or `kendall` (~18 µs, O(n²)), and `Adf` (~2.3 µs, full OLS
+on each bar). Pearson is the default and stays under 400 ns at w=200.
 
 !!! tip "Research mode cost for features"
     `FeaturePipeline.run_research()` calls `update()` in a loop. The total cost to
@@ -70,8 +80,14 @@ scales with window size, matching `Sma` in character.
 
 | Operator | Latency |
 |---|---|
+| `Reciprocal` | 1 ns |
+| `Add` | 2 ns |
 | `Subtract` | 2 ns |
+| `Multiply` | 2 ns |
+| `Divide` | 2 ns |
+| `Log` | 4 ns |
 | `NegLog` | 4 ns |
+| `Logit` | 4 ns |
 
 All operators are `O(1)`: they perform a fixed arithmetic operation with no buffer or state.
 
@@ -99,8 +115,9 @@ The PyO3 boundary adds roughly **100-200 ns per call** on top of the Rust number
 above. This cost is constant: it does not depend on the feature, the window size,
 or the number of outputs.
 
-At w=200, the most expensive feature in Python is therefore `Kama` at roughly
-1 µs total. Every other feature remains under 400 ns end-to-end.
+At w=200, the most expensive feature in Python is `Adf` at roughly 2.5 µs total.
+`Correlation` and `AutoCorrelation` with `pearson` or `spearman` stay under 2 µs.
+`kendall` at w=200 reaches roughly 18 µs.
 
 ---
 

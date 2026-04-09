@@ -11,6 +11,16 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.11] - 2026-04-08
+
+### Added
+
+**Features**
+
+- `AutoCorrelation` - rolling autocorrelation of a single series at a fixed lag. Correlates `x[t-window+1..t]` with `x[t-window+1-lag..t-lag]` over a sliding window. Supports `'pearson'`, `'spearman'`, and `'kendall'` methods (same as `Correlation`). `warm_up_period = window + lag - 1`. Returns `None` when either sub-window is constant.
+
+---
+
 ## [0.2.10] - 2026-04-08
 
 ### Added

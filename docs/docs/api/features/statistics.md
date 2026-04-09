@@ -418,7 +418,7 @@ H_t = -\sum_{i=1}^{k} p_i \ln p_i
 $$
 
 $$
-H^*_t = \frac{H_t}{\ln k} \in [0,\,1] \quad \text{(when \texttt{normalize=True})}
+H^*_t = \frac{H_t}{\ln k} \in [0,\,1] \quad \text{(when normalize=True)}
 $$
 
 Rolling Shannon entropy over the last `window` bars. Values are discretized into
@@ -554,7 +554,7 @@ When all values in the window are identical, range is zero and entropy is `0.0` 
 
 ## Correlation
 
-<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;2µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;18µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
 
 Rolling pairwise correlation between two series over a sliding window. Three methods
 are supported, differing in what relationship they measure and their computational cost.
@@ -611,11 +611,11 @@ $C$ = concordant pairs (same ordering in both series), $D$ = discordant pairs.
 
     - **Performance.** Measured at `w200` on Apple M-series:
 
-    | Method | Complexity | w20 | w200 | Live-safe |
-    |---|---|---|---|---|
-    | `'pearson'` | O(n) | 38 ns | 373 ns | Yes |
-    | `'spearman'` | O(n log n) | 273 ns | 1 648 ns | Yes (small-to-mid windows) |
-    | `'kendall'` | O(n^2) | 247 ns | 17 372 ns | Small windows only (<=30) |
+    | Method | Complexity | w20 | w200 |
+    |---|---|---|---|
+    | `'pearson'` | O(n) | 39 ns | 384 ns |
+    | `'spearman'` | O(n log n) | 279 ns | 1 687 ns |
+    | `'kendall'` | O(n^2) | 248 ns | 17 779 ns |
 
     | Situation | Output |
     |---|---|
@@ -671,9 +671,7 @@ $C$ = concordant pairs (same ordering in both series), $D$ = discordant pairs.
     corr = Correlation(inputs=["x", "y"], window=3, outputs=["corr"])
     corr.update([1.0, 1.0])   # [NaN]
     corr.update([2.0, 3.0])   # [NaN]
-    result = corr.update([3.0, 2.0])
-    # x=[1,2,3], y=[1,3,2]: Sxy=1, Sxx=2, Syy=2 -> r = 1/sqrt(4) = 0.5
-    assert abs(result[0] - 0.5) < 1e-10
+    result = corr.update([3.0, 2.0])  # x=[1,2,3], y=[1,3,2]: Sxy=1, Sxx=2, Syy=2 -> r = 1/sqrt(4) = 0.5
     ```
 
 === "Contributing"
@@ -714,3 +712,99 @@ $C$ = concordant pairs (same ordering in both series), $D$ = discordant pairs.
 === "Source"
 
     [:octicons-mark-github-16: `crates/oryon/src/features/correlation.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/correlation.rs)
+
+---
+
+## AutoCorrelation
+
+<a href="../../../getting-started/streaming-vs-research/#streaming-live-trading" class="oryon-badge oryon-badge--streaming">Streaming</a> <a href="../../../benchmarks/" class="oryon-badge oryon-badge--perf">&lt;19µs/update</a> <a href="../../../getting-started/streaming-vs-research/#research-full-dataset" class="oryon-badge oryon-badge--research">Research</a>
+
+Rolling autocorrelation of a single series at a fixed lag. Uses the same Pearson,
+Spearman, and Kendall formulas as `Correlation`, with $x = x_t$ and $y = x_{t-\text{lag}}$
+over a sliding window of `window` observations.
+
+=== "Parameters"
+
+    | Name | Type | Constraint | Description |
+    |---|---|---|---|
+    | `inputs` | `list[str]` | len = 1 | Input column, e.g. `["close"]` |
+    | `window` | `int` | >= 2 | Number of bars in each sub-window |
+    | `outputs` | `list[str]` | len = 1 | Output column, e.g. `["close_autocorr_20_1"]` |
+    | `lag` | `int` | >= 1 | Lag in bars. Default: `1` |
+    | `method` | `str` | `'pearson'`, `'spearman'`, `'kendall'` | Correlation method. Default: `'pearson'` |
+
+=== "Output"
+
+    | Column | When valid | Description |
+    |---|---|---|
+    | `outputs[0]` | `t >= window + lag - 1`, no `NaN` in buffer, neither sub-window constant | Autocorrelation coefficient in [-1, 1] |
+
+=== "Behavior"
+
+    - **Warm-up.** The first `window + lag - 1` bars return `NaN`. A combined buffer
+    of `window + lag` values is required for the first output.
+
+    - **`NaN` propagation.** A `NaN` input enters the buffer. Output stays `NaN` until
+    the `NaN` is evicted after `window + lag` consecutive valid bars.
+
+    - **Constant series.** If either sub-window has zero variance over the window, the
+    correlation is mathematically undefined and the output is `NaN`.
+
+    - **`reset()`.** Clears the buffer entirely. Call between backtest folds
+    (CPCV, walk-forward) to avoid state leaking across splits.
+
+    - **Performance.** Same complexity and throughput as `Correlation` - the only
+    difference is that both sub-windows are slices of the same buffer rather than
+    two separate buffers.
+
+    | Situation | Output |
+    |---|---|
+    | `t < window + lag - 1` (buffer not full) | `NaN` |
+    | Buffer full, all values valid, neither sub-window constant | Autocorrelation value in [-1, 1] |
+    | Any `NaN` in the buffer | `NaN` |
+    | Either sub-window constant over the window | `NaN` |
+    | After `reset()` | `NaN` until buffer refills |
+
+=== "Interpretation"
+
+    - **Lag 1.** Measures bar-to-bar persistence. A high positive value means the
+    series tends to continue in the same direction (trending). A high negative value
+    means the series tends to reverse (mean-reverting on a one-bar horizon).
+
+    - **Multiple lags.** Running `AutoCorrelation` at several lags simultaneously
+    (e.g. 1, 5, 20 bars) produces a rolling ACF profile. Jumps in the ACF at
+    periodic lags may reveal seasonality or microstructure patterns.
+
+    - **Spearman / Kendall.** Robust alternatives when the relationship is non-linear
+    or when the series contains outliers. Same tradeoffs as in `Correlation`.
+
+=== "Example"
+
+    ```python
+    from oryon.features import AutoCorrelation
+
+    # Lag-1 autocorrelation of close prices
+    ac = AutoCorrelation(inputs=["close"], window=20, outputs=["close_ac1_20"], lag=1)
+    ac.update([100.0])  # -> [NaN] (warm-up, need window + lag = 21 bars)
+    # ... feed 21 bars total for first valid output ...
+
+    # Lag-5 autocorrelation: weekly persistence in daily data
+    ac5 = AutoCorrelation(inputs=["close"], window=20, outputs=["close_ac5_20"], lag=5)
+    ```
+
+    Manual verification (window=3, lag=1, `method='pearson'`):
+
+    ```python
+    ac = AutoCorrelation(inputs=["x"], window=3, outputs=["autocorr"], lag=1)
+    ac.update([1.0])   # [NaN]
+    ac.update([3.0])   # [NaN]
+    ac.update([2.0])   # [NaN]
+    result = ac.update([4.0])
+    # buf=[1,3,2,4]: recent=[3,2,4], lagged=[1,3,2]
+    # Sxy=-1, Sxx=2, Syy=2  ->  r = -1/sqrt(4) = -0.5
+    print(result)  # [-0.5]
+    ```
+
+=== "Source"
+
+    [:octicons-mark-github-16: `crates/oryon/src/features/autocorrelation.rs`](https://github.com/lucasinglese/oryon/blob/main/crates/oryon/src/features/autocorrelation.rs)

@@ -1,5 +1,6 @@
 from ._oryon import (
     Adf,
+    AutoCorrelation,
     Correlation,
     Ema,
     Kama,
@@ -17,6 +18,7 @@ from ._oryon import (
 
 __all__ = [
     "Adf",
+    "AutoCorrelation",
     "Correlation",
     "Sma",
     "Ema",

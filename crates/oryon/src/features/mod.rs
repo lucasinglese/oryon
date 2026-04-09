@@ -1,4 +1,5 @@
 mod adf;
+mod autocorrelation;
 mod correlation;
 mod ema;
 mod kama;
@@ -14,6 +15,7 @@ mod skewness;
 mod sma;
 
 pub use adf::Adf;
+pub use autocorrelation::AutoCorrelation;
 pub use correlation::{Correlation, CorrelationMethod};
 pub use ema::Ema;
 pub use kama::Kama;

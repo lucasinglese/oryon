@@ -1,4 +1,5 @@
 use oryon::features::Adf as RustAdf;
+use oryon::features::AutoCorrelation as RustAutoCorrelation;
 use oryon::features::BinMethod as RustBinMethod;
 use oryon::features::Correlation as RustCorrelation;
 use oryon::features::CorrelationMethod as RustCorrelationMethod;
@@ -869,6 +870,91 @@ impl Correlation {
             self.inner.input_names(),
             self.window,
             self.inner.output_names(),
+            self.method,
+        )
+    }
+}
+
+// --- AutoCorrelation ---------------------------------------------------------
+
+/// Rolling autocorrelation of a single series at a fixed lag.
+///
+/// Computes the correlation between the current window ``x[t-window+1..t]``
+/// and the lagged window ``x[t-window+1-lag..t-lag]``. Supports the same
+/// three methods as ``Correlation``.
+///
+/// Returns ``NaN`` during warm-up or when either sub-window is constant.
+#[pyclass(module = "oryon")]
+pub(crate) struct AutoCorrelation {
+    pub(crate) inner: RustAutoCorrelation,
+    window: usize,
+    lag: usize,
+    method: String,
+}
+
+#[pymethods]
+impl AutoCorrelation {
+    /// Create a new ``AutoCorrelation``.
+    ///
+    /// Args:
+    ///     inputs: Name of the single input column (e.g. ``["close"]``).
+    ///     window: Number of bars in each correlation sub-window. Must be >= 2.
+    ///     outputs: Name of the single output column (e.g. ``["close_autocorr_20_1"]``).
+    ///     lag: Number of bars to shift the lagged window. Must be >= 1. Default: ``1``.
+    ///     method: ``'pearson'``, ``'spearman'``, or ``'kendall'``. Default: ``'pearson'``.
+    #[new]
+    #[pyo3(signature = (inputs, window, outputs, lag = 1, method = "pearson"))]
+    pub fn new(
+        inputs: Vec<String>,
+        window: usize,
+        outputs: Vec<String>,
+        lag: usize,
+        method: &str,
+    ) -> PyResult<Self> {
+        let m = parse_correlation_method(method)?;
+        let inner =
+            RustAutoCorrelation::new(inputs, window, outputs, lag, m).map_err(crate::oryon_err)?;
+        Ok(AutoCorrelation {
+            inner,
+            window,
+            lag,
+            method: method.to_string(),
+        })
+    }
+
+    /// Process one bar. Returns ``[NaN]`` during warm-up, on ``NaN`` input,
+    /// or when either sub-window is constant.
+    fn update(&mut self, values: Vec<f64>) -> Vec<f64> {
+        to_python(&self.inner.update(&to_rust(&values)))
+    }
+
+    /// Reset internal state (e.g. between CPCV splits).
+    fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Input column names.
+    fn input_names(&self) -> Vec<String> {
+        self.inner.input_names()
+    }
+
+    /// Output column names.
+    fn output_names(&self) -> Vec<String> {
+        self.inner.output_names()
+    }
+
+    /// Number of bars before the first valid output.
+    fn warm_up_period(&self) -> usize {
+        self.inner.warm_up_period()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "AutoCorrelation(inputs={:?}, window={}, outputs={:?}, lag={}, method={:?})",
+            self.inner.input_names(),
+            self.window,
+            self.inner.output_names(),
+            self.lag,
             self.method,
         )
     }

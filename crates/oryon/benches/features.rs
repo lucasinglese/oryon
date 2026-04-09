@@ -1,8 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use oryon::features::{
-    Adf, BinMethod, Correlation, CorrelationMethod, Ema, Kama, Kurtosis, LinearSlope, LogReturn,
-    Mma, ParkinsonVolatility, RogersSatchellVolatility, ShannonEntropy, SimpleReturn, Skewness,
-    Sma,
+    Adf, AutoCorrelation, BinMethod, Correlation, CorrelationMethod, Ema, Kama, Kurtosis,
+    LinearSlope, LogReturn, Mma, ParkinsonVolatility, RogersSatchellVolatility, ShannonEntropy,
+    SimpleReturn, Skewness, Sma,
 };
 use oryon::ops::AdfRegression;
 use oryon::traits::StreamingTransform;
@@ -413,9 +413,91 @@ fn bench_correlation(c: &mut Criterion) {
     group.finish();
 }
 
+fn bench_autocorrelation(c: &mut Criterion) {
+    let mut group = c.benchmark_group("autocorrelation_update");
+
+    // Pearson — O(n)
+    let mut ac_pearson_w20 = AutoCorrelation::new(
+        vec!["x".into()],
+        20,
+        vec!["x_autocorr_20_1".into()],
+        1,
+        CorrelationMethod::Pearson,
+    )
+    .unwrap();
+    group.bench_function("pearson/w20", |b| {
+        b.iter(|| ac_pearson_w20.update(black_box(&[Some(1.0)])))
+    });
+
+    let mut ac_pearson_w200 = AutoCorrelation::new(
+        vec!["x".into()],
+        200,
+        vec!["x_autocorr_200_1".into()],
+        1,
+        CorrelationMethod::Pearson,
+    )
+    .unwrap();
+    group.bench_function("pearson/w200", |b| {
+        b.iter(|| ac_pearson_w200.update(black_box(&[Some(1.0)])))
+    });
+
+    // Spearman — O(n log n)
+    let mut ac_spearman_w20 = AutoCorrelation::new(
+        vec!["x".into()],
+        20,
+        vec!["x_autocorr_20_1".into()],
+        1,
+        CorrelationMethod::Spearman,
+    )
+    .unwrap();
+    group.bench_function("spearman/w20", |b| {
+        b.iter(|| ac_spearman_w20.update(black_box(&[Some(1.0)])))
+    });
+
+    let mut ac_spearman_w200 = AutoCorrelation::new(
+        vec!["x".into()],
+        200,
+        vec!["x_autocorr_200_1".into()],
+        1,
+        CorrelationMethod::Spearman,
+    )
+    .unwrap();
+    group.bench_function("spearman/w200", |b| {
+        b.iter(|| ac_spearman_w200.update(black_box(&[Some(1.0)])))
+    });
+
+    // Kendall — O(n^2): expect w200 to exceed the 1µs target
+    let mut ac_kendall_w20 = AutoCorrelation::new(
+        vec!["x".into()],
+        20,
+        vec!["x_autocorr_20_1".into()],
+        1,
+        CorrelationMethod::Kendall,
+    )
+    .unwrap();
+    group.bench_function("kendall/w20", |b| {
+        b.iter(|| ac_kendall_w20.update(black_box(&[Some(1.0)])))
+    });
+
+    let mut ac_kendall_w200 = AutoCorrelation::new(
+        vec!["x".into()],
+        200,
+        vec!["x_autocorr_200_1".into()],
+        1,
+        CorrelationMethod::Kendall,
+    )
+    .unwrap();
+    group.bench_function("kendall/w200", |b| {
+        b.iter(|| ac_kendall_w200.update(black_box(&[Some(1.0)])))
+    });
+
+    group.finish();
+}
+
 criterion_group!(
     benches,
     bench_adf,
+    bench_autocorrelation,
     bench_correlation,
     bench_ema,
     bench_kama,
