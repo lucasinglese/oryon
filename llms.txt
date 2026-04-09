@@ -21,7 +21,7 @@ No separate research implementation.
 
 - Trend: Sma, Ema, Kama
 - Returns: SimpleReturn, LogReturn
-- Statistics: Adf, Skewness, Kurtosis, LinearSlope, Mma, ShannonEntropy, Correlation
+- Statistics: Adf, Skewness, Kurtosis, LinearSlope, Mma, ShannonEntropy, Correlation, AutoCorrelation
 - Volatility: ParkinsonVolatility, RogersSatchellVolatility
 
 ## Scalers (v0.2)

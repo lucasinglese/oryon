@@ -100,7 +100,7 @@
     
 <div class="banner">
   <p style="margin: 0;">
-    This documentation reflects <strong>Oryon v0.2.10</strong>. &nbsp;·&nbsp;
+    This documentation reflects <strong>Oryon v0.2.11</strong>. &nbsp;·&nbsp;
     <a href="https://github.com/lucasinglese/oryon/blob/main/CHANGELOG.md" target="_blank">Review recent updates in the Changelog →</a>
   </p>
 </div>
@@ -1513,45 +1513,92 @@ run them on your own hardware.</p>
 </tr>
 <tr>
 <td><code>Sma</code></td>
-<td>13 ns</td>
-<td>144 ns</td>
+<td>14 ns</td>
+<td>151 ns</td>
 </tr>
 <tr>
 <td><code>ParkinsonVolatility</code></td>
-<td>16 ns</td>
-<td>161 ns</td>
+<td>17 ns</td>
+<td>164 ns</td>
 </tr>
 <tr>
 <td><code>RogersSatchellVolatility</code></td>
-<td>25 ns</td>
-<td>172 ns</td>
+<td>26 ns</td>
+<td>178 ns</td>
 </tr>
 <tr>
-<td><code>Kurtosis</code></td>
-<td>35 ns</td>
-<td>504 ns</td>
+<td><code>AutoCorrelation</code> (pearson)</td>
+<td>36 ns</td>
+<td>382 ns</td>
+</tr>
+<tr>
+<td><code>Correlation</code> (pearson)</td>
+<td>39 ns</td>
+<td>384 ns</td>
 </tr>
 <tr>
 <td><code>Skewness</code></td>
-<td>35 ns</td>
-<td>492 ns</td>
+<td>36 ns</td>
+<td>507 ns</td>
+</tr>
+<tr>
+<td><code>Kurtosis</code></td>
+<td>36 ns</td>
+<td>510 ns</td>
 </tr>
 <tr>
 <td><code>LinearSlope</code></td>
-<td>37 ns</td>
-<td>369 ns</td>
+<td>38 ns</td>
+<td>383 ns</td>
+</tr>
+<tr>
+<td><code>Mma</code></td>
+<td>156 ns</td>
+<td>576 ns</td>
 </tr>
 <tr>
 <td><code>Kama</code></td>
-<td>164 ns</td>
-<td>870 ns</td>
+<td>158 ns</td>
+<td>641 ns</td>
+</tr>
+<tr>
+<td><code>ShannonEntropy</code></td>
+<td>262 ns</td>
+<td>951 ns</td>
+</tr>
+<tr>
+<td><code>AutoCorrelation</code> (spearman)</td>
+<td>279 ns</td>
+<td>1 700 ns</td>
+</tr>
+<tr>
+<td><code>Correlation</code> (spearman)</td>
+<td>279 ns</td>
+<td>1 687 ns</td>
+</tr>
+<tr>
+<td><code>Adf</code></td>
+<td>457 ns</td>
+<td>2 306 ns</td>
+</tr>
+<tr>
+<td><code>AutoCorrelation</code> (kendall)</td>
+<td>245 ns</td>
+<td>18 039 ns</td>
+</tr>
+<tr>
+<td><code>Correlation</code> (kendall)</td>
+<td>248 ns</td>
+<td>17 779 ns</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Every feature stays under 1 µs at w=200.</strong></p>
 <p><code>Ema</code>, <code>SimpleReturn</code>, and <code>LogReturn</code> are <code>O(1)</code> per update regardless of window
-size. <code>Sma</code>, <code>Skewness</code>, <code>Kurtosis</code>, <code>LinearSlope</code>, and <code>Kama</code> recompute over the
-full buffer on each update (<code>O(N)</code>) and scale with window size.</p>
+size. Most features (<code>Sma</code>, <code>Skewness</code>, <code>Kurtosis</code>, <code>LinearSlope</code>, <code>Mma</code>, <code>Kama</code>,
+<code>ShannonEntropy</code>, <code>ParkinsonVolatility</code>, <code>RogersSatchellVolatility</code>) stay under
+1 µs at w=200. Exceptions: <code>Correlation</code> and <code>AutoCorrelation</code> with <code>spearman</code>
+(~1.7 µs, O(n log n)) or <code>kendall</code> (~18 µs, O(n²)), and <code>Adf</code> (~2.3 µs, full OLS
+on each bar). Pearson is the default and stays under 400 ns at w=200.</p>
 <div class="admonition tip">
 <p class="admonition-title">Research mode cost for features</p>
 <p><code>FeaturePipeline.run_research()</code> calls <code>update()</code> in a loop. The total cost to
@@ -1594,11 +1641,35 @@ scales with window size, matching <code>Sma</code> in character.</p>
 </thead>
 <tbody>
 <tr>
+<td><code>Reciprocal</code></td>
+<td>1 ns</td>
+</tr>
+<tr>
+<td><code>Add</code></td>
+<td>2 ns</td>
+</tr>
+<tr>
 <td><code>Subtract</code></td>
 <td>2 ns</td>
 </tr>
 <tr>
+<td><code>Multiply</code></td>
+<td>2 ns</td>
+</tr>
+<tr>
+<td><code>Divide</code></td>
+<td>2 ns</td>
+</tr>
+<tr>
+<td><code>Log</code></td>
+<td>4 ns</td>
+</tr>
+<tr>
 <td><code>NegLog</code></td>
+<td>4 ns</td>
+</tr>
+<tr>
+<td><code>Logit</code></td>
 <td>4 ns</td>
 </tr>
 </tbody>
@@ -1641,8 +1712,9 @@ and horizon.</p>
 <p>The PyO3 boundary adds roughly <strong>100-200 ns per call</strong> on top of the Rust numbers
 above. This cost is constant: it does not depend on the feature, the window size,
 or the number of outputs.</p>
-<p>At w=200, the most expensive feature in Python is therefore <code>Kama</code> at roughly
-1 µs total. Every other feature remains under 400 ns end-to-end.</p>
+<p>At w=200, the most expensive feature in Python is <code>Adf</code> at roughly 2.5 µs total.
+<code>Correlation</code> and <code>AutoCorrelation</code> with <code>pearson</code> or <code>spearman</code> stay under 2 µs.
+<code>kendall</code> at w=200 reaches roughly 18 µs.</p>
 <hr />
 <h2 id="reproduce">Reproduce<a class="headerlink" href="#reproduce" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cargo<span class="w"> </span>bench<span class="w"> </span>--bench<span class="w"> </span>features<span class="w">  </span>--<span class="w"> </span>--output-format<span class="w"> </span>bencher
@@ -1766,7 +1838,7 @@ or the number of outputs.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.10"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.11"}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
