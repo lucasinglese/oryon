@@ -1,4 +1,5 @@
 mod adf;
+mod correlation;
 mod ema;
 mod kama;
 mod kurtosis;
@@ -7,13 +8,13 @@ mod log_return;
 mod mma;
 mod parkinson_volatility;
 mod rogers_satchell_volatility;
-mod correlation;
 mod shannon_entropy;
 mod simple_return;
 mod skewness;
 mod sma;
 
 pub use adf::Adf;
+pub use correlation::{Correlation, CorrelationMethod};
 pub use ema::Ema;
 pub use kama::Kama;
 pub use kurtosis::Kurtosis;
@@ -22,7 +23,6 @@ pub use log_return::LogReturn;
 pub use mma::Mma;
 pub use parkinson_volatility::ParkinsonVolatility;
 pub use rogers_satchell_volatility::RogersSatchellVolatility;
-pub use correlation::{Correlation, CorrelationMethod};
 pub use shannon_entropy::{BinMethod, ShannonEntropy};
 pub use simple_return::SimpleReturn;
 pub use skewness::Skewness;

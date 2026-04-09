@@ -4,11 +4,6 @@ import oryon
 from oryon.features import Correlation
 
 
-# ---------------------------------------------------------------------------
-# Warm-up
-# ---------------------------------------------------------------------------
-
-
 def test_warm_up_pearson():
     c = Correlation(inputs=["x", "y"], window=3, outputs=["corr"], method="pearson")
     assert math.isnan(c.update([1.0, 1.0])[0])
@@ -25,11 +20,6 @@ def test_warm_up_kendall():
     c = Correlation(inputs=["x", "y"], window=3, outputs=["corr"], method="kendall")
     assert math.isnan(c.update([1.0, 1.0])[0])
     assert math.isnan(c.update([2.0, 2.0])[0])
-
-
-# ---------------------------------------------------------------------------
-# Valid values
-# ---------------------------------------------------------------------------
 
 
 def test_valid_pearson_perfect_positive():
@@ -95,22 +85,12 @@ def test_valid_kendall_non_trivial():
     assert abs(result[0] - 2.0 / 3.0) < 1e-10
 
 
-# ---------------------------------------------------------------------------
-# NaN input propagation
-# ---------------------------------------------------------------------------
-
-
 def test_nan_input_propagates():
     c = Correlation(inputs=["x", "y"], window=3, outputs=["corr"], method="pearson")
     c.update([1.0, 1.0])
     c.update([2.0, 2.0])
     c.update([3.0, 3.0])
     assert math.isnan(c.update([float("nan"), 4.0])[0])
-
-
-# ---------------------------------------------------------------------------
-# Constant series
-# ---------------------------------------------------------------------------
 
 
 def test_constant_series_returns_nan():
@@ -121,11 +101,6 @@ def test_constant_series_returns_nan():
     assert math.isnan(c.update([3.0, 5.0])[0])
 
 
-# ---------------------------------------------------------------------------
-# Reset
-# ---------------------------------------------------------------------------
-
-
 def test_reset():
     c = Correlation(inputs=["x", "y"], window=3, outputs=["corr"], method="pearson")
     c.update([1.0, 1.0])
@@ -133,11 +108,6 @@ def test_reset():
     c.update([3.0, 3.0])
     c.reset()
     assert math.isnan(c.update([1.0, 1.0])[0])
-
-
-# ---------------------------------------------------------------------------
-# Binding contract
-# ---------------------------------------------------------------------------
 
 
 def test_input_names():
@@ -153,11 +123,6 @@ def test_output_names():
 def test_warm_up_period():
     c = Correlation(inputs=["x", "y"], window=20, outputs=["corr"], method="pearson")
     assert c.warm_up_period() == 19
-
-
-# ---------------------------------------------------------------------------
-# Invalid params
-# ---------------------------------------------------------------------------
 
 
 def test_invalid_window_zero():
