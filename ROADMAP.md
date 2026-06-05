@@ -5,9 +5,11 @@ The API is not stable until v1.0.0, breaking changes may occur on any `0.x` rele
 
 ---
 
-## v0.2.0 — Current
+## v0.2.x — Current
 
-- 10 features: Sma, Ema, Kama, SimpleReturn, LogReturn, Skewness, Kurtosis, LinearSlope, ParkinsonVolatility, RogersSatchellVolatility
+- 15 features: Sma, Ema, Kama, SimpleReturn, LogReturn, Adf, Skewness, Kurtosis, LinearSlope, Mma, ShannonEntropy, Correlation, AutoCorrelation, ParkinsonVolatility, RogersSatchellVolatility
+- 2 scalers: RollingZScore, FixedZScore (+ fit_standard_scaler)
+- 8 operators: Add, Subtract, Multiply, Divide, Reciprocal, Log, NegLog, Logit
 - 3 forward targets: FutureReturn, FutureCTCVolatility, FutureLinearSlope
 - FeaturePipeline (DAG) + TargetPipeline
 - Python 3.9 to 3.14, pre-built wheels for Linux, macOS, Windows
@@ -16,7 +18,7 @@ The API is not stable until v1.0.0, breaking changes may occur on any `0.x` rele
 
 ## v0.3.0 — Scale
 
-- Features x50: RSI, ATR, Bollinger Bands, MACD, momentum, rolling beta, rolling correlation, ...
+- Features x50: RSI, ATR, Bollinger Bands, MACD, momentum, rolling beta, ...
 - Targets x10: FutureDirection, FutureMaxDrawdown, ...
 - Performance: O(1) running sum for Sma
 

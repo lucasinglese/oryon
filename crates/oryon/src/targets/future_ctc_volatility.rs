@@ -8,24 +8,27 @@ use crate::traits::Target;
 /// For each bar *t*, computes the rolling standard deviation of log returns
 /// over the next `horizon` bars. The last `horizon` values are `None`
 /// because the future is not yet known.
-///
-/// Output name: `{input}_future_ctc_vol_{horizon}`.
 #[derive(Debug)]
 pub struct FutureCTCVolatility {
-    input: String,
+    inputs: Vec<String>,
     horizon: usize,
-    output: String,
+    outputs: Vec<String>,
 }
 
 impl FutureCTCVolatility {
     /// Create a new `FutureCTCVolatility` target.
     ///
-    /// - `input` — price series name (e.g. `"close"`).
-    /// - `horizon` — number of bars to look ahead. Must be >= 2 (std_dev requires at least 2 log returns).
-    pub fn new(input: &str, horizon: usize) -> Result<Self, OryonError> {
-        if input.is_empty() {
+    /// - `inputs`  - price series name (e.g. `["close"]`). Must contain at least 1 entry.
+    /// - `horizon` - number of bars to look ahead. Must be >= 2 (std_dev requires at least 2 log returns).
+    /// - `outputs` - name of the output column (e.g. `["close_future_ctc_vol_20"]`).
+    pub fn new(
+        inputs: Vec<String>,
+        horizon: usize,
+        outputs: Vec<String>,
+    ) -> Result<Self, OryonError> {
+        if inputs.is_empty() {
             return Err(OryonError::InvalidInput {
-                msg: "input must not be empty".into(),
+                msg: "inputs must not be empty".into(),
             });
         }
         if horizon < 2 {
@@ -33,22 +36,26 @@ impl FutureCTCVolatility {
                 msg: "horizon must be >= 2 (std_dev requires at least 2 log returns)".into(),
             });
         }
-        let output = format!("{input}_future_ctc_vol_{horizon}");
+        if outputs.is_empty() {
+            return Err(OryonError::InvalidInput {
+                msg: "outputs must not be empty".into(),
+            });
+        }
         Ok(FutureCTCVolatility {
-            input: input.to_string(),
+            inputs,
             horizon,
-            output,
+            outputs,
         })
     }
 }
 
 impl Target for FutureCTCVolatility {
     fn input_names(&self) -> Vec<String> {
-        vec![self.input.clone()]
+        self.inputs.clone()
     }
 
     fn output_names(&self) -> Vec<String> {
-        vec![self.output.clone()]
+        self.outputs.clone()
     }
 
     fn forward_period(&self) -> usize {
@@ -83,11 +90,21 @@ mod tests {
     }
 
     fn vol3() -> FutureCTCVolatility {
-        FutureCTCVolatility::new("close", 3).unwrap()
+        FutureCTCVolatility::new(
+            vec!["close".into()],
+            3,
+            vec!["close_future_ctc_vol_3".into()],
+        )
+        .unwrap()
     }
 
     target_contract_tests!(
-        FutureCTCVolatility::new("close", 3).unwrap(),
+        FutureCTCVolatility::new(
+            vec!["close".into()],
+            3,
+            vec!["close_future_ctc_vol_3".into()]
+        )
+        .unwrap(),
         vec!["close".to_string()],
         vec!["close_future_ctc_vol_3".to_string()],
         3,
@@ -121,20 +138,28 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_input_empty() {
-        let err = FutureCTCVolatility::new("", 3).unwrap_err();
-        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("input")));
+    fn test_invalid_inputs_empty() {
+        let err = FutureCTCVolatility::new(vec![], 3, vec!["out".into()]).unwrap_err();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("inputs")));
+    }
+
+    #[test]
+    fn test_invalid_outputs_empty() {
+        let err = FutureCTCVolatility::new(vec!["close".into()], 3, vec![]).unwrap_err();
+        assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("outputs")));
     }
 
     #[test]
     fn test_invalid_horizon_zero() {
-        let err = FutureCTCVolatility::new("close", 0).unwrap_err();
+        let err =
+            FutureCTCVolatility::new(vec!["close".into()], 0, vec!["out".into()]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("horizon")));
     }
 
     #[test]
     fn test_invalid_horizon_one() {
-        let err = FutureCTCVolatility::new("close", 1).unwrap_err();
+        let err =
+            FutureCTCVolatility::new(vec!["close".into()], 1, vec!["out".into()]).unwrap_err();
         assert!(matches!(err, OryonError::InvalidInput { ref msg } if msg.contains("horizon")));
     }
 }

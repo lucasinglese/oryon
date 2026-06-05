@@ -158,7 +158,8 @@ pub(crate) fn extract_target(obj: &Bound<'_, PyAny>) -> PyResult<Box<dyn Target>
     }
     if let Ok(t) = obj.extract::<PyRef<FutureCTCVolatility>>() {
         return Ok(Box::new(
-            RustFutureCTCVolatility::new(&t.input, t.horizon).map_err(oryon_err)?,
+            RustFutureCTCVolatility::new(t.inputs.clone(), t.horizon, t.outputs.clone())
+                .map_err(oryon_err)?,
         ));
     }
     if let Ok(t) = obj.extract::<PyRef<FutureLinearSlope>>() {

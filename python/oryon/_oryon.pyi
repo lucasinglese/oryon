@@ -556,18 +556,18 @@ class FutureCTCVolatility:
 
     For each bar t, computes the rolling std of log-returns over
     ``[t, t + horizon)``. The last ``horizon`` bars are ``NaN``.
-    Output name is auto-generated as ``"{input}_future_ctc_vol_{horizon}"``.
     """
 
-    def __init__(self, input: str, horizon: int) -> None:
+    def __init__(self, inputs: List[str], horizon: int, outputs: List[str]) -> None:
         """Create a new FutureCTCVolatility target.
 
         Args:
-            input: Price series name (e.g. ``"close"``).
-            horizon: Number of bars to look ahead. Must be >= 1.
+            inputs: Price series name (e.g. ``["close"]``).
+            horizon: Number of bars to look ahead. Must be >= 2.
+            outputs: Name of the output column (e.g. ``["close_future_ctc_vol_20"]``).
 
         Raises:
-            ValueError: If ``horizon`` is 0 or ``input`` is empty.
+            ValueError: If ``horizon`` < 2 or ``inputs``/``outputs`` are empty.
         """
         ...
 
@@ -576,7 +576,7 @@ class FutureCTCVolatility:
         ...
 
     def output_names(self) -> List[str]:
-        """Output column names (auto-generated: ``"{input}_future_ctc_vol_{horizon}"``)."""
+        """Output column names."""
         ...
 
     def forward_period(self) -> int:

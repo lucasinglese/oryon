@@ -29,8 +29,10 @@ def test_future_return_invalid():
 # --- FutureCTCVolatility -----------------------------------------------------
 
 
-def test_future_ctc_vol_auto_name():
-    t = FutureCTCVolatility(input="close", horizon=5)
+def test_future_ctc_vol_names():
+    t = FutureCTCVolatility(
+        inputs=["close"], horizon=5, outputs=["close_future_ctc_vol_5"]
+    )
     assert t.input_names() == ["close"]
     assert t.output_names() == ["close_future_ctc_vol_5"]
     assert t.forward_period() == 5
@@ -38,9 +40,11 @@ def test_future_ctc_vol_auto_name():
 
 def test_future_ctc_vol_invalid():
     with pytest.raises(oryon.InvalidInputError):
-        FutureCTCVolatility(input="", horizon=5)
+        FutureCTCVolatility(inputs=[], horizon=5, outputs=["out"])
     with pytest.raises(oryon.InvalidInputError):
-        FutureCTCVolatility(input="close", horizon=0)
+        FutureCTCVolatility(inputs=["close"], horizon=1, outputs=["out"])
+    with pytest.raises(oryon.InvalidInputError):
+        FutureCTCVolatility(inputs=["close"], horizon=5, outputs=[])
 
 
 # --- TargetPipeline ----------------------------------------------------------
@@ -80,7 +84,9 @@ def test_target_pipeline_valid_value():
 
 def test_target_pipeline_multiple_targets():
     t1 = FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"])
-    t2 = FutureCTCVolatility(input="close", horizon=3)
+    t2 = FutureCTCVolatility(
+        inputs=["close"], horizon=3, outputs=["close_future_ctc_vol_3"]
+    )
     pipeline = TargetPipeline(targets=[t1, t2], input_columns=["close"])
     assert len(pipeline) == 2
     assert pipeline.forward_period() == 3

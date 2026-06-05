@@ -1,7 +1,6 @@
 use oryon::targets::FutureCTCVolatility as RustFutureCTCVolatility;
 use oryon::targets::FutureLinearSlope as RustFutureLinearSlope;
 use oryon::targets::FutureReturn as RustFutureReturn;
-use oryon::Target;
 use pyo3::prelude::*;
 
 // --- FutureReturn ------------------------------------------------------------
@@ -61,9 +60,9 @@ impl FutureReturn {
 /// Future close-to-close realized volatility.
 #[pyclass(module = "oryon")]
 pub(crate) struct FutureCTCVolatility {
-    pub(crate) input: String,
+    pub(crate) inputs: Vec<String>,
     pub(crate) horizon: usize,
-    pub(crate) output: String,
+    pub(crate) outputs: Vec<String>,
 }
 
 #[pymethods]
@@ -71,29 +70,28 @@ impl FutureCTCVolatility {
     /// Create a new ``FutureCTCVolatility`` target.
     ///
     /// Args:
-    ///     input: Price series name (e.g. ``"close"``).
-    ///     horizon: Number of bars to look ahead. Must be >= 1.
-    ///
-    /// The output column name is auto-generated as ``"{input}_future_ctc_vol_{horizon}"``.
+    ///     inputs: Price series name (e.g. ``["close"]``).
+    ///     horizon: Number of bars to look ahead. Must be >= 2.
+    ///     outputs: Name of the output column (e.g. ``["close_future_ctc_vol_20"]``).
     #[new]
-    pub fn new(input: String, horizon: usize) -> PyResult<Self> {
-        let rust = RustFutureCTCVolatility::new(&input, horizon).map_err(crate::oryon_err)?;
-        let output = rust.output_names()[0].clone();
+    pub fn new(inputs: Vec<String>, horizon: usize, outputs: Vec<String>) -> PyResult<Self> {
+        RustFutureCTCVolatility::new(inputs.clone(), horizon, outputs.clone())
+            .map_err(crate::oryon_err)?;
         Ok(FutureCTCVolatility {
-            input,
+            inputs,
             horizon,
-            output,
+            outputs,
         })
     }
 
     /// Input column names.
     fn input_names(&self) -> Vec<String> {
-        vec![self.input.clone()]
+        self.inputs.clone()
     }
 
     /// Output column names.
     fn output_names(&self) -> Vec<String> {
-        vec![self.output.clone()]
+        self.outputs.clone()
     }
 
     /// Number of bars at the end that will be ``NaN``.
@@ -103,8 +101,8 @@ impl FutureCTCVolatility {
 
     fn __repr__(&self) -> String {
         format!(
-            "FutureCTCVolatility(input={:?}, horizon={})",
-            self.input, self.horizon,
+            "FutureCTCVolatility(inputs={:?}, horizon={}, outputs={:?})",
+            self.inputs, self.horizon, self.outputs,
         )
     }
 }

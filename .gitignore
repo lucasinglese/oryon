@@ -197,6 +197,7 @@ PERSONAL_ROADMAP.md
 demo.py
 demo_pl.py
 TO-DO-LIST.md
+*.dSYM/
 
 # Website
 docs/site/

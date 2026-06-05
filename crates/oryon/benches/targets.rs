@@ -11,12 +11,22 @@ fn bench_future_ctc_volatility(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("future_ctc_vol_compute");
 
-    let vol_h20 = FutureCTCVolatility::new("close", 20).unwrap();
+    let vol_h20 = FutureCTCVolatility::new(
+        vec!["close".into()],
+        20,
+        vec!["close_future_ctc_vol_20".into()],
+    )
+    .unwrap();
     group.bench_function("h20/1000_bars", |b| {
         b.iter(|| vol_h20.run_research(black_box(&[&p1000])))
     });
 
-    let vol_h200 = FutureCTCVolatility::new("close", 200).unwrap();
+    let vol_h200 = FutureCTCVolatility::new(
+        vec!["close".into()],
+        200,
+        vec!["close_future_ctc_vol_200".into()],
+    )
+    .unwrap();
     group.bench_function("h200/1000_bars", |b| {
         b.iter(|| vol_h200.run_research(black_box(&[&p1000])))
     });

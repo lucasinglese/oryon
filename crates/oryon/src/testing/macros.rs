@@ -10,7 +10,7 @@
 /// # Usage
 /// ```ignore
 /// target_contract_tests!(
-///     FutureCTCVolatility::new("close", 3).unwrap(),
+///     FutureCTCVolatility::new(vec!["close".into()], 3, vec!["close_future_ctc_vol_3".into()]).unwrap(),
 ///     vec!["close".to_string()],
 ///     vec!["close_future_ctc_vol_3".to_string()],
 ///     3,  // forward_period

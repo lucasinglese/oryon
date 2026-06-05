@@ -20,7 +20,12 @@ fn main() {
     // time index used as x-axis for linear slope
     let t: Vec<Option<f64>> = (0..n).map(|i| Some(i as f64)).collect();
 
-    let vol = FutureCTCVolatility::new("close", 3).unwrap();
+    let vol = FutureCTCVolatility::new(
+        vec!["close".into()],
+        3,
+        vec!["close_future_ctc_vol_3".into()],
+    )
+    .unwrap();
     let slope = FutureLinearSlope::new(
         vec!["t".into(), "close".into()],
         4,

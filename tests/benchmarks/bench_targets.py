@@ -24,13 +24,17 @@ def test_future_return_h20(benchmark):
 
 
 def test_ctc_vol_h5(benchmark):
-    t = FutureCTCVolatility(input="close", horizon=5)
+    t = FutureCTCVolatility(
+        inputs=["close"], horizon=5, outputs=["close_future_ctc_vol_5"]
+    )
     pipeline = TargetPipeline(targets=[t], input_columns=["close"])
     benchmark(pipeline.run_research, [PRICES])
 
 
 def test_ctc_vol_h20(benchmark):
-    t = FutureCTCVolatility(input="close", horizon=20)
+    t = FutureCTCVolatility(
+        inputs=["close"], horizon=20, outputs=["close_future_ctc_vol_20"]
+    )
     pipeline = TargetPipeline(targets=[t], input_columns=["close"])
     benchmark(pipeline.run_research, [PRICES])
 

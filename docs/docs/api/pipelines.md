@@ -197,7 +197,7 @@ stateless: no DAG is needed and there is no `update()` method.
     tp = TargetPipeline(
         targets=[
             FutureReturn(inputs=["close"], horizon=2, outputs=["close_fr_2"]),
-            FutureCTCVolatility(input="close", horizon=3),
+            FutureCTCVolatility(inputs=["close"], horizon=3, outputs=["close_future_ctc_vol_3"]),
         ],
         input_columns=["close"],
     )

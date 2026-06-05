@@ -11,6 +11,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.12] - 2026-06-05
+
+### Changed
+
+- **BREAKING** `FutureCTCVolatility` constructor aligned with the other targets. It now takes `new(inputs: list[str], horizon: int, outputs: list[str])` instead of `new(input: str, horizon: int)`. The output column name is no longer auto-generated, it must be passed explicitly via `outputs` (same as `FutureReturn` and `FutureLinearSlope`). Migration: `FutureCTCVolatility(input="close", horizon=20)` becomes `FutureCTCVolatility(inputs=["close"], horizon=20, outputs=["close_future_ctc_vol_20"])`.
+
+---
+
 ## [0.2.11] - 2026-04-08
 
 ### Added

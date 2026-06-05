@@ -14,15 +14,15 @@ $$
 $$
 
 Close-to-close realized volatility over the next `horizon` bars. Computes the
-sample standard deviation of log returns over the forward window. The output
-name is auto-generated as `{input}_future_ctc_vol_{horizon}`.
+sample standard deviation of log returns over the forward window.
 
 === "Parameters"
 
     | Name | Type | Constraint | Description |
     |---|---|---|---|
-    | `input` | `str` | non-empty | Price column, e.g. `"close"` |
-    | `horizon` | `int` | >= 1 | Number of bars to look ahead ($h$) |
+    | `inputs` | `list[str]` | non-empty | Price column, e.g. `["close"]` |
+    | `horizon` | `int` | >= 2 | Number of bars to look ahead ($h$) |
+    | `outputs` | `list[str]` | non-empty | Output column name, e.g. `["close_future_ctc_vol_3"]` |
 
 === "Output"
 
@@ -67,7 +67,9 @@ name is auto-generated as `{input}_future_ctc_vol_{horizon}`.
     from oryon import TargetPipeline
     from oryon.adapters import run_targets_pipeline_pandas
 
-    t = FutureCTCVolatility(input="close", horizon=3)
+    t = FutureCTCVolatility(
+        inputs=["close"], horizon=3, outputs=["close_future_ctc_vol_3"]
+    )
     print(t.output_names())  # ['close_future_ctc_vol_3']
 
     tp = TargetPipeline(targets=[t], input_columns=["close"])
