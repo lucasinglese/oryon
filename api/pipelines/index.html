@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/figures/oryon_diamond_dot_square.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1599,10 +1599,10 @@ DAG resolves the sequence automatically.</p>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">]),</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sma_log_ret&quot;</span><span class="p">]),</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_sma_3"</span><span class="p">]),</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">"close_sma_3"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"sma_log_ret"</span><span class="p">]),</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="p">],</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">100.0</span><span class="p">]))</span>  <span class="c1"># [nan, nan]</span>
@@ -1611,7 +1611,7 @@ DAG resolves the sequence automatically.</p>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">103.0</span><span class="p">]))</span>  <span class="c1"># [102.0, 0.0099]</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="mf">104.0</span><span class="p">]))</span>  <span class="c1"># [103.0, 0.0098]</span>
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>    <span class="c1"># [&#39;close_sma_3&#39;, &#39;sma_log_ret&#39;]</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>    <span class="c1"># ['close_sma_3', 'sma_log_ret']</span>
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">warm_up_period</span><span class="p">())</span>  <span class="c1"># 3</span>
 </code></pre></div>
 <p><strong>Research mode, full dataset at once:</strong></p>
@@ -1620,10 +1620,10 @@ DAG resolves the sequence automatically.</p>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">]),</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sma_log_ret&quot;</span><span class="p">]),</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_sma_3"</span><span class="p">]),</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">"close_sma_3"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"sma_log_ret"</span><span class="p">]),</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="p">],</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># Each inner list is one bar: [close]</span>
@@ -1632,7 +1632,7 @@ DAG resolves the sequence automatically.</p>
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># result is row-oriented: one list per bar, columns match output_names()</span>
 <a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># [[nan, nan], [nan, nan], [101.0, nan], [102.0, 0.0099], [103.0, 0.0098], [104.0, 0.0097]]</span>
 <a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>  <span class="c1"># [&#39;close_sma_3&#39;, &#39;sma_log_ret&#39;]</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>  <span class="c1"># ['close_sma_3', 'sma_log_ret']</span>
 </code></pre></div>
 <p><strong><code>reset()</code> between folds:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">fold_1</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">100.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">101.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">102.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">103.0</span><span class="p">]]</span>
@@ -1743,10 +1743,10 @@ window extends beyond the series.</p>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">tp</span> <span class="o">=</span> <span class="n">TargetPipeline</span><span class="p">(</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">targets</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">FutureReturn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_fr_2&quot;</span><span class="p">]),</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="n">FutureCTCVolatility</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_future_ctc_vol_3&quot;</span><span class="p">]),</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">FutureReturn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_fr_2"</span><span class="p">]),</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="n">FutureCTCVolatility</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_future_ctc_vol_3"</span><span class="p">]),</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="p">],</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">)</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
 <a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1"># Input is column-oriented: one list per column</span>
@@ -1757,7 +1757,7 @@ window extends beyond the series.</p>
 <a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1"># result[1] → close_future_ctc_vol_3:  [0.0150, 0.0202, 0.0201, 0.0199, nan,    nan, nan]</span>
 <a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
 <a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">tp</span><span class="o">.</span><span class="n">forward_period</span><span class="p">())</span>  <span class="c1"># 3</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="nb">print</span><span class="p">(</span><span class="n">tp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>    <span class="c1"># [&#39;close_fr_2&#39;, &#39;close_future_ctc_vol_3&#39;]</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="nb">print</span><span class="p">(</span><span class="n">tp</span><span class="o">.</span><span class="n">output_names</span><span class="p">())</span>    <span class="c1"># ['close_fr_2', 'close_future_ctc_vol_3']</span>
 </code></pre></div>
 <p><code>FutureReturn(h=2)</code> leaves the last 2 rows as <code>NaN</code>. <code>FutureCTCVolatility(h=3)</code>
 leaves the last 3 rows as <code>NaN</code>. <code>forward_period()</code> returns the maximum: <code>3</code>.</p>
@@ -1811,20 +1811,20 @@ the original index (integer, datetime, or otherwise).</p>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">oryon.targets</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureReturn</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="p">{</span><span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">]},</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s2">&quot;2024-01-01&quot;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="p">{</span><span class="s2">"close"</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span><span class="p">,</span> <span class="mf">102.0</span><span class="p">,</span> <span class="mf">103.0</span><span class="p">,</span> <span class="mf">104.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">106.0</span><span class="p">,</span> <span class="mf">107.0</span><span class="p">]},</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s2">"2024-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="p">)</span>
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
 <a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="n">fp</span> <span class="o">=</span> <span class="n">FeaturePipeline</span><span class="p">(</span>
 <a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_sma_3&quot;</span><span class="p">]),</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;log_ret&quot;</span><span class="p">]),</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>        <span class="n">Sma</span><span class="p">([</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_sma_3"</span><span class="p">]),</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="n">LogReturn</span><span class="p">([</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"log_ret"</span><span class="p">]),</span>
 <a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>    <span class="p">],</span>
-<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span>
 <a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="p">)</span>
 <a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="n">tp</span> <span class="o">=</span> <span class="n">TargetPipeline</span><span class="p">(</span>
-<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="n">FutureReturn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close_fr_2&quot;</span><span class="p">])],</span>
-<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="n">FutureReturn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s2">"close_fr_2"</span><span class="p">])],</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="n">input_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"close"</span><span class="p">],</span>
 <a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="p">)</span>
 <a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>
 <a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="n">features_df</span> <span class="o">=</span> <span class="n">run_features_pipeline_pandas</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
@@ -1976,10 +1976,10 @@ can be concatenated directly onto the source DataFrame.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.12"}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.tabs", "content.code.copy", "content.code.annotation"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "0.2.12"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       
